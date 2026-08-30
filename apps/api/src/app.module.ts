@@ -9,6 +9,7 @@ import { AIModule } from './ai/ai.module';
 import { CompaniesModule } from './companies/companies.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { LeadsModule } from './leads/leads.module';
+import { QualificationsModule } from './qualifications/qualifications.module';
 
 @Module({
   imports: [
@@ -20,11 +21,13 @@ import { LeadsModule } from './leads/leads.module';
     CompaniesModule,
     ContactsModule,
     LeadsModule,
+    QualificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
+
 
 
 
