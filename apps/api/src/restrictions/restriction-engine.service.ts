@@ -174,8 +174,20 @@ export class RestrictionEngineService {
 
     if (!currentLead) return;
 
-    if (currentLead.status === LeadLifecycleStatus.WON || currentLead.status === LeadLifecycleStatus.LOST) {
-      this.logger.warn(`Restriction check returned '${result}' for Lead '${leadId}' which is in final state '${currentLead.status}'. Status transitioning to RESTRICTED.`);
+    const isAdvancedStatus = (
+      [
+        LeadLifecycleStatus.WON,
+        LeadLifecycleStatus.LOST,
+        LeadLifecycleStatus.DEAL_DISCUSSION,
+        LeadLifecycleStatus.QUALIFIED,
+      ] as LeadLifecycleStatus[]
+    ).includes(currentLead.status);
+
+
+    if (isAdvancedStatus) {
+      this.logger.warn(
+        `[CRITICAL COMPLIANCE OVERRIDE] Restriction check returned '${result}' for Lead '${leadId}' which was previously at advanced stage '${currentLead.status}'. Overriding status to RESTRICTED for regulatory compliance.`,
+      );
     }
 
     await this.prisma.client.lead.update({
@@ -186,13 +198,16 @@ export class RestrictionEngineService {
           restrictionBlocked: true,
           restrictionResult: result,
           blockReason: reason,
+          previousStatus: currentLead.status,
+          overrodeAdvancedStatus: isAdvancedStatus,
           blockedAt: new Date().toISOString(),
         },
       },
     });
 
-    this.logger.log(`Lead '${leadId}' status transitioned to RESTRICTED due to ${result} restriction evaluation outcome.`);
+    this.logger.log(`Lead '${leadId}' status transitioned from '${currentLead.status}' to RESTRICTED due to ${result} restriction evaluation.`);
   }
+
 
   private async handleCompanyLeadsBlocking(companyId: string, result: RestrictionCheckResult, reason: string): Promise<void> {
     if (result === RestrictionCheckResult.CLEAR) return;

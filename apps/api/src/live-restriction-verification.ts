@@ -199,7 +199,69 @@ async function runLiveRestrictionEngineVerification() {
   const verifyLead2 = await request(server).get(`/leads/${lead2Id}`);
   console.log(`LEAD 2 STATUS UNCHANGED: ${verifyLead2.body.status} (Expected: COLD_LEAD)\n`);
 
+  // TEST CASE 3: NON-DOWNGRADE INVARIANT ON ADVANCED LEAD (QUALIFIED -> CLEAR -> STILL QUALIFIED)
+  console.log('>>> TEST CASE 3: Non-Downgrade Invariant on Advanced Lead');
+  const comp3Res = await request(server)
+    .post('/companies')
+    .send({
+      name: 'Redwood Custom Millwork LLC',
+      domain: `redwood-${Date.now()}.com`,
+      industry: 'Woodworking',
+    });
+  const comp3Id = comp3Res.body.id;
+  const lead3Res = await request(server).post('/leads').send({ companyId: comp3Id });
+  const lead3Id = lead3Res.body.id;
+
+  // Advance lead status to QUALIFIED
+  await request(server)
+    .patch(`/leads/${lead3Id}`)
+    .send({ status: LeadLifecycleStatus.QUALIFIED });
+  const advancedLead3 = await request(server).get(`/leads/${lead3Id}`);
+  console.log(`Lead 3 Advanced to: ${advancedLead3.body.status}`);
+
+  console.log(`>>> Triggering Restriction Check on Advanced Lead: POST /leads/${lead3Id}/restriction-check`);
+  const checkLead3 = await request(server)
+    .post(`/leads/${lead3Id}/restriction-check`)
+    .send({ notes: 'Routine check on qualified lead' });
+  console.log(`RESULT: ${checkLead3.body.result}`);
+
+  const verifyLead3 = await request(server).get(`/leads/${lead3Id}`);
+  console.log(`LEAD 3 STATUS AFTER CLEAR: ${verifyLead3.body.status} (Expected: QUALIFIED - strictly preserved!)\n`);
+
+  // TEST CASE 4: ADVANCED/TERMINAL STATUS OVERRIDE (WON -> RESTRICTED -> RESTRICTED with Audit)
+  console.log('>>> TEST CASE 4: Advanced Terminal Status Override (WON -> RESTRICTED)');
+  const comp4Res = await request(server)
+    .post('/companies')
+    .send({
+      name: 'Titan Framing Systems LLC',
+      domain: `titan-${Date.now()}.com`,
+      industry: 'Steel Joists and Longspan Decking',
+    });
+  const comp4Id = comp4Res.body.id;
+  const lead4Res = await request(server).post('/leads').send({ companyId: comp4Id });
+  const lead4Id = lead4Res.body.id;
+
+  // Advance lead status to terminal WON
+  await request(server)
+    .patch(`/leads/${lead4Id}`)
+    .send({ status: LeadLifecycleStatus.WON });
+  const wonLead4 = await request(server).get(`/leads/${lead4Id}`);
+  console.log(`Lead 4 Advanced to Terminal State: ${wonLead4.body.status}`);
+
+  console.log(`>>> Triggering Research on Prohibited Scope: POST /companies/${comp4Id}/research`);
+  const research4Res = await request(server)
+    .post(`/companies/${comp4Id}/research`)
+    .send({
+      rawResearchText: 'Titan specializes in OWSJ open web steel joists and K-Series joist girders.',
+    });
+  console.log(`RESULT: ${research4Res.body.restrictionCheck.result}`);
+
+  const verifyLead4 = await request(server).get(`/leads/${lead4Id}`);
+  console.log(`LEAD 4 STATUS AFTER OVERRIDE: ${verifyLead4.body.status} (Expected: RESTRICTED)`);
+  console.log(`LEAD 4 AUDIT METADATA:`, JSON.stringify(verifyLead4.body.metadata, null, 2));
+
   await app.close();
+
   console.log('================================================================');
   console.log(' LIVE RESTRICTION POLICY TRACES COMPLETED WITH ZERO ERRORS     ');
   console.log('================================================================');

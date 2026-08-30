@@ -228,12 +228,11 @@ describe('Restriction Engine Pipeline', () => {
       });
     });
 
-    it('leaves Lead.status untouched when check returns CLEAR', async () => {
+    it('leaves Lead.status untouched when check returns CLEAR on an ALREADY-ADVANCED lead (non-downgrade invariant)', async () => {
       mockPrismaClient.lead.findUnique.mockResolvedValue({
-        id: 'lead-test-3',
-        status: LeadLifecycleStatus.INTERESTED,
+        id: 'lead-test-advanced',
+        status: LeadLifecycleStatus.QUALIFIED,
       });
-
 
       mockAIOrchestrator.analyzeRestriction.mockResolvedValue({
         data: {
@@ -247,15 +246,54 @@ describe('Restriction Engine Pipeline', () => {
 
       const check = await service.evaluate({
         entityType: RestrictionEntityType.LEAD,
-        leadId: 'lead-test-3',
+        leadId: 'lead-test-advanced',
         sourceTrigger: 'manual',
         textCorpus: 'High-end timber and glass construction.',
       });
 
       expect(check.result).toBe(RestrictionCheckResult.CLEAR);
-      // Lead.update should NOT have been called for CLEAR
+      // Lead.update must NOT be called for CLEAR, preserving QUALIFIED status
       expect(mockPrismaClient.lead.update).not.toHaveBeenCalled();
     });
+
+    it('overrides an advanced terminal status (e.g. WON) to RESTRICTED with prominent audit metadata when restriction is found', async () => {
+      mockPrismaClient.lead.findUnique.mockResolvedValue({
+        id: 'lead-test-won',
+        status: LeadLifecycleStatus.WON,
+      });
+
+      mockAIOrchestrator.analyzeRestriction.mockResolvedValue({
+        data: {
+          result: RestrictionCheckResult.RESTRICTED,
+          reason: 'Post-award audit identified prohibited DLH-Series joist scope.',
+          matchedKeywordsOrEntities: ['DLH-Series'],
+          requiresHumanReview: true,
+          confidence: 0.99,
+        },
+      });
+
+      const check = await service.evaluate({
+        entityType: RestrictionEntityType.LEAD,
+        leadId: 'lead-test-won',
+        sourceTrigger: 'manual',
+        textCorpus: 'Post-award drawings specify DLH-Series longspan joists.',
+      });
+
+      expect(check.result).toBe(RestrictionCheckResult.RESTRICTED);
+      expect(mockPrismaClient.lead.update).toHaveBeenCalledWith({
+        where: { id: 'lead-test-won' },
+        data: {
+          status: LeadLifecycleStatus.RESTRICTED,
+          metadata: expect.objectContaining({
+            restrictionBlocked: true,
+            restrictionResult: RestrictionCheckResult.RESTRICTED,
+            previousStatus: LeadLifecycleStatus.WON,
+            overrodeAdvancedStatus: true,
+          }),
+        },
+      });
+    });
+
 
     it('evaluates lead directly via evaluateLead() and persists RestrictionCheck', async () => {
       mockPrismaClient.lead.findUnique.mockResolvedValue({
