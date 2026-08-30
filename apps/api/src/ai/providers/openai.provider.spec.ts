@@ -6,19 +6,28 @@ import {
 
 describe('OpenAIProvider', () => {
   let provider: OpenAIProvider;
-  let mockOpenAIClient: any;
+  let mockCreate: jest.Mock;
 
   beforeEach(() => {
-    mockOpenAIClient = {
+    // Isolate environment
+    delete process.env.OPENAI_API_KEY;
+
+    mockCreate = jest.fn();
+    provider = new OpenAIProvider();
+
+    // Inject mock client directly into provider instance to guarantee zero real network transport
+    (provider as any).client = {
       chat: {
         completions: {
-          create: jest.fn(),
+          create: mockCreate,
         },
       },
     };
+  });
 
-    provider = new OpenAIProvider();
-    (provider as any).client = mockOpenAIClient;
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
   });
 
   it('completes request with json_schema structured outputs and returns usage metadata', async () => {
@@ -38,7 +47,7 @@ describe('OpenAIProvider', () => {
       },
     };
 
-    mockOpenAIClient.chat.completions.create.mockResolvedValue(mockApiResponse);
+    mockCreate.mockResolvedValue(mockApiResponse);
 
     const result = await provider.complete({
       prompt: 'Check restriction for Acme',
@@ -53,7 +62,8 @@ describe('OpenAIProvider', () => {
     expect(result.parsedContent).toEqual({ result: 'CLEAR', reason: 'No issue' });
     expect(result.modelUsed).toBe('gpt-4o-mini');
     expect(result.usage.totalTokens).toBe(60);
-    expect(mockOpenAIClient.chat.completions.create).toHaveBeenCalledWith(
+    expect(mockCreate).toHaveBeenCalledTimes(1);
+    expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         response_format: {
           type: 'json_schema',
@@ -69,8 +79,10 @@ describe('OpenAIProvider', () => {
     );
   });
 
-  it('retries on transient rate-limit (429) errors with backoff and succeeds', async () => {
-    const rateLimitError = new Error('Rate limit exceeded');
+  it('retries on transient rate-limit (429) errors with fake timers and succeeds', async () => {
+    jest.useFakeTimers();
+
+    const rateLimitError = new Error('Simulated 429 Rate limit exceeded from mock double');
     (rateLimitError as any).status = 429;
 
     const successResponse = {
@@ -79,24 +91,29 @@ describe('OpenAIProvider', () => {
       usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
     };
 
-    mockOpenAIClient.chat.completions.create
+    mockCreate
       .mockRejectedValueOnce(rateLimitError)
       .mockResolvedValueOnce(successResponse);
 
-    const result = await provider.complete({
+    const completePromise = provider.complete({
       prompt: 'Test prompt',
       maxRetries: 2,
     });
 
-    expect(mockOpenAIClient.chat.completions.create).toHaveBeenCalledTimes(2);
+    // Advance fake timer to fast-forward through backoff delay
+    await jest.advanceTimersByTimeAsync(3000);
+
+    const result = await completePromise;
+
+    expect(mockCreate).toHaveBeenCalledTimes(2);
     expect(result.rawContent).toBe('{"status":"ok"}');
   });
 
   it('does not retry on fatal errors (401 invalid API key) and throws AIProviderFatalError immediately', async () => {
-    const authError = new Error('Incorrect API key provided');
+    const authError = new Error('Simulated 401 Incorrect API key provided from mock double');
     (authError as any).status = 401;
 
-    mockOpenAIClient.chat.completions.create.mockRejectedValue(authError);
+    mockCreate.mockRejectedValue(authError);
 
     await expect(
       provider.complete({
@@ -105,6 +122,17 @@ describe('OpenAIProvider', () => {
       }),
     ).rejects.toThrow(AIProviderFatalError);
 
-    expect(mockOpenAIClient.chat.completions.create).toHaveBeenCalledTimes(1);
+    expect(mockCreate).toHaveBeenCalledTimes(1);
+  });
+
+  it('throws AIProviderFatalError immediately if client is not initialized', async () => {
+    const uninitializedProvider = new OpenAIProvider();
+    (uninitializedProvider as any).client = null;
+
+    await expect(
+      uninitializedProvider.complete({
+        prompt: 'Test prompt',
+      }),
+    ).rejects.toThrow(AIProviderFatalError);
   });
 });

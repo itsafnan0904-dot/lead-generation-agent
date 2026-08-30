@@ -10,12 +10,16 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LeadsService } from './leads.service';
+import { ScoringService } from './services/scoring.service';
 import { CreateLeadDto, UpdateLeadDto, ListLeadsQueryDto } from './dto/lead.dto';
 
 @Controller('leads')
 @UseGuards(JwtAuthGuard)
 export class LeadsController {
-  constructor(private readonly leadsService: LeadsService) {}
+  constructor(
+    private readonly leadsService: LeadsService,
+    private readonly scoringService: ScoringService,
+  ) {}
 
   /**
    * Creates a new Lead requiring an existing companyId.
@@ -23,6 +27,14 @@ export class LeadsController {
   @Post()
   async createLead(@Body() dto: CreateLeadDto) {
     return this.leadsService.createLead(dto);
+  }
+
+  /**
+   * Triggers lead scoring calculation using AI analysis and backend bounds validation.
+   */
+  @Post(':id/score')
+  async scoreLead(@Param('id') id: string) {
+    return this.scoringService.calculateLeadScore(id);
   }
 
   /**
@@ -52,3 +64,4 @@ export class LeadsController {
     return this.leadsService.updateLead(id, dto);
   }
 }
+
