@@ -10,6 +10,7 @@ import { CompaniesModule } from './companies/companies.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { LeadsModule } from './leads/leads.module';
 import { QualificationsModule } from './qualifications/qualifications.module';
+import { RestrictionsModule } from './restrictions/restrictions.module';
 
 @Module({
   imports: [
@@ -22,11 +23,13 @@ import { QualificationsModule } from './qualifications/qualifications.module';
     ContactsModule,
     LeadsModule,
     QualificationsModule,
+    RestrictionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
+
 
 
 

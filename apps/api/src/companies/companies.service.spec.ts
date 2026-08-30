@@ -1,14 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
-import { PrismaService } from '../prisma/prisma.service';
-import { AIOrchestratorService } from '../ai/services/ai-orchestrator.service';
-import { checkPreliminaryRestrictionKeywords } from './utils/restriction-keywords.util';
+import { RestrictionCheckResult } from '@ai-sales-agent/database';
 
-describe('CompaniesService & Preliminary Restriction Scan', () => {
+describe('CompaniesService & Restriction Engine Integration', () => {
   let service: CompaniesService;
-  let prismaService: any;
-  let aiOrchestrator: any;
+  let mockPrismaClient: any;
+  let mockAIOrchestrator: any;
+  let mockRestrictionEngine: any;
 
   const mockCompany = {
     id: 'comp-uuid-1',
@@ -25,42 +23,42 @@ describe('CompaniesService & Preliminary Restriction Scan', () => {
     updatedAt: new Date(),
   };
 
-  beforeEach(async () => {
-    prismaService = {
-      client: {
-        company: {
-          create: jest.fn(),
-          findUnique: jest.fn(),
-          findFirst: jest.fn(),
-          findMany: jest.fn(),
-          count: jest.fn(),
-          update: jest.fn(),
-        },
-        research: {
-          create: jest.fn(),
-        },
+  beforeEach(() => {
+    mockPrismaClient = {
+      company: {
+        create: jest.fn(),
+        findUnique: jest.fn(),
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        count: jest.fn(),
+        update: jest.fn(),
+      },
+      research: {
+        create: jest.fn(),
       },
     };
 
-    aiOrchestrator = {
+    mockAIOrchestrator = {
       analyzeResearch: jest.fn(),
     };
 
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        CompaniesService,
-        { provide: PrismaService, useValue: prismaService },
-        { provide: AIOrchestratorService, useValue: aiOrchestrator },
-      ],
-    }).compile();
+    mockRestrictionEngine = {
+      evaluate: jest.fn(),
+    };
 
-    service = module.get<CompaniesService>(CompaniesService);
+    const mockPrismaService = { client: mockPrismaClient } as any;
+
+    service = new CompaniesService(
+      mockPrismaService,
+      mockAIOrchestrator,
+      mockRestrictionEngine,
+    );
   });
 
   describe('Company Creation & Deduplication', () => {
     it('successfully creates a company when domain is unique', async () => {
-      prismaService.client.company.findUnique.mockResolvedValue(null);
-      prismaService.client.company.create.mockResolvedValue(mockCompany);
+      mockPrismaClient.company.findUnique.mockResolvedValue(null);
+      mockPrismaClient.company.create.mockResolvedValue(mockCompany);
 
       const result = await service.createCompany({
         name: 'Apex Industrial Supply',
@@ -69,14 +67,14 @@ describe('CompaniesService & Preliminary Restriction Scan', () => {
       });
 
       expect(result.id).toBe('comp-uuid-1');
-      expect(prismaService.client.company.findUnique).toHaveBeenCalledWith({
+      expect(mockPrismaClient.company.findUnique).toHaveBeenCalledWith({
         where: { domain: 'apexindustrial.com' },
       });
-      expect(prismaService.client.company.create).toHaveBeenCalled();
+      expect(mockPrismaClient.company.create).toHaveBeenCalled();
     });
 
     it('rejects company creation with 409 Conflict when domain already exists', async () => {
-      prismaService.client.company.findUnique.mockResolvedValue(mockCompany);
+      mockPrismaClient.company.findUnique.mockResolvedValue(mockCompany);
 
       await expect(
         service.createCompany({
@@ -85,11 +83,11 @@ describe('CompaniesService & Preliminary Restriction Scan', () => {
         }),
       ).rejects.toThrow(ConflictException);
 
-      expect(prismaService.client.company.create).not.toHaveBeenCalled();
+      expect(mockPrismaClient.company.create).not.toHaveBeenCalled();
     });
 
     it('rejects company creation with 409 Conflict when name matches case-insensitively without domain', async () => {
-      prismaService.client.company.findFirst.mockResolvedValue(mockCompany);
+      mockPrismaClient.company.findFirst.mockResolvedValue(mockCompany);
 
       await expect(
         service.createCompany({
@@ -97,19 +95,19 @@ describe('CompaniesService & Preliminary Restriction Scan', () => {
         }),
       ).rejects.toThrow(ConflictException);
 
-      expect(prismaService.client.company.findFirst).toHaveBeenCalledWith({
+      expect(mockPrismaClient.company.findFirst).toHaveBeenCalledWith({
         where: {
           name: { equals: 'apex industrial supply', mode: 'insensitive' },
         },
       });
-      expect(prismaService.client.company.create).not.toHaveBeenCalled();
+      expect(mockPrismaClient.company.create).not.toHaveBeenCalled();
     });
   });
 
-  describe('POST /companies/:id/research & Preliminary Restriction Scan', () => {
-    it('calls AIOrchestratorService.analyzeResearch and persists Research record linked to Company', async () => {
-      prismaService.client.company.findUnique.mockResolvedValue(mockCompany);
-      aiOrchestrator.analyzeResearch.mockResolvedValue({
+  describe('POST /companies/:id/research & Restriction Policy Engine', () => {
+    it('calls AIOrchestratorService.analyzeResearch, executes RestrictionEngine, and persists Research record', async () => {
+      mockPrismaClient.company.findUnique.mockResolvedValue(mockCompany);
+      mockAIOrchestrator.analyzeResearch.mockResolvedValue({
         data: {
           summary: 'Apex provides general industrial manufacturing and supply chain logistics.',
           keyInsights: ['Expanding into Midwest', 'Upgrading automated warehouse'],
@@ -126,83 +124,43 @@ describe('CompaniesService & Preliminary Restriction Scan', () => {
         },
       });
 
+      const mockRestrictionCheck = {
+        id: 'restr-check-101',
+        entityType: 'COMPANY',
+        result: RestrictionCheckResult.CLEAR,
+        reason: 'Clean industrial equipment scope.',
+      };
+      mockRestrictionEngine.evaluate.mockResolvedValue(mockRestrictionCheck);
+
       const mockCreatedResearch = {
         id: 'research-uuid-101',
         companyId: mockCompany.id,
         companySummary: 'Apex provides general industrial manufacturing and supply chain logistics.',
         completedAt: new Date(),
       };
-      prismaService.client.research.create.mockResolvedValue(mockCreatedResearch);
+      mockPrismaClient.research.create.mockResolvedValue(mockCreatedResearch);
 
       const result = await service.triggerResearch(mockCompany.id, {});
 
-      expect(aiOrchestrator.analyzeResearch).toHaveBeenCalledWith({
+      expect(mockAIOrchestrator.analyzeResearch).toHaveBeenCalledWith({
         companyName: mockCompany.name,
         rawResearchText: expect.stringContaining('Apex Industrial Supply'),
       });
-      expect(prismaService.client.research.create).toHaveBeenCalledWith({
+      expect(mockRestrictionEngine.evaluate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          companyId: mockCompany.id,
+          sourceTrigger: 'research',
+        }),
+      );
+      expect(mockPrismaClient.research.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           companyId: mockCompany.id,
           companySummary: expect.any(String),
           keyInsights: expect.any(Array),
         }),
       });
-      expect(result.preliminaryRestrictionFlag).toBe(false);
-      expect(result.preliminaryRestrictionDetails.matchedKeywords.length).toBe(0);
-    });
-
-    it('triggers preliminary restriction flag when restricted keywords are detected in company data or AI output', async () => {
-      prismaService.client.company.findUnique.mockResolvedValue({
-        ...mockCompany,
-        industry: 'Commercial Steel Decking & Framing',
-      });
-
-      aiOrchestrator.analyzeResearch.mockResolvedValue({
-        data: {
-          summary: 'Company specializes in OWSJ open-web steel joists and K-Series joist girders.',
-          keyInsights: ['Major supplier of Steel decking'],
-          techStack: ['Tekla Structures'],
-          painPoints: ['Supply chain bottlenecks'],
-          recentEvents: ['Expanded joist production line'],
-          confidenceScore: 0.95,
-        },
-        metadata: {
-          modelUsed: 'gpt-4o-mini',
-          usage: { promptTokens: 150, completionTokens: 80, totalTokens: 230 },
-          latencyMs: 350,
-          timestamp: new Date(),
-        },
-      });
-
-      prismaService.client.research.create.mockResolvedValue({ id: 'res-1' });
-
-      const result = await service.triggerResearch(mockCompany.id, {
-        rawResearchText: 'Specializing in LH-Series and DLH-Series longspan steel joists.',
-      });
-
-      expect(result.preliminaryRestrictionFlag).toBe(true);
-      expect(result.preliminaryRestrictionDetails.matchedKeywords).toContain('OWSJ');
-      expect(result.preliminaryRestrictionDetails.matchedKeywords).toContain('K-Series');
-      expect(result.preliminaryRestrictionDetails.matchedKeywords).toContain('LH-Series');
-      expect(result.preliminaryRestrictionDetails.matchedKeywords).toContain('Steel decking');
-    });
-  });
-
-  describe('checkPreliminaryRestrictionKeywords utility', () => {
-    it('identifies exact restricted steel & joist keywords accurately', () => {
-      const sampleText = 'We fabricate Joist girders and provide complete Decking for roofs.';
-      const res = checkPreliminaryRestrictionKeywords(sampleText);
-
-      expect(res.flagged).toBe(true);
-      expect(res.matchedKeywords).toEqual(['Joist girders', 'Decking']);
-    });
-
-    it('does not trigger false positives on ordinary unrelated text', () => {
-      const sampleText = 'Cloud software development, SaaS CRM platforms, and database administration.';
-      const res = checkPreliminaryRestrictionKeywords(sampleText);
-
-      expect(res.flagged).toBe(false);
-      expect(res.matchedKeywords).toEqual([]);
+      expect(result.restrictionCheck.result).toBe(RestrictionCheckResult.CLEAR);
     });
   });
 });
+

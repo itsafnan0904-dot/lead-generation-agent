@@ -12,8 +12,8 @@ import {
   TriggerResearchDto,
 } from './dto/company.dto';
 import { AIOrchestratorService } from '../ai/services/ai-orchestrator.service';
-import { checkPreliminaryRestrictionKeywords } from './utils/restriction-keywords.util';
-import { Company, Research } from '@ai-sales-agent/database';
+import { RestrictionEngineService } from '../restrictions/restriction-engine.service';
+import { Company, Research, RestrictionCheck, RestrictionEntityType } from '@ai-sales-agent/database';
 
 @Injectable()
 export class CompaniesService {
@@ -22,7 +22,9 @@ export class CompaniesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly aiOrchestrator: AIOrchestratorService,
+    private readonly restrictionEngine: RestrictionEngineService,
   ) {}
+
 
   /**
    * Creates a new Company record with deduplication checks:
@@ -193,19 +195,15 @@ export class CompaniesService {
   }
 
   /**
-   * Triggers AI research for a company, scans for preliminary restriction keywords,
-   * and persists a new Research record linked to the Company.
+   * Triggers AI research for a company, executes the 3-layer Restriction Policy Engine,
+   * persists a new Research record and an authoritative RestrictionCheck record linked to the Company.
    */
   async triggerResearch(
     companyId: string,
     dto: TriggerResearchDto,
   ): Promise<{
     research: Research;
-    preliminaryRestrictionFlag: boolean;
-    preliminaryRestrictionDetails: {
-      matchedKeywords: string[];
-      explanation: string;
-    };
+    restrictionCheck: RestrictionCheck;
   }> {
     const company = await this.getCompanyById(companyId);
 
@@ -221,8 +219,7 @@ export class CompaniesService {
 
     const researchData = aiResponse.data;
 
-    // 2. Perform Preliminary Restriction Keyword Check
-    // Aggregates known company text + AI generated summary & insights
+    // 2. Perform Authoritative 3-Layer Restriction Policy Evaluation
     const corpusToScan = [
       company.name,
       company.industry || '',
@@ -231,9 +228,15 @@ export class CompaniesService {
       ...(researchData.keyInsights || []),
       ...(researchData.painPoints || []),
       ...(researchData.techStack || []),
-    ].join(' ');
+    ].join('\n');
 
-    const restrictionScan = checkPreliminaryRestrictionKeywords(corpusToScan);
+    const restrictionCheck = await this.restrictionEngine.evaluate({
+      entityType: RestrictionEntityType.COMPANY,
+      companyId: company.id,
+      sourceTrigger: 'research',
+      textCorpus: corpusToScan,
+      notes: `Triggered via POST /companies/${company.id}/research`,
+    });
 
     // 3. Persist Research record linked to Company
     const research = await this.prisma.client.research.create({
@@ -248,20 +251,17 @@ export class CompaniesService {
           rawInput: rawResearchInput,
           confidenceScore: researchData.confidenceScore,
           metadata: aiResponse.metadata as any,
-          preliminaryRestrictionScan: restrictionScan as any,
+          restrictionCheckId: restrictionCheck.id,
+          restrictionResult: restrictionCheck.result,
         } as any,
         completedAt: new Date(),
       },
     });
 
-
     return {
       research,
-      preliminaryRestrictionFlag: restrictionScan.flagged,
-      preliminaryRestrictionDetails: {
-        matchedKeywords: restrictionScan.matchedKeywords,
-        explanation: restrictionScan.explanation,
-      },
+      restrictionCheck,
     };
   }
 }
+

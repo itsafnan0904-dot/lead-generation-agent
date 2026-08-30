@@ -6,10 +6,12 @@ import { LEAD_DISCOVERY_PROVIDER_TOKEN } from './interfaces/lead-discovery-provi
 import { PrismaModule } from '../prisma/prisma.module';
 import { AIModule } from '../ai/ai.module';
 import { AuthModule } from '../auth/auth.module';
+import { RestrictionsModule } from '../restrictions/restrictions.module';
 
 @Module({
-  imports: [PrismaModule, AIModule, AuthModule],
+  imports: [PrismaModule, AIModule, AuthModule, RestrictionsModule],
   controllers: [CompaniesController],
+
   providers: [
     CompaniesService,
     ManualEntryProvider,
