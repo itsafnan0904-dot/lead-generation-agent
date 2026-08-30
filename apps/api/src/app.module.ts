@@ -1,0 +1,31 @@
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { PrismaModule } from './prisma/prisma.module';
+import { HealthModule } from './health/health.module';
+import { AuthModule } from './auth/auth.module';
+import { GmailModule } from './gmail/gmail.module';
+import { AIModule } from './ai/ai.module';
+import { CompaniesModule } from './companies/companies.module';
+import { ContactsModule } from './contacts/contacts.module';
+import { LeadsModule } from './leads/leads.module';
+
+@Module({
+  imports: [
+    PrismaModule,
+    HealthModule,
+    AuthModule,
+    GmailModule,
+    AIModule,
+    CompaniesModule,
+    ContactsModule,
+    LeadsModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+
+
+
+
