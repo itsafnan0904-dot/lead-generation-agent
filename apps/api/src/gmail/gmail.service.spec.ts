@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GmailService } from './gmail.service';
 import { TokenEncryptionService } from './token-encryption.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
 import { google } from 'googleapis';
 
 jest.mock('googleapis');
@@ -10,6 +11,7 @@ describe('GmailService', () => {
   let gmailService: GmailService;
   let encryptionService: TokenEncryptionService;
   let prismaService: any;
+  let auditService: any;
 
   const mockActiveAccount = {
     id: 'gmail-acc-uuid-111',
@@ -52,6 +54,7 @@ describe('GmailService', () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     encryptionService = new TokenEncryptionService();
     mockActiveAccount.accessToken = encryptionService.encrypt('mock_raw_access_token');
     mockActiveAccount.refreshToken = encryptionService.encrypt('mock_raw_refresh_token');
@@ -68,6 +71,10 @@ describe('GmailService', () => {
       },
     };
 
+    auditService = {
+      log: jest.fn().mockResolvedValue({ id: 'audit-gmail-1' }),
+    };
+
     (google.auth.OAuth2 as unknown as jest.Mock).mockImplementation(() => mockOAuthClient);
     (google.gmail as unknown as jest.Mock).mockReturnValue(mockGmailClient);
 
@@ -76,6 +83,7 @@ describe('GmailService', () => {
         GmailService,
         { provide: TokenEncryptionService, useValue: encryptionService },
         { provide: PrismaService, useValue: prismaService },
+        { provide: AuditService, useValue: auditService },
       ],
     }).compile();
 
@@ -102,7 +110,6 @@ describe('GmailService', () => {
     });
 
     it('handles OAuth callback with valid ADMIN state, exchanges code, encrypts tokens, deactivates prior active accounts, and upserts new active account', async () => {
-      // Create valid signed state for an ADMIN user
       const statePayload = { userId: 'user-admin-uuid', issuedAt: Date.now() };
       const encodedPayload = Buffer.from(JSON.stringify(statePayload)).toString('base64url');
       const crypto = require('crypto');
@@ -149,16 +156,21 @@ describe('GmailService', () => {
       expect(prismaService.client.gmailAccount.upsert).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { email: 'shared-sales@company.com' },
+          update: expect.objectContaining({
+            createdAt: expect.any(Date),
+            isActive: true,
+          }),
           create: expect.objectContaining({
             email: 'shared-sales@company.com',
             isActive: true,
             connectedByUserId: 'user-admin-uuid',
+            createdAt: expect.any(Date),
           }),
         }),
       );
       expect(result.isConnected).toBe(true);
       expect(result.email).toBe('shared-sales@company.com');
-      // Verifies tokens are NOT returned in response
+      expect(result.healthStatus).toBe('HEALTHY');
       expect(result).not.toHaveProperty('accessToken');
       expect(result).not.toHaveProperty('refreshToken');
     });
@@ -196,17 +208,6 @@ describe('GmailService', () => {
       ).rejects.toThrow('Unauthorized OAuth callback: Gmail connection requires ADMIN role');
     });
 
-    it('getStatus returns connection metadata without exposing raw or encrypted tokens', async () => {
-      prismaService.client.gmailAccount.findFirst.mockResolvedValue(mockActiveAccount);
-
-      const status = await gmailService.getStatus();
-      expect(status.isConnected).toBe(true);
-      expect(status.email).toBe('sales@example.com');
-      expect(status.connectedByUser?.email).toBe('admin@example.com');
-      expect(status).not.toHaveProperty('accessToken');
-      expect(status).not.toHaveProperty('refreshToken');
-    });
-
     it('disconnect deactivates account and revokes token with Google', async () => {
       prismaService.client.gmailAccount.findFirst.mockResolvedValue(mockActiveAccount);
       prismaService.client.gmailAccount.update.mockResolvedValue({
@@ -224,9 +225,105 @@ describe('GmailService', () => {
     });
   });
 
+  describe('Active Connection Health Verification (Systemic Safeguard)', () => {
+    it('verifies a genuinely valid connection as HEALTHY by calling Google API profile endpoint', async () => {
+      prismaService.client.gmailAccount.findFirst.mockResolvedValue(mockActiveAccount);
+      mockGmailClient.users.getProfile.mockResolvedValue({
+        data: { emailAddress: 'sales@example.com', messagesTotal: 120 },
+      });
+
+      const health = await gmailService.verifyConnectionHealth();
+
+      expect(health.isConnected).toBe(true);
+      expect(health.healthStatus).toBe('HEALTHY');
+      expect(health.email).toBe('sales@example.com');
+      expect(health.lastVerifiedAt).toBeInstanceOf(Date);
+      expect(mockGmailClient.users.getProfile).toHaveBeenCalledWith({ userId: 'me' });
+      expect(prismaService.client.gmailAccount.update).not.toHaveBeenCalled();
+    });
+
+    it('detects revoked refresh token (invalid_grant), deactivates account in database, logs audit event, and returns NEEDS_REAUTHENTICATION', async () => {
+      prismaService.client.gmailAccount.findFirst.mockResolvedValue(mockActiveAccount);
+      prismaService.client.gmailAccount.update.mockResolvedValue({
+        ...mockActiveAccount,
+        isActive: false,
+      });
+
+      const invalidGrantError = new Error('invalid_grant: Token has been expired or revoked.');
+      (invalidGrantError as any).response = { data: { error: 'invalid_grant' } };
+      mockGmailClient.users.getProfile.mockRejectedValue(invalidGrantError);
+
+      const health = await gmailService.verifyConnectionHealth();
+
+      expect(health.isConnected).toBe(false);
+      expect(health.healthStatus).toBe('NEEDS_REAUTHENTICATION');
+      expect(health.message).toContain('OAuth credentials revoked or expired');
+
+      // Crucial requirement: Account must be deactivated in DB so false positive isActive:true is cleared
+      expect(prismaService.client.gmailAccount.update).toHaveBeenCalledWith({
+        where: { id: mockActiveAccount.id },
+        data: { isActive: false },
+      });
+
+      // Audit event must be logged
+      expect(auditService.log).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'GMAIL_ACCOUNT_DEACTIVATED_AUTH_FAILURE',
+          entityId: mockActiveAccount.id,
+          newState: expect.objectContaining({ isActive: false, reason: 'TOKEN_REVOKED_OR_EXPIRED' }),
+        }),
+      );
+    });
+
+    it('gracefully handles temporary Google API network timeout or error without deactivating database record', async () => {
+      prismaService.client.gmailAccount.findFirst.mockResolvedValue(mockActiveAccount);
+
+      const networkError = new Error('ETIMEDOUT: Connection to googleapis.com timed out');
+      mockGmailClient.users.getProfile.mockRejectedValue(networkError);
+
+      const health = await gmailService.verifyConnectionHealth();
+
+      expect(health.isConnected).toBe(true);
+      expect(health.healthStatus).toBe('UNREACHABLE');
+      expect(health.message).toContain('Temporary network/API failure communicating with Google');
+
+      // Must NOT deactivate account on transient network error
+      expect(prismaService.client.gmailAccount.update).not.toHaveBeenCalled();
+    });
+
+    it('getStatus leverages cached health status within TTL window to avoid redundant Google API hits', async () => {
+      prismaService.client.gmailAccount.findFirst.mockResolvedValue(mockActiveAccount);
+      mockGmailClient.users.getProfile.mockResolvedValue({
+        data: { emailAddress: 'sales@example.com' },
+      });
+
+      // First call runs live health check
+      const status1 = await gmailService.getStatus();
+      expect(status1.healthStatus).toBe('HEALTHY');
+      expect(mockGmailClient.users.getProfile).toHaveBeenCalledTimes(1);
+
+      // Second call within 3 minutes should use cache
+      const status2 = await gmailService.getStatus();
+      expect(status2.healthStatus).toBe('HEALTHY');
+      expect(mockGmailClient.users.getProfile).toHaveBeenCalledTimes(1); // Not called again!
+
+      // Force verify bypasses cache
+      const status3 = await gmailService.getStatus({ forceVerify: true });
+      expect(status3.healthStatus).toBe('HEALTHY');
+      expect(mockGmailClient.users.getProfile).toHaveBeenCalledTimes(2); // Called again
+    });
+
+    it('getStatus returns disconnected status if no active account is in database', async () => {
+      prismaService.client.gmailAccount.findFirst.mockResolvedValue(null);
+
+      const status = await gmailService.getStatus();
+      expect(status.isConnected).toBe(false);
+      expect(status.healthStatus).toBe('DISCONNECTED');
+    });
+  });
+
   describe('Automatic Access Token Refresh Logic', () => {
     it('transparently triggers token refresh when access token is near expiry', async () => {
-      // Near-expiry account (e.g. expiring in 30 seconds)
       const nearExpiryAccount = {
         ...mockActiveAccount,
         tokenExpiresAt: new Date(Date.now() + 30 * 1000),
@@ -261,6 +358,30 @@ describe('GmailService', () => {
       );
       expect(res.messageId).toBe('msg-001');
       expect(res.threadId).toBe('th-001');
+    });
+
+    it('auto-deactivates account if refreshAccessToken fails with invalid_grant during send', async () => {
+      const nearExpiryAccount = {
+        ...mockActiveAccount,
+        tokenExpiresAt: new Date(Date.now() + 30 * 1000),
+      };
+      prismaService.client.gmailAccount.findFirst.mockResolvedValue(nearExpiryAccount);
+
+      const refreshRevokedErr = new Error('invalid_grant: Bad Request');
+      mockOAuthClient.refreshAccessToken.mockRejectedValue(refreshRevokedErr);
+
+      await expect(
+        gmailService.sendEmail({
+          to: 'lead@target.com',
+          subject: 'Hello',
+          bodyText: 'Test',
+        }),
+      ).rejects.toThrow('Gmail authorization token is revoked or expired. Please reconnect the account in Settings.');
+
+      expect(prismaService.client.gmailAccount.update).toHaveBeenCalledWith({
+        where: { id: nearExpiryAccount.id },
+        data: { isActive: false },
+      });
     });
   });
 

@@ -5,9 +5,10 @@ import { ScoringService } from './services/scoring.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { AuthModule } from '../auth/auth.module';
 import { AIModule } from '../ai/ai.module';
+import { OutreachModule } from '../outreach/outreach.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, AIModule],
+  imports: [PrismaModule, AuthModule, AIModule, OutreachModule],
   controllers: [LeadsController],
   providers: [LeadsService, ScoringService],
   exports: [LeadsService, ScoringService],

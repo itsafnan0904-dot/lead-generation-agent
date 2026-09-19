@@ -1,3 +1,10 @@
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(process.cwd(), 'apps/api/.env') });
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
@@ -83,6 +90,7 @@ async function runLiveVerificationTraces() {
       GmailService,
       TokenEncryptionService,
       { provide: PrismaService, useValue: mockPrismaService },
+      { provide: require('./audit/audit.service').AuditService, useValue: { log: async () => ({}) } },
       Reflector,
       RolesGuard,
     ],
@@ -131,14 +139,14 @@ async function runLiveVerificationTraces() {
   console.log(`RESPONSE: ${JSON.stringify(res2.body, null, 2)}`);
   console.log('RESULT: 403 Forbidden returned (RolesGuard blocked non-ADMIN user)\n');
 
-  // TRACE 3: ADMIN authenticated request to GET /gmail/connect -> expect 302 Redirect with signed HMAC state
+  // TRACE 3: ADMIN authenticated request to GET /gmail/connect -> expect 200 OK with signed authUrl JSON
   console.log('>>> TRACE 3: GET /gmail/connect with ADMIN Bearer Token');
   const res3 = await request(server)
     .get('/gmail/connect')
     .set('Authorization', 'Bearer admin-jwt-token');
   console.log(`STATUS: ${res3.status}`);
-  console.log(`LOCATION HEADER: ${res3.header.location}`);
-  console.log('RESULT: 302 Redirect returned to Google OAuth with signed admin state\n');
+  console.log(`RESPONSE: ${JSON.stringify(res3.body, null, 2)}`);
+  console.log('RESULT: 200 OK returned with Google OAuth consent authUrl JSON\n');
 
   // TRACE 4: Unauthenticated request to POST /gmail/disconnect -> expect 401
   console.log('>>> TRACE 4: POST /gmail/disconnect without Authentication Header');
@@ -174,15 +182,15 @@ async function runLiveVerificationTraces() {
   console.log(`RESPONSE: ${JSON.stringify(res7.body, null, 2)}`);
   console.log('RESULT: 200 OK returned (/gmail/status remains accessible to all authenticated roles)\n');
 
-  // TRACE 8: OAuth Callback with forged/invalid state -> expect 400 Bad Request
+  // TRACE 8: OAuth Callback with forged/invalid state -> expect 302 Redirect to /gmail?error=invalid_state
   console.log('>>> TRACE 8: GET /gmail/oauth/callback with forged/invalid state');
   const res8 = await request(server)
     .get('/gmail/oauth/callback?code=mock_code&state=forged.signature');
   console.log(`STATUS: ${res8.status}`);
-  console.log(`RESPONSE: ${JSON.stringify(res8.body, null, 2)}`);
-  console.log('RESULT: 400 Bad Request returned due to HMAC signature validation failure\n');
+  console.log(`LOCATION: ${res8.header.location}`);
+  console.log('RESULT: 302 Found redirect returned with safe error param (HMAC signature validation failure)\n');
 
-  // TRACE 9: OAuth Callback initiated by a non-ADMIN state -> expect 400 Bad Request
+  // TRACE 9: OAuth Callback initiated by a non-ADMIN state -> expect 302 Redirect to /gmail?error=admin_required
   console.log('>>> TRACE 9: GET /gmail/oauth/callback with signed state from non-ADMIN user');
   const repStatePayload = { userId: salesRepUserId, issuedAt: Date.now() };
   const repEncoded = Buffer.from(JSON.stringify(repStatePayload)).toString('base64url');
@@ -195,8 +203,8 @@ async function runLiveVerificationTraces() {
   const res9 = await request(server)
     .get(`/gmail/oauth/callback?code=mock_code&state=${repSignedState}`);
   console.log(`STATUS: ${res9.status}`);
-  console.log(`RESPONSE: ${JSON.stringify(res9.body, null, 2)}`);
-  console.log('RESULT: 400 Bad Request returned (OAuth callback rejected non-ADMIN user initiator)\n');
+  console.log(`LOCATION: ${res9.header.location}`);
+  console.log('RESULT: 302 Found redirect returned with admin_required error param (OAuth callback rejected non-ADMIN user initiator)\n');
 
   await app.close();
   console.log('================================================================');

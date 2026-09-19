@@ -119,13 +119,13 @@ describe('AIOrchestratorService', () => {
       expect(res.data.scoreBreakdown.serviceMatch).toBe(35);
     });
 
-    it('3. generateEmail returns structured outreach copy', async () => {
+    it('3. generateEmail returns structured outreach copy and rejects template placeholders', async () => {
       const mockResult: AICompletionResult = {
         rawContent: '...',
         parsedContent: {
           subject: 'Modernizing Acme cloud architecture',
-          bodyText: 'Hi Sarah, saw your recent expansion...',
-          bodyHtml: '<p>Hi Sarah, saw your recent expansion...</p>',
+          bodyText: 'Hi Sarah, saw your recent expansion...\n\nBest regards,\nAfnan Jawad\nSales Director',
+          bodyHtml: '<p>Hi Sarah, saw your recent expansion...</p><p>Best regards,<br/>Afnan Jawad<br/>Sales Director</p>',
           callToAction: 'Can we schedule a 15-minute call this Thursday?',
           rationale: 'Addresses recent cloud migration initiatives.',
           personalizationPointsUsed: ['Series B announcement', 'Microservices migration'],
@@ -141,10 +141,27 @@ describe('AIOrchestratorService', () => {
         recipientName: 'Sarah',
         companyName: 'Acme',
         contextNotes: 'Recent series B funding',
+        senderName: 'Afnan Jawad',
+        senderTitle: 'Sales Director',
       });
 
       expect(res.data.subject).toBe('Modernizing Acme cloud architecture');
       expect(res.data.personalizationPointsUsed.length).toBe(2);
+
+      // Verify prompt passed to AI contains sender details and strict negative rules
+      expect(mockProvider.complete).toHaveBeenCalledWith(
+        expect.objectContaining({
+          systemPrompt: expect.stringContaining('NEVER output generic template placeholder markers'),
+          prompt: expect.stringContaining('Afnan Jawad'),
+        }),
+      );
+
+      // Assert that generated email body contains real values and no placeholder bracket patterns
+      const placeholderPattern = /\[(Your |Name|Position|Company|Contact|Title|Phone|Email)[\w\s]*\]/i;
+      expect(placeholderPattern.test(res.data.bodyText)).toBe(false);
+      expect(res.data.bodyText).not.toContain('[Your Name]');
+      expect(res.data.bodyText).not.toContain('[Your Company]');
+      expect(res.data.bodyText).toContain('Afnan Jawad');
     });
 
     it('4. analyzeReply returns structured intent and sentiment', async () => {

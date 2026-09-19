@@ -8,6 +8,7 @@ import {
 import {
   AIProviderTransientError,
   AIProviderFatalError,
+  AIProviderNotConfiguredError,
 } from '../errors/ai-errors';
 
 @Injectable()
@@ -33,7 +34,9 @@ export class OpenAIProvider implements AIProvider {
 
   async complete(options: AICompletionOptions): Promise<AICompletionResult> {
     if (!this.client) {
-      throw new AIProviderFatalError('OpenAI API client is not initialized (OPENAI_API_KEY missing)');
+      throw new AIProviderNotConfiguredError(
+        'OpenAIProvider cannot complete request: OPENAI_API_KEY is missing or unconfigured in environment.',
+      );
     }
 
     const model = options.model || this.defaultModel;

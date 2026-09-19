@@ -12,6 +12,27 @@ export class RedisService implements OnModuleDestroy {
     this.initClient();
   }
 
+  getRedisUrl(): string {
+    return this.redisUrl;
+  }
+
+  /**
+   * Creates a dedicated ioredis connection configured for BullMQ (maxRetriesPerRequest: null).
+   */
+  createBullMQConnection(): Redis {
+    const client = new Redis(this.redisUrl, {
+      maxRetriesPerRequest: null,
+      enableReadyCheck: false,
+      retryStrategy: (times) => Math.min(times * 200, 2000),
+    });
+
+    client.on('error', (err) => {
+      this.logger.warn(`BullMQ Redis connection event: ${err.message}`);
+    });
+
+    return client;
+  }
+
   private initClient(): Redis {
     if (this.redisClient && this.redisClient.status !== 'end') {
       return this.redisClient;

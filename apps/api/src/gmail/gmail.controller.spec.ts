@@ -73,7 +73,7 @@ describe('GmailController RBAC & OAuth Callback Security (e2e/controller tests)'
   });
 
   describe('GET /gmail/connect (ADMIN only)', () => {
-    it('allows an ADMIN user to successfully initiate connect and redirects to consent URL', async () => {
+    it('allows an ADMIN user to successfully initiate connect and returns consent authUrl JSON', async () => {
       gmailService.getConsentUrl.mockReturnValue(
         'https://accounts.google.com/o/oauth2/v2/auth?client_id=test&state=signed_state_token',
       );
@@ -81,9 +81,9 @@ describe('GmailController RBAC & OAuth Callback Security (e2e/controller tests)'
       const res = await request(app.getHttpServer())
         .get('/gmail/connect')
         .set('Authorization', 'Bearer admin.access.jwt')
-        .expect(302);
+        .expect(200);
 
-      expect(res.header.location).toBe(
+      expect(res.body.authUrl).toBe(
         'https://accounts.google.com/o/oauth2/v2/auth?client_id=test&state=signed_state_token',
       );
       expect(gmailService.getConsentUrl).toHaveBeenCalledWith(mockAdminUser.id);
@@ -146,6 +146,7 @@ describe('GmailController RBAC & OAuth Callback Security (e2e/controller tests)'
       gmailService.getStatus.mockResolvedValue({
         isConnected: true,
         email: 'shared@company.com',
+        healthStatus: 'HEALTHY',
         isTokenExpired: false,
       });
 
@@ -156,12 +157,31 @@ describe('GmailController RBAC & OAuth Callback Security (e2e/controller tests)'
 
       expect(res.body.isConnected).toBe(true);
       expect(res.body.email).toBe('shared@company.com');
+      expect(gmailService.getStatus).toHaveBeenCalledWith({ forceVerify: false });
+    });
+
+    it('passes forceVerify: true to service when ?force=true query parameter is supplied', async () => {
+      gmailService.getStatus.mockResolvedValue({
+        isConnected: true,
+        email: 'shared@company.com',
+        healthStatus: 'HEALTHY',
+        isTokenExpired: false,
+      });
+
+      const res = await request(app.getHttpServer())
+        .get('/gmail/status?force=true')
+        .set('Authorization', 'Bearer admin.access.jwt')
+        .expect(200);
+
+      expect(res.body.isConnected).toBe(true);
+      expect(gmailService.getStatus).toHaveBeenCalledWith({ forceVerify: true });
     });
 
     it('allows a non-ADMIN (SALES_REP) authenticated user to retrieve status (no role restriction)', async () => {
       gmailService.getStatus.mockResolvedValue({
         isConnected: true,
         email: 'shared@company.com',
+        healthStatus: 'HEALTHY',
         isTokenExpired: false,
       });
 
@@ -184,7 +204,7 @@ describe('GmailController RBAC & OAuth Callback Security (e2e/controller tests)'
   });
 
   describe('GET /gmail/oauth/callback (Google Redirect & Signed State Validation)', () => {
-    it('successfully processes callback when state traces back to valid ADMIN-initiated connect flow', async () => {
+    it('successfully processes callback when state traces back to valid ADMIN-initiated connect flow and redirects with connected=true', async () => {
       gmailService.handleOAuthCallback.mockResolvedValue({
         isConnected: true,
         email: 'shared-sales@company.com',
@@ -194,26 +214,25 @@ describe('GmailController RBAC & OAuth Callback Security (e2e/controller tests)'
 
       const res = await request(app.getHttpServer())
         .get('/gmail/oauth/callback?code=valid_auth_code&state=valid_signed_admin_state')
-        .expect(200);
+        .expect(302);
 
-      expect(res.body.isConnected).toBe(true);
-      expect(res.body.email).toBe('shared-sales@company.com');
+      expect(res.header.location).toBe('http://localhost:3000/gmail?connected=true');
       expect(gmailService.handleOAuthCallback).toHaveBeenCalledWith(
         'valid_auth_code',
         'valid_signed_admin_state',
       );
     });
 
-    it('forwards error when handleOAuthCallback rejects non-ADMIN or invalid state', async () => {
+    it('redirects with safe error reason when handleOAuthCallback rejects non-ADMIN or invalid state', async () => {
       gmailService.handleOAuthCallback.mockRejectedValue(
         new ForbiddenException('Unauthorized OAuth callback: Gmail connection requires ADMIN role'),
       );
 
       const res = await request(app.getHttpServer())
         .get('/gmail/oauth/callback?code=valid_auth_code&state=forged_or_rep_state')
-        .expect(403);
+        .expect(302);
 
-      expect(res.body.message).toContain('Unauthorized OAuth callback: Gmail connection requires ADMIN role');
+      expect(res.header.location).toBe('http://localhost:3000/gmail?error=admin_required');
     });
   });
 });

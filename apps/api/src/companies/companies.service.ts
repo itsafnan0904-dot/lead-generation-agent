@@ -13,7 +13,8 @@ import {
 } from './dto/company.dto';
 import { AIOrchestratorService } from '../ai/services/ai-orchestrator.service';
 import { RestrictionEngineService } from '../restrictions/restriction-engine.service';
-import { Company, Research, RestrictionCheck, RestrictionEntityType } from '@ai-sales-agent/database';
+import { NotificationsService } from '../notifications/notifications.service';
+import { Company, Research, RestrictionCheck, RestrictionEntityType, NotificationPriority } from '@ai-sales-agent/database';
 
 @Injectable()
 export class CompaniesService {
@@ -23,6 +24,7 @@ export class CompaniesService {
     private readonly prisma: PrismaService,
     private readonly aiOrchestrator: AIOrchestratorService,
     private readonly restrictionEngine: RestrictionEngineService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
 
@@ -255,6 +257,20 @@ export class CompaniesService {
           restrictionResult: restrictionCheck.result,
         } as any,
         completedAt: new Date(),
+      },
+    });
+
+    // Notify: INFO Research Completed
+    await this.notificationsService.create({
+      priority: NotificationPriority.INFO,
+      title: `Research Completed: ${company.name}`,
+      message: `AI market and company research has completed for ${company.name}. Restriction status: ${restrictionCheck.result}.`,
+      entityType: 'COMPANY',
+      entityId: company.id,
+      metadata: {
+        companyId: company.id,
+        researchId: research.id,
+        restrictionResult: restrictionCheck.result,
       },
     });
 

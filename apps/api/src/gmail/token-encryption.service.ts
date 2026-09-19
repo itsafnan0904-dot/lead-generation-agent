@@ -9,8 +9,11 @@ export class TokenEncryptionService {
   private readonly key: Buffer;
 
   constructor() {
-    const rawKey = process.env.GMAIL_TOKEN_ENCRYPTION_KEY || '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
-    
+    const rawKey = process.env.GMAIL_TOKEN_ENCRYPTION_KEY;
+    if (!rawKey) {
+      throw new Error('GMAIL_TOKEN_ENCRYPTION_KEY is required and must be defined in the environment.');
+    }
+
     // Check if key is a 64-char hex string (32 bytes) or fallback to hashing raw key
     if (/^[0-9a-fA-F]{64}$/.test(rawKey)) {
       this.key = Buffer.from(rawKey, 'hex');

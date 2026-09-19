@@ -38,4 +38,17 @@ export interface AIProvider {
   complete(options: AICompletionOptions): Promise<AICompletionResult>;
 }
 
+/**
+ * AI_PROVIDER_TOKEN
+ * Dependency Injection token for the core AI Provider.
+ *
+ * CRITICAL ARCHITECTURAL SAFEGUARD / CONVENTION:
+ * 1. Live verification scripts and production paths MUST NEVER silently mock or substitute
+ *    this provider with hardcoded simulated responses when OPENAI_API_KEY is missing.
+ * 2. If OPENAI_API_KEY is missing, live execution must fail loudly with AIProviderNotConfiguredError.
+ * 3. Provider overriding via `overrideProvider(AI_PROVIDER_TOKEN)` is STRICTLY PROHIBITED outside
+ *    of isolated automated unit test suites (`*.spec.ts`).
+ * 4. Any test-double provider constructed for unit testing must be named with explicit test markers
+ *    (e.g., `mockAIProvider` or `FAKE_AI_PROVIDER_TEST_DOUBLE_ONLY`) to prevent accidental leakage into reports.
+ */
 export const AI_PROVIDER_TOKEN = 'AI_PROVIDER_TOKEN';

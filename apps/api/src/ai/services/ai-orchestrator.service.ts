@@ -101,17 +101,51 @@ export class AIOrchestratorService {
 
   /**
    * 3. Capability: Generate Personalized Email
-   * NOTE: Prompt content is a baseline placeholder — will be refined when OutreachModule is implemented.
    */
   async generateEmail(
-    input: { recipientName: string; companyName: string; contextNotes: string; tone?: string },
+    input: {
+      recipientName: string;
+      companyName: string;
+      contextNotes: string;
+      tone?: string;
+      senderName?: string;
+      senderTitle?: string;
+      senderCompany?: string;
+      senderEmail?: string;
+    },
     context?: OrchestratorContext,
   ): Promise<OrchestratorResponse<EmailGenerationOutputDto>> {
-    const systemPrompt =
-      'You are a high-converting enterprise B2B sales copywriter. Write a concise, personalized outreach email adhering to the exact requested JSON schema.';
-    const prompt = `Write an email to ${input.recipientName} at ${input.companyName}.\nTone: ${input.tone || 'professional and consultative'}\nContext: ${input.contextNotes}`;
+    const senderName = input.senderName?.trim() || 'Sales Team';
+    const senderTitle = input.senderTitle?.trim() || 'Account Executive';
+    const senderCompany = input.senderCompany?.trim() || process.env.SENDER_COMPANY_NAME || 'Enterprise Solutions';
+    const senderEmail = input.senderEmail?.trim() || '';
 
-    return this.executeCapability<EmailGenerationOutputDto>(
+    const systemPrompt =
+      'You are a high-converting enterprise B2B sales copywriter. Write a concise, personalized outreach email adhering to the exact requested JSON schema.\n\n' +
+      'SENDER AND IDENTITY INSTRUCTIONS:\n' +
+      `1. You represent "${senderCompany}". When referencing your company in the email body, refer to it as "${senderCompany}" or "our team".\n` +
+      `2. Sign off the email using the real Sender Name ("${senderName}"), Title ("${senderTitle}"), and provided Contact Info.\n` +
+      '3. CRITICAL: NEVER output generic template placeholder markers or bracketed tokens under ANY circumstances (e.g. "[Your Name]", "[Your Title]", "[Your Position]", "[Your Company]", "[Company Name]", "[Your Contact Information]", "[Phone Number]", "[Email]", or any text enclosed in square brackets "[...]").\n' +
+      '4. All output MUST be concrete, fully substituted, production-ready text.';
+
+    const senderDetails: string[] = [
+      `- Sender Name: ${senderName}`,
+      `- Sender Title: ${senderTitle}`,
+      `- Sender Company: ${senderCompany}`,
+    ];
+    if (senderEmail) senderDetails.push(`- Sender Email: ${senderEmail}`);
+
+    const prompt =
+      `Write a personalized sales outreach email to ${input.recipientName} at ${input.companyName}.\n` +
+      `Tone: ${input.tone || 'professional and consultative'}\n\n` +
+      `SENDER DETAILS (Use these exact details for identity and signature):\n` +
+      `${senderDetails.join('\n')}\n\n` +
+      `CONTEXT & PROSPECT DATA:\n` +
+      `${input.contextNotes}\n\n` +
+      `STRICT INSTRUCTION:\n` +
+      `Represent "${senderCompany}" and sign off directly with "${senderName}". Do NOT use bracketed placeholder tokens like "[Your Name]" or "[Your Company]" anywhere in the subject or body. All values must be real and concrete.`;
+
+    const response = await this.executeCapability<EmailGenerationOutputDto>(
       'DRAFT_EMAIL',
       EmailGenerationOutputDto,
       EMAIL_GENERATION_SCHEMA,
@@ -119,6 +153,46 @@ export class AIOrchestratorService {
       systemPrompt,
       context,
     );
+
+    // Defense-in-depth: Sanitize any stray bracketed placeholder tokens from the AI output
+    if (response.data) {
+      const replacements = {
+        senderName,
+        senderCompany,
+        senderTitle,
+        senderEmail,
+        recipientName: input.recipientName,
+        companyName: input.companyName,
+      };
+      response.data.subject = this.sanitizePlaceholders(response.data.subject, replacements);
+      response.data.bodyText = this.sanitizePlaceholders(response.data.bodyText, replacements);
+      if (response.data.bodyHtml) {
+        response.data.bodyHtml = this.sanitizePlaceholders(response.data.bodyHtml, replacements);
+      }
+    }
+
+    return response;
+  }
+
+  private sanitizePlaceholders(
+    text: string,
+    replacements: {
+      senderName: string;
+      senderCompany: string;
+      senderTitle?: string;
+      senderEmail?: string;
+      recipientName?: string;
+      companyName?: string;
+    },
+  ): string {
+    if (!text) return text;
+    return text
+      .replace(/\[(?:Your\s+)?(?:Company(?:\s+Name)?|Sender\s+Company)\]/gi, replacements.senderCompany)
+      .replace(/\[(?:Your\s+)?(?:Name|Sender\s+Name)\]/gi, replacements.senderName)
+      .replace(/\[(?:Your\s+)?(?:Title|Position|Role|Job\s+Title)\]/gi, replacements.senderTitle || 'Account Executive')
+      .replace(/\[(?:Your\s+)?(?:Contact(?:\s+Information)?|Email|Phone(?:\s+Number)?)\]/gi, replacements.senderEmail || '')
+      .replace(/\[(?:Recipient(?:\s+Name)?|Prospect(?:\s+Name)?)\]/gi, replacements.recipientName || '')
+      .replace(/\[(?:Recipient|Prospect|Target)\s+Company(?:\s+Name)?\]/gi, replacements.companyName || '');
   }
 
   /**

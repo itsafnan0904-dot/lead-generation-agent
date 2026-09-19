@@ -87,6 +87,25 @@ enum NotificationPriority {
   ACTION_REQUIRED
 }
 
+enum OutreachDraftStatus {
+  DRAFT
+  SENT
+  FAILED
+  CANCELLED
+}
+
+enum AIControlState {
+  AI_ACTIVE
+  PAUSED
+  TAKEN_OVER
+}
+
+enum HumanReviewTriggerSource {
+  RESTRICTION_CHECK
+  AI_REPLY_FLAG
+  MANUAL
+}
+
 // -----------------------------------------------------------------------------
 // Core Domain Models
 // -----------------------------------------------------------------------------
@@ -103,11 +122,12 @@ model User {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
-  assignedLeads  Lead[]          @relation("AssignedUserLeads")
-  humanReviews   HumanReview[]   @relation("ReviewerUser")
-  notifications  Notification[]
-  auditEvents    AuditEvent[]
-  gmailAccounts  GmailAccount[]  @relation("ConnectedGmailUser")
+  assignedLeads   Lead[]          @relation("AssignedUserLeads")
+  humanReviews    HumanReview[]   @relation("ReviewerUser")
+  resolvedReviews HumanReview[]   @relation("ResolvedByUser")
+  notifications   Notification[]
+  auditEvents     AuditEvent[]
+  gmailAccounts   GmailAccount[]  @relation("ConnectedGmailUser")
 
   @@index([role])
 }
@@ -202,6 +222,7 @@ model Lead {
   assignedUser        User?               @relation("AssignedUserLeads", fields: [assignedUserId], references: [id], onDelete: SetNull)
 
   status              LeadLifecycleStatus @default(COLD_LEAD)
+  aiControlState      AIControlState      @default(AI_ACTIVE)
 
   // Scoring breakdown (Sum total 100 max)
   scoreTotal          Int                 @default(0)
@@ -223,12 +244,14 @@ model Lead {
   humanReviews        HumanReview[]
   aiActions           AIAction[]
   restrictionChecks   RestrictionCheck[]
+  outreachDrafts      OutreachDraft[]
 
   @@index([companyId])
   @@index([primaryContactId])
   @@index([campaignId])
   @@index([assignedUserId])
   @@index([status])
+  @@index([aiControlState])
   @@index([scoreTotal])
 }
 
@@ -255,8 +278,8 @@ model Research {
 
 model Conversation {
   id              String       @id @default(uuid())
-  leadId          String
-  lead            Lead         @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  leadId          String?
+  lead            Lead?        @relation(fields: [leadId], references: [id], onDelete: SetNull)
   gmailThreadId   String?      @unique
   subject         String?
   channel         String       @default("EMAIL")
@@ -290,6 +313,7 @@ model Message {
   updatedAt      DateTime         @updatedAt
 
   aiActions      AIAction[]
+  humanReviews   HumanReview[]
 
   @@index([conversationId])
   @@index([sentAt])
@@ -351,6 +375,8 @@ model RestrictionCheck {
   checkedPayload Json?
   createdAt      DateTime               @default(now())
 
+  humanReviews   HumanReview[]
+
   @@index([entityType])
   @@index([companyId])
   @@index([contactId])
@@ -360,26 +386,38 @@ model RestrictionCheck {
 }
 
 model HumanReview {
-  id             String            @id @default(uuid())
-  leadId         String?
-  lead           Lead?             @relation(fields: [leadId], references: [id], onDelete: SetNull)
-  conversationId String?
-  conversation   Conversation?     @relation(fields: [conversationId], references: [id], onDelete: SetNull)
-  assignedToId   String?
-  assignedTo     User?             @relation("ReviewerUser", fields: [assignedToId], references: [id], onDelete: SetNull)
-  status         HumanReviewStatus @default(PENDING)
-  triggerReason  String            @db.Text
-  aiDraftContent String?           @db.Text
-  reviewedContent String?          @db.Text
-  reviewNotes    String?           @db.Text
-  resolvedAt     DateTime?
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  id                      String                    @id @default(uuid())
+  leadId                  String?
+  lead                    Lead?                     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  conversationId          String?
+  conversation            Conversation?             @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  messageId               String?
+  message                 Message?                  @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  restrictionCheckId      String?
+  restrictionCheck        RestrictionCheck?         @relation(fields: [restrictionCheckId], references: [id], onDelete: SetNull)
+  assignedToId            String?
+  assignedTo              User?                     @relation("ReviewerUser", fields: [assignedToId], references: [id], onDelete: SetNull)
+  resolvedByUserId        String?
+  resolvedByUser          User?                     @relation("ResolvedByUser", fields: [resolvedByUserId], references: [id], onDelete: SetNull)
+  status                  HumanReviewStatus         @default(PENDING)
+  triggerSource           HumanReviewTriggerSource  @default(RESTRICTION_CHECK)
+  triggerReason           String                    @db.Text
+  resolutionJustification String?                   @db.Text
+  aiDraftContent          String?                   @db.Text
+  reviewedContent         String?                   @db.Text
+  reviewNotes             String?                   @db.Text
+  resolvedAt              DateTime?
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
 
   @@index([leadId])
   @@index([conversationId])
+  @@index([messageId])
+  @@index([restrictionCheckId])
   @@index([assignedToId])
+  @@index([resolvedByUserId])
   @@index([status])
+  @@index([triggerSource])
 }
 
 model AIAction {
@@ -433,17 +471,46 @@ model AuditEvent {
   id           String   @id @default(uuid())
   userId       String?
   user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  action       String   // e.g. LEAD_CREATED, EMAIL_SENT, HUMAN_OVERRIDE
-  entityType   String   // e.g. LEAD, CONVERSATION, RESTRICTION_CHECK
+  actorType    String   @default("USER") // USER, AI, SYSTEM
+  actorId      String?
+  action       String   // e.g. LEAD_CREATED, EMAIL_SENT, HUMAN_OVERRIDE, HUMAN_REVIEW_RESOLVED
+  entityType   String   // e.g. LEAD, CONVERSATION, RESTRICTION_CHECK, HUMAN_REVIEW
   entityId     String?
   oldState     Json?
   newState     Json?
+  metadata     Json?
   ipAddress    String?
   userAgent    String?
   createdAt    DateTime @default(now())
 
   @@index([userId])
+  @@index([actorType])
   @@index([entityType, entityId])
   @@index([action])
   @@index([createdAt])
 }
+
+model OutreachDraft {
+  id               String              @id @default(uuid())
+  leadId           String
+  lead             Lead                @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  subject          String
+  bodyText         String              @db.Text
+  bodyHtml         String?             @db.Text
+  callToAction     String?
+  rationale        String?             @db.Text
+  personalizationPoints Json?
+  status           OutreachDraftStatus @default(DRAFT)
+  aiUsageMetadata  Json?
+  gmailMessageId   String?             @unique
+  gmailThreadId    String?
+  sentAt           DateTime?
+  errorMessage     String?             @db.Text
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  @@index([leadId])
+  @@index([status])
+  @@index([createdAt])
+}
+

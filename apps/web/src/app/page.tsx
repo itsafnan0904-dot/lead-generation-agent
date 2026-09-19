@@ -1,8 +1,12 @@
-export default function HomePage() {
-  return (
-    <main style={{ fontFamily: 'system-ui, sans-serif', padding: '2rem', textAlign: 'center' }}>
-      <h1>AI Sales Agent</h1>
-      <p>Monorepo Workspace Initialized</p>
-    </main>
-  );
+import { redirect } from 'next/navigation';
+import { serverApiFetch } from '@/lib/server-api-client';
+
+export default async function RootPage() {
+  const { data } = await serverApiFetch<{ user: any }>('/auth/me');
+
+  if (data?.user) {
+    redirect('/overview');
+  } else {
+    redirect('/login');
+  }
 }

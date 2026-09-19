@@ -2,6 +2,7 @@ import { OpenAIProvider } from './openai.provider';
 import {
   AIProviderTransientError,
   AIProviderFatalError,
+  AIProviderNotConfiguredError,
 } from '../errors/ai-errors';
 
 describe('OpenAIProvider', () => {
@@ -125,7 +126,7 @@ describe('OpenAIProvider', () => {
     expect(mockCreate).toHaveBeenCalledTimes(1);
   });
 
-  it('throws AIProviderFatalError immediately if client is not initialized', async () => {
+  it('throws AIProviderNotConfiguredError immediately if client is not initialized', async () => {
     const uninitializedProvider = new OpenAIProvider();
     (uninitializedProvider as any).client = null;
 
@@ -133,6 +134,6 @@ describe('OpenAIProvider', () => {
       uninitializedProvider.complete({
         prompt: 'Test prompt',
       }),
-    ).rejects.toThrow(AIProviderFatalError);
+    ).rejects.toThrow(AIProviderNotConfiguredError);
   });
 });

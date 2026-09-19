@@ -29,7 +29,6 @@ import * as request from 'supertest';
 import { AppModule } from './app.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UserRole } from '@ai-sales-agent/database';
-import { AI_PROVIDER_TOKEN, AIProvider } from './ai/interfaces/ai-provider.interface';
 
 async function runLiveCRMVerification() {
   console.log('================================================================');
@@ -43,8 +42,15 @@ async function runLiveCRMVerification() {
     role: UserRole.ADMIN,
   };
 
-  const hasRealKey = !!process.env.OPENAI_API_KEY;
-  console.log(`Live OpenAI API Key: ${hasRealKey ? 'Configured' : 'Not configured in environment (using test provider simulation for live trace)'}`);
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    console.error('\n[FATAL] OPENAI_API_KEY is not defined in environment.');
+    console.error('Live AI CRM verification requires a genuine OpenAI API key to execute real calls.');
+    console.error('Silent fallback simulation has been removed to prevent fabricated proof.\n');
+    process.exit(1);
+  }
+
+  console.log(`Live OpenAI API Key Detected: ${apiKey.substring(0, 7)}...${apiKey.substring(apiKey.length - 4)}`);
 
   const moduleBuilder = Test.createTestingModule({
     imports: [AppModule],
@@ -57,36 +63,6 @@ async function runLiveCRMVerification() {
         return true;
       },
     });
-
-  if (!hasRealKey) {
-    const fallbackTestProvider: AIProvider = {
-      complete: async (options) => {
-        return {
-          rawContent: JSON.stringify({
-            summary: 'Vertex Structural Tech manufactures heavy structural framing, OWSJ joists, K-Series assemblies, and commercial Steel decking.',
-            keyInsights: ['Major supplier of OWSJ steel joists', 'Specializes in steel decking for logistics centers'],
-            techStack: ['Tekla Structures', 'AutoCAD SDS/2'],
-            painPoints: ['Volatile raw steel prices', 'Long lead-time fabrication'],
-            recentEvents: ['Commissioned automated joist welding line'],
-            confidenceScore: 0.96,
-          }),
-          parsedContent: {
-            summary: 'Vertex Structural Tech manufactures heavy structural framing, OWSJ joists, K-Series assemblies, and commercial Steel decking.',
-            keyInsights: ['Major supplier of OWSJ steel joists', 'Specializes in steel decking for logistics centers'],
-            techStack: ['Tekla Structures', 'AutoCAD SDS/2'],
-            painPoints: ['Volatile raw steel prices', 'Long lead-time fabrication'],
-            recentEvents: ['Commissioned automated joist welding line'],
-            confidenceScore: 0.96,
-          },
-          modelUsed: 'gpt-4o-mini',
-          usage: { promptTokens: 145, completionTokens: 85, totalTokens: 230 },
-          latencyMs: 320,
-        };
-      },
-    };
-
-    moduleBuilder.overrideProvider(AI_PROVIDER_TOKEN).useValue(fallbackTestProvider);
-  }
 
   const moduleRef: TestingModule = await moduleBuilder.compile();
 
@@ -185,8 +161,8 @@ async function runLiveCRMVerification() {
     });
   console.log(`STATUS: ${res6.status}`);
   console.log(`RESPONSE: ${JSON.stringify(res6.body, null, 2)}`);
-  console.log(`PRELIMINARY RESTRICTION FLAGGED: ${res6.body.preliminaryRestrictionFlag}`);
-  console.log(`MATCHED RESTRICTED KEYWORDS: ${JSON.stringify(res6.body.preliminaryRestrictionDetails.matchedKeywords)}`);
+  console.log(`RESTRICTION CHECK RESULT: ${res6.body.restrictionCheck?.result}`);
+  console.log(`MATCHED RESTRICTED RULES: ${JSON.stringify(res6.body.restrictionCheck?.matchedRules?.deterministicMatches || res6.body.restrictionCheck?.matchedRules?.aiAnalysis?.matchedEntities)}`);
 
   await app.close();
   console.log('\n================================================================');

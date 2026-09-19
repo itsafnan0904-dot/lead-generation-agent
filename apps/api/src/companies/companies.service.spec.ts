@@ -46,12 +46,17 @@ describe('CompaniesService & Restriction Engine Integration', () => {
       evaluate: jest.fn(),
     };
 
+    const mockNotificationsService = {
+      create: jest.fn().mockResolvedValue([]),
+    };
+
     const mockPrismaService = { client: mockPrismaClient } as any;
 
     service = new CompaniesService(
       mockPrismaService,
       mockAIOrchestrator,
       mockRestrictionEngine,
+      mockNotificationsService as any,
     );
   });
 

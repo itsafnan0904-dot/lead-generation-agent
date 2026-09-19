@@ -28,7 +28,6 @@ import * as request from 'supertest';
 import { AppModule } from './app.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UserRole, RestrictionCheckResult, LeadLifecycleStatus } from '@ai-sales-agent/database';
-import { AI_PROVIDER_TOKEN, AIProvider } from './ai/interfaces/ai-provider.interface';
 
 async function runLiveRestrictionEngineVerification() {
   console.log('================================================================');
@@ -42,8 +41,15 @@ async function runLiveRestrictionEngineVerification() {
     role: UserRole.ADMIN,
   };
 
-  const hasRealKey = !!process.env.OPENAI_API_KEY;
-  console.log(`Live OpenAI API Key: ${hasRealKey ? 'Configured (Live API)' : 'Not configured (using contextual simulation double)'}`);
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    console.error('\n[FATAL] OPENAI_API_KEY is not defined in environment.');
+    console.error('Live Restriction Policy Engine verification requires a genuine OpenAI API key.');
+    console.error('Silent fallback simulation has been removed to prevent fabricated proof.\n');
+    process.exit(1);
+  }
+
+  console.log(`Live OpenAI API Key Detected: ${apiKey.substring(0, 7)}...${apiKey.substring(apiKey.length - 4)}`);
 
   const moduleBuilder = Test.createTestingModule({
     imports: [AppModule],
@@ -56,80 +62,6 @@ async function runLiveRestrictionEngineVerification() {
         return true;
       },
     });
-
-  if (!hasRealKey) {
-    const fallbackTestProvider: AIProvider = {
-      complete: async (options) => {
-        const schemaName = options.schema?.name;
-
-        if (schemaName === 'research_analysis_response') {
-          const isRestrictedText = options.prompt.includes('OWSJ') || options.prompt.includes('Steel decking') || options.prompt.includes('Vulcan');
-
-          const summary = isRestrictedText
-            ? 'Vulcan manufactures OWSJ open web steel joists and structural composite steel decking.'
-            : 'General architectural woodworking and premium millwork.';
-
-          const researchPayload = {
-            summary,
-            keyInsights: isRestrictedText ? ['Major OWSJ joist supplier', 'Steel deck installer'] : ['Custom millwork leader'],
-            techStack: ['AutoCAD', 'Tekla'],
-            painPoints: ['Material lead times'],
-            recentEvents: ['Facility expansion'],
-            confidenceScore: 0.95,
-          };
-
-          return {
-            rawContent: JSON.stringify(researchPayload),
-            parsedContent: researchPayload,
-            modelUsed: 'gpt-4o-mini',
-            usage: { promptTokens: 140, completionTokens: 60, totalTokens: 200 },
-            latencyMs: 280,
-          };
-        }
-
-        // Restriction Check schema
-        const hasDetectedRestrictedTerms = options.prompt.includes('Detected potential restricted terms:');
-
-        if (hasDetectedRestrictedTerms) {
-          const restrPayload = {
-            result: 'RESTRICTED',
-            reason: 'Core business includes open web steel joists (OWSJ) and structural steel decking.',
-            matchedKeywordsOrEntities: ['OWSJ', 'Steel decking'],
-            requiresHumanReview: true,
-            confidence: 0.96,
-          };
-          return {
-            rawContent: JSON.stringify(restrPayload),
-            parsedContent: restrPayload,
-            modelUsed: 'gpt-4o-mini',
-            usage: { promptTokens: 180, completionTokens: 65, totalTokens: 245 },
-            latencyMs: 320,
-          };
-        } else {
-          const clearPayload = {
-            result: 'CLEAR',
-            reason: 'Architectural woodworking and custom glass cabinetry — zero prohibited structural steel or joist scope.',
-            matchedKeywordsOrEntities: [],
-            requiresHumanReview: false,
-            confidence: 0.98,
-          };
-          return {
-            rawContent: JSON.stringify(clearPayload),
-            parsedContent: clearPayload,
-            modelUsed: 'gpt-4o-mini',
-            usage: { promptTokens: 155, completionTokens: 55, totalTokens: 210 },
-            latencyMs: 275,
-          };
-        }
-
-
-
-      },
-    };
-
-    moduleBuilder.overrideProvider(AI_PROVIDER_TOKEN).useValue(fallbackTestProvider);
-  }
-
 
   const moduleRef: TestingModule = await moduleBuilder.compile();
   const app: INestApplication = moduleRef.createNestApplication();

@@ -9,7 +9,7 @@ import * as crypto from 'crypto';
 import { google, gmail_v1 } from 'googleapis';
 import { PrismaService } from '../prisma/prisma.service';
 import { TokenEncryptionService } from './token-encryption.service';
-
+import { AuditService } from '../audit/audit.service';
 
 export interface SendEmailOptions {
   to: string;
@@ -43,8 +43,27 @@ export interface GmailMessageMetadata {
   headers?: GmailMessageHeader[];
 }
 
+export type GmailHealthStatus =
+  | 'HEALTHY'
+  | 'NEEDS_REAUTHENTICATION'
+  | 'UNREACHABLE'
+  | 'DISCONNECTED';
+
+export interface GmailHealthCheckResult {
+  isConnected: boolean;
+  healthStatus: GmailHealthStatus;
+  email?: string;
+  lastVerifiedAt: Date;
+  message: string;
+  isTokenExpired?: boolean;
+  tokenExpiresAt?: Date;
+}
+
 export interface GmailStatusResponse {
   isConnected: boolean;
+  healthStatus?: GmailHealthStatus;
+  lastVerifiedAt?: Date | null;
+  verificationMessage?: string;
   email?: string;
   tokenExpiresAt?: Date;
   isTokenExpired?: boolean;
@@ -56,12 +75,32 @@ export interface GmailStatusResponse {
   connectedAt?: Date;
 }
 
+interface CachedHealthCheck {
+  accountId: string;
+  status: GmailHealthStatus;
+  verifiedAt: Date;
+  message: string;
+}
+
 @Injectable()
 export class GmailService {
   private readonly logger = new Logger(GmailService.name);
-  private readonly clientId = process.env.GMAIL_OAUTH_CLIENT_ID || '';
-  private readonly clientSecret = process.env.GMAIL_OAUTH_CLIENT_SECRET || '';
-  private readonly redirectUri = process.env.GMAIL_OAUTH_CALLBACK_URL || 'http://localhost:4000/gmail/oauth/callback';
+
+  // In-memory cache for verified health checks (3-minute TTL to prevent excess Google API calls)
+  private readonly HEALTH_CHECK_TTL_MS = 3 * 60 * 1000;
+  private cachedHealthCheck: CachedHealthCheck | null = null;
+
+  private get clientId(): string {
+    return process.env.GMAIL_OAUTH_CLIENT_ID || '';
+  }
+
+  private get clientSecret(): string {
+    return process.env.GMAIL_OAUTH_CLIENT_SECRET || '';
+  }
+
+  private get redirectUri(): string {
+    return process.env.GMAIL_OAUTH_CALLBACK_URL || 'http://localhost:4000/gmail/oauth/callback';
+  }
   private readonly scopes = [
     'https://www.googleapis.com/auth/gmail.send',
     'https://www.googleapis.com/auth/gmail.readonly',
@@ -70,6 +109,7 @@ export class GmailService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly encryptionService: TokenEncryptionService,
+    private readonly auditService: AuditService,
   ) {}
 
   /**
@@ -81,6 +121,9 @@ export class GmailService {
     let state: string | undefined = undefined;
 
     if (userId) {
+      if (!this.clientSecret) {
+        throw new InternalServerErrorException('GMAIL_OAUTH_CLIENT_SECRET is required to generate secure OAuth state');
+      }
       const statePayload = {
         userId,
         issuedAt: Date.now(),
@@ -88,7 +131,7 @@ export class GmailService {
       const jsonStr = JSON.stringify(statePayload);
       const encodedPayload = Buffer.from(jsonStr).toString('base64url');
       const signature = crypto
-        .createHmac('sha256', this.clientSecret || 'oauth_state_signing_secret')
+        .createHmac('sha256', this.clientSecret)
         .update(encodedPayload)
         .digest('hex');
       state = `${encodedPayload}.${signature}`;
@@ -110,6 +153,10 @@ export class GmailService {
       throw new BadRequestException('Missing OAuth state parameter: Callback must be initiated via /gmail/connect');
     }
 
+    if (!this.clientSecret) {
+      throw new InternalServerErrorException('GMAIL_OAUTH_CLIENT_SECRET is required to verify OAuth state');
+    }
+
     const parts = state.split('.');
     if (parts.length !== 2) {
       throw new BadRequestException('Invalid OAuth state format');
@@ -117,7 +164,7 @@ export class GmailService {
 
     const [encodedPayload, providedSignature] = parts;
     const expectedSignature = crypto
-      .createHmac('sha256', this.clientSecret || 'oauth_state_signing_secret')
+      .createHmac('sha256', this.clientSecret)
       .update(encodedPayload)
       .digest('hex');
 
@@ -235,6 +282,8 @@ export class GmailService {
       data: { isActive: false },
     });
 
+    const connectionTimestamp = new Date();
+
     // Upsert the connected account and mark it as the active connection
     const account = await this.prisma.client.gmailAccount.upsert({
       where: { email: connectedEmail },
@@ -245,6 +294,7 @@ export class GmailService {
         scope: tokens.scope || this.scopes.join(' '),
         isActive: true,
         connectedByUserId: verifiedAdminUserId,
+        createdAt: connectionTimestamp, // Reset connectedAt timestamp on genuine reconnection
       },
       create: {
         email: connectedEmail,
@@ -254,6 +304,7 @@ export class GmailService {
         scope: tokens.scope || this.scopes.join(' '),
         isActive: true,
         connectedByUserId: verifiedAdminUserId,
+        createdAt: connectionTimestamp,
       },
       include: {
         connectedByUser: {
@@ -262,20 +313,47 @@ export class GmailService {
       },
     });
 
+    // Invalidate cached health check to reflect fresh connection
+    this.cachedHealthCheck = {
+      accountId: account.id,
+      status: 'HEALTHY',
+      verifiedAt: new Date(),
+      message: 'Connection active and verified with Google',
+    };
+
+    // Record AuditEvent for Gmail connection
+    await this.auditService.log({
+      actorType: 'USER',
+      actorId: verifiedAdminUserId,
+      userId: verifiedAdminUserId,
+      action: 'GMAIL_ACCOUNT_CONNECTED',
+      entityType: 'GMAIL_ACCOUNT',
+      entityId: account.id,
+      newState: { email: connectedEmail, isActive: true },
+      metadata: { connectedByUserId: verifiedAdminUserId },
+    });
+
     return {
       isConnected: true,
+      healthStatus: 'HEALTHY',
       email: account.email,
       tokenExpiresAt: account.tokenExpiresAt,
       isTokenExpired: account.tokenExpiresAt.getTime() <= Date.now(),
       connectedByUser: account.connectedByUser,
       connectedAt: account.createdAt,
+      lastVerifiedAt: new Date(),
+      verificationMessage: 'Connection active and verified with Google',
     };
   }
 
   /**
-   * Retrieves the current system connection status.
+   * Performs an active, lightweight health check against Google's real servers
+   * to verify that the stored credentials and OAuth refresh token are genuinely valid.
+   * If token revocation is detected, deactivates the account in the database.
    */
-  async getStatus(): Promise<GmailStatusResponse> {
+  async verifyConnectionHealth(options: { timeoutMs?: number } = {}): Promise<GmailHealthCheckResult> {
+    const timeoutMs = options.timeoutMs || 5000;
+
     const activeAccount = await this.prisma.client.gmailAccount.findFirst({
       where: { isActive: true },
       include: {
@@ -287,16 +365,182 @@ export class GmailService {
     });
 
     if (!activeAccount) {
-      return { isConnected: false };
+      return {
+        isConnected: false,
+        healthStatus: 'DISCONNECTED',
+        lastVerifiedAt: new Date(),
+        message: 'No active Gmail connection found in database',
+      };
     }
 
+    try {
+      const decryptedAccessToken = this.encryptionService.decrypt(activeAccount.accessToken);
+      const decryptedRefreshToken = this.encryptionService.decrypt(activeAccount.refreshToken);
+
+      const oauth2Client = this.createOAuthClient();
+      oauth2Client.setCredentials({
+        access_token: decryptedAccessToken,
+        refresh_token: decryptedRefreshToken,
+        expiry_date: activeAccount.tokenExpiresAt.getTime(),
+      });
+
+      const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
+
+      // Wrap Google API getProfile call with timeout to prevent indefinite hangs
+      const profilePromise = gmail.users.getProfile({ userId: 'me' });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error(`Gmail health check timed out after ${timeoutMs}ms`)), timeoutMs),
+      );
+
+      const profileRes = (await Promise.race([profilePromise, timeoutPromise])) as any;
+      const verifiedEmail = profileRes?.data?.emailAddress || activeAccount.email;
+
+      const now = new Date();
+      this.cachedHealthCheck = {
+        accountId: activeAccount.id,
+        status: 'HEALTHY',
+        verifiedAt: now,
+        message: 'Connection active and verified with Google',
+      };
+
+      return {
+        isConnected: true,
+        healthStatus: 'HEALTHY',
+        email: verifiedEmail,
+        lastVerifiedAt: now,
+        tokenExpiresAt: activeAccount.tokenExpiresAt,
+        isTokenExpired: activeAccount.tokenExpiresAt.getTime() <= Date.now(),
+        message: 'Connection active and verified with Google',
+      };
+    } catch (err: any) {
+      this.logger.warn(`Gmail connection health check failed for ${activeAccount.email}: ${err.message}`);
+
+      if (this.isAuthRevocationError(err)) {
+        this.logger.error(
+          `[GMAIL_REVOKED] Stored credentials for ${activeAccount.email} have been revoked or invalidated by Google. Deactivating account in database.`,
+        );
+
+        // Systemic safeguard: Update database record so stale active flag does NOT persist
+        await this.prisma.client.gmailAccount.update({
+          where: { id: activeAccount.id },
+          data: { isActive: false },
+        });
+
+        await this.auditService.log({
+          actorType: 'SYSTEM',
+          action: 'GMAIL_ACCOUNT_DEACTIVATED_AUTH_FAILURE',
+          entityType: 'GMAIL_ACCOUNT',
+          entityId: activeAccount.id,
+          oldState: { email: activeAccount.email, isActive: true },
+          newState: { isActive: false, reason: 'TOKEN_REVOKED_OR_EXPIRED' },
+          metadata: { errorMessage: err.message, errorDetails: err.response?.data },
+        });
+
+        const now = new Date();
+        this.cachedHealthCheck = {
+          accountId: activeAccount.id,
+          status: 'NEEDS_REAUTHENTICATION',
+          verifiedAt: now,
+          message: `OAuth credentials revoked or expired: ${err.message}. Account has been marked disconnected. Reconnection required.`,
+        };
+
+        return {
+          isConnected: false,
+          healthStatus: 'NEEDS_REAUTHENTICATION',
+          email: activeAccount.email,
+          lastVerifiedAt: now,
+          message: `OAuth credentials revoked or expired: ${err.message}. Reconnection required.`,
+        };
+      }
+
+      // Transient network or external service error — preserve isActive in DB
+      const now = new Date();
+      this.cachedHealthCheck = {
+        accountId: activeAccount.id,
+        status: 'UNREACHABLE',
+        verifiedAt: now,
+        message: `Temporary network/API failure communicating with Google: ${err.message}`,
+      };
+
+      return {
+        isConnected: true,
+        healthStatus: 'UNREACHABLE',
+        email: activeAccount.email,
+        lastVerifiedAt: now,
+        tokenExpiresAt: activeAccount.tokenExpiresAt,
+        isTokenExpired: activeAccount.tokenExpiresAt.getTime() <= Date.now(),
+        message: `Temporary network/API failure communicating with Google: ${err.message}`,
+      };
+    }
+  }
+
+  /**
+   * Retrieves the current system connection status with verified health caching.
+   * Default caching window is 3 minutes to avoid hitting Google on every poll.
+   */
+  async getStatus(options: { forceVerify?: boolean } = {}): Promise<GmailStatusResponse> {
+    const activeAccount = await this.prisma.client.gmailAccount.findFirst({
+      where: { isActive: true },
+      include: {
+        connectedByUser: {
+          select: { id: true, email: true, name: true },
+        },
+      },
+      orderBy: { updatedAt: 'desc' },
+    });
+
+    if (!activeAccount) {
+      const cached = this.cachedHealthCheck;
+      if (cached && cached.status === 'NEEDS_REAUTHENTICATION') {
+        return {
+          isConnected: false,
+          healthStatus: 'NEEDS_REAUTHENTICATION',
+          lastVerifiedAt: cached.verifiedAt,
+          verificationMessage: cached.message,
+        };
+      }
+
+      return {
+        isConnected: false,
+        healthStatus: 'DISCONNECTED',
+        lastVerifiedAt: null,
+        verificationMessage: 'No Gmail account is currently connected.',
+      };
+    }
+
+    const cacheValid =
+      !options.forceVerify &&
+      this.cachedHealthCheck &&
+      this.cachedHealthCheck.accountId === activeAccount.id &&
+      Date.now() - this.cachedHealthCheck.verifiedAt.getTime() < this.HEALTH_CHECK_TTL_MS;
+
+    if (cacheValid && this.cachedHealthCheck) {
+      return {
+        isConnected: this.cachedHealthCheck.status !== 'NEEDS_REAUTHENTICATION',
+        healthStatus: this.cachedHealthCheck.status,
+        email: activeAccount.email,
+        tokenExpiresAt: activeAccount.tokenExpiresAt,
+        isTokenExpired: activeAccount.tokenExpiresAt.getTime() <= Date.now(),
+        connectedByUser: activeAccount.connectedByUser,
+        connectedAt: activeAccount.createdAt,
+        lastVerifiedAt: this.cachedHealthCheck.verifiedAt,
+        verificationMessage: this.cachedHealthCheck.message,
+      };
+    }
+
+    // Run active health check against Google
+    const health = await this.verifyConnectionHealth();
+
     return {
-      isConnected: true,
-      email: activeAccount.email,
+      isConnected: health.isConnected,
+      healthStatus: health.healthStatus,
+      email: health.email || activeAccount.email,
       tokenExpiresAt: activeAccount.tokenExpiresAt,
       isTokenExpired: activeAccount.tokenExpiresAt.getTime() <= Date.now(),
       connectedByUser: activeAccount.connectedByUser,
       connectedAt: activeAccount.createdAt,
+      lastVerifiedAt: health.lastVerifiedAt,
+      verificationMessage: health.message,
     };
   }
 
@@ -324,6 +568,19 @@ export class GmailService {
     await this.prisma.client.gmailAccount.update({
       where: { id: activeAccount.id },
       data: { isActive: false },
+    });
+
+    this.cachedHealthCheck = null;
+
+    // Record AuditEvent for Gmail disconnect
+    await this.auditService.log({
+      actorType: 'USER',
+      action: 'GMAIL_ACCOUNT_DISCONNECTED',
+      entityType: 'GMAIL_ACCOUNT',
+      entityId: activeAccount.id,
+      oldState: { email: activeAccount.email, isActive: true },
+      newState: { isActive: false },
+      metadata: { email: activeAccount.email },
     });
 
     return { success: true, message: 'Gmail account disconnected successfully' };
@@ -479,11 +736,81 @@ export class GmailService {
         }
       } catch (err: any) {
         this.logger.error(`Failed to automatically refresh Gmail access token: ${err.message}`);
+
+        if (this.isAuthRevocationError(err)) {
+          // Deactivate revoked account
+          await this.prisma.client.gmailAccount.update({
+            where: { id: activeAccount.id },
+            data: { isActive: false },
+          });
+
+          await this.auditService.log({
+            actorType: 'SYSTEM',
+            action: 'GMAIL_ACCOUNT_DEACTIVATED_AUTH_FAILURE',
+            entityType: 'GMAIL_ACCOUNT',
+            entityId: activeAccount.id,
+            oldState: { email: activeAccount.email, isActive: true },
+            newState: { isActive: false, reason: 'TOKEN_REVOKED_DURING_REFRESH' },
+            metadata: { errorMessage: err.message },
+          });
+
+          this.cachedHealthCheck = {
+            accountId: activeAccount.id,
+            status: 'NEEDS_REAUTHENTICATION',
+            verifiedAt: new Date(),
+            message: `Gmail authorization revoked or expired: ${err.message}. Account marked disconnected.`,
+          };
+
+          throw new BadRequestException('Gmail authorization token is revoked or expired. Please reconnect the account in Settings.');
+        }
+
         throw new InternalServerErrorException('Failed to refresh Gmail authorization token');
       }
     }
 
     return google.gmail({ version: 'v1', auth: oauth2Client });
+  }
+
+  /**
+   * Determines whether an error returned by Google OAuth / Gmail API indicates
+   * credential invalidation (revocation, expiry, or invalid grant) vs transient network error.
+   */
+  private isAuthRevocationError(err: any): boolean {
+    if (!err) return false;
+
+    const message = (err.message || '').toLowerCase();
+    const errorProp = (err.error || '').toLowerCase();
+    const dataError = (err.response?.data?.error || '').toLowerCase();
+    const dataDesc = (err.response?.data?.error_description || '').toLowerCase();
+    const status = err.status || err.code || err.response?.status;
+
+    const authErrorKeywords = [
+      'invalid_grant',
+      'invalid_token',
+      'unauthorized_client',
+      'token has been expired or revoked',
+      'token has been revoked',
+      'revoked',
+      'bad request (invalid_grant)',
+      'invalid credentials',
+    ];
+
+    const isMatch = authErrorKeywords.some(
+      (keyword) =>
+        message.includes(keyword) ||
+        errorProp.includes(keyword) ||
+        dataError.includes(keyword) ||
+        dataDesc.includes(keyword),
+    );
+
+    if (isMatch) return true;
+
+    // HTTP 401 Unauthorized from Google OAuth or Gmail API
+    if (status === 401 || status === '401') {
+      return true;
+    }
+
+    return false;
   }
 
   private createOAuthClient() {

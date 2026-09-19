@@ -47,9 +47,27 @@ export interface GoogleLinkTokenPayload {
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
   private readonly saltRounds = 12;
-  private readonly accessSecret = process.env.JWT_ACCESS_SECRET || 'dev_jwt_access_secret_ai_sales_agent_2026';
-  private readonly refreshSecret = process.env.JWT_REFRESH_SECRET || 'dev_jwt_refresh_secret_ai_sales_agent_2026';
-  private readonly linkSecret = process.env.JWT_LINK_SECRET || process.env.JWT_ACCESS_SECRET || 'dev_jwt_link_secret_ai_sales_agent_2026';
+
+  private get accessSecret(): string {
+    const secret = process.env.JWT_ACCESS_SECRET;
+    if (!secret) {
+      throw new Error('JWT_ACCESS_SECRET is required and must be defined in the environment.');
+    }
+    return secret;
+  }
+
+  private get refreshSecret(): string {
+    const secret = process.env.JWT_REFRESH_SECRET;
+    if (!secret) {
+      throw new Error('JWT_REFRESH_SECRET is required and must be defined in the environment.');
+    }
+    return secret;
+  }
+
+  private get linkSecret(): string {
+    return process.env.JWT_LINK_SECRET || this.accessSecret;
+  }
+
   private readonly accessExpiresIn = process.env.JWT_ACCESS_EXPIRES_IN || '15m';
   private readonly refreshExpiresIn = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
   private readonly linkTokenExpiresIn = process.env.JWT_LINK_EXPIRES_IN || '10m';

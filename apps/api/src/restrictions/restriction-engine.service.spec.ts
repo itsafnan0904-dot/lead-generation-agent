@@ -26,10 +26,21 @@ describe('Restriction Engine Pipeline', () => {
           createdAt: new Date(),
         })),
       },
+      humanReview: {
+        findFirst: jest.fn().mockResolvedValue(null),
+        create: jest.fn().mockImplementation((args) => ({
+          id: 'human-review-uuid-1',
+          ...args.data,
+          createdAt: new Date(),
+        })),
+      },
       lead: {
         findUnique: jest.fn(),
         findMany: jest.fn(),
         update: jest.fn(),
+      },
+      auditEvent: {
+        create: jest.fn().mockResolvedValue({ id: 'audit-uuid-1' }),
       },
     };
 
@@ -37,9 +48,22 @@ describe('Restriction Engine Pipeline', () => {
       analyzeRestriction: jest.fn(),
     };
 
+    const mockAuditService = {
+      log: jest.fn().mockResolvedValue({ id: 'audit-event-1' }),
+    };
+
+    const mockNotificationsService = {
+      create: jest.fn().mockResolvedValue([]),
+    };
+
     const mockPrismaService = { client: mockPrismaClient } as any;
 
-    service = new RestrictionEngineService(mockPrismaService, mockAIOrchestrator);
+    service = new RestrictionEngineService(
+      mockPrismaService,
+      mockAIOrchestrator,
+      mockAuditService as any,
+      mockNotificationsService as any,
+    );
   });
 
   describe('Layer 1: Deterministic Check Layer', () => {

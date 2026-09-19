@@ -1,3 +1,13 @@
+export class AIProviderNotConfiguredError extends Error {
+  constructor(
+    message: string = 'OpenAI API is not configured: OPENAI_API_KEY is missing or invalid in environment.',
+  ) {
+    super(message);
+    this.name = 'AIProviderNotConfiguredError';
+    Object.setPrototypeOf(this, AIProviderNotConfiguredError.prototype);
+  }
+}
+
 export class AIOutputValidationError extends Error {
   public readonly errors: any[];
   public readonly rawContent: string;

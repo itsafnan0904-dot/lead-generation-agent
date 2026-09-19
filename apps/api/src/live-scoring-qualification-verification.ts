@@ -29,7 +29,6 @@ import * as request from 'supertest';
 import { AppModule } from './app.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UserRole } from '@ai-sales-agent/database';
-import { AI_PROVIDER_TOKEN, AIProvider } from './ai/interfaces/ai-provider.interface';
 
 async function runLiveScoringQualificationVerification() {
   console.log('================================================================');
@@ -43,8 +42,15 @@ async function runLiveScoringQualificationVerification() {
     role: UserRole.ADMIN,
   };
 
-  const hasRealKey = !!process.env.OPENAI_API_KEY;
-  console.log(`Live OpenAI API Key: ${hasRealKey ? 'Configured (Live API)' : 'Not configured in environment (using test provider simulation)'}`);
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    console.error('\n[FATAL] OPENAI_API_KEY is not defined in environment.');
+    console.error('Live Scoring & Qualification verification requires a genuine OpenAI API key.');
+    console.error('Silent fallback simulation has been removed to prevent fabricated proof.\n');
+    process.exit(1);
+  }
+
+  console.log(`Live OpenAI API Key Detected: ${apiKey.substring(0, 7)}...${apiKey.substring(apiKey.length - 4)}`);
 
   const moduleBuilder = Test.createTestingModule({
     imports: [AppModule],
@@ -57,50 +63,6 @@ async function runLiveScoringQualificationVerification() {
         return true;
       },
     });
-
-  if (!hasRealKey) {
-    const fallbackTestProvider: AIProvider = {
-      complete: async (options) => {
-        return {
-          rawContent: JSON.stringify({
-            totalScore: 88,
-            scoreBreakdown: {
-              serviceMatch: 38,
-              companyRelevance: 18,
-              contactQuality: 14,
-              projectPotential: 11,
-              locationMatch: 7,
-            },
-            recommendedStage: 'QUALIFIED',
-            justification: 'High alignment with industrial engineering specifications and confirmed decision maker.',
-            keyStrengths: ['Direct procurement authority', 'Verified architectural requirements'],
-            potentialRisks: ['Tight Q4 delivery window'],
-            requiresHumanReview: false,
-          }),
-          parsedContent: {
-            totalScore: 88,
-            scoreBreakdown: {
-              serviceMatch: 38,
-              companyRelevance: 18,
-              contactQuality: 14,
-              projectPotential: 11,
-              locationMatch: 7,
-            },
-            recommendedStage: 'QUALIFIED',
-            justification: 'High alignment with industrial engineering specifications and confirmed decision maker.',
-            keyStrengths: ['Direct procurement authority', 'Verified architectural requirements'],
-            potentialRisks: ['Tight Q4 delivery window'],
-            requiresHumanReview: false,
-          },
-          modelUsed: 'gpt-4o-mini',
-          usage: { promptTokens: 165, completionTokens: 75, totalTokens: 240 },
-          latencyMs: 290,
-        };
-      },
-    };
-
-    moduleBuilder.overrideProvider(AI_PROVIDER_TOKEN).useValue(fallbackTestProvider);
-  }
 
   const moduleRef: TestingModule = await moduleBuilder.compile();
   const app: INestApplication = moduleRef.createNestApplication();
