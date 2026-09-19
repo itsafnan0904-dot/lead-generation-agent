@@ -1,60 +1,69 @@
 /**
  * ============================================================================
- * AI SALES AGENT — GLOBAL CSS & DESIGN SYSTEM VARIABLES
- * Reference: docs/DESIGN_SYSTEM.md
+ * AI SALES AGENT — GLOBAL CSS & DESIGN SYSTEM V2 VARIABLES
+ * Reference: docs/DESIGN_SYSTEM_V2.md (Authoritative)
+ * Foundation: Emil Kowalski Design Engineering Principles
  * ============================================================================
  */
 
 :root {
-  /* Surface & Background Hierarchy */
-  --bg-canvas: #0b0f19;
-  --bg-surface: #111827;
-  --bg-surface-subtle: #161f30;
-  --bg-surface-elevated: #1e293b;
-  --bg-surface-hover: #1f293d;
+  /* Canvas & Background Surfaces */
+  --bg-canvas: #090a0f;              /* Deep matte obsidian canvas */
+  --bg-surface: #111318;             /* Primary container & card surface */
+  --bg-surface-subtle: #161820;      /* Secondary panels, table headers, inputs */
+  --bg-surface-elevated: #1c1f2a;    /* Modals, popovers, dropdown menus */
+  --bg-surface-hover: #1f2330;       /* Interactive element hover surface */
 
-  /* Hairline Borders & Dividers */
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-default: rgba(255, 255, 255, 0.12);
-  --border-strong: rgba(255, 255, 255, 0.20);
-  --border-focus: #6366f1;
+  /* Hairlines & Structural Borders */
+  --border-subtle: rgba(255, 255, 255, 0.06);   /* Structural grids, inner dividers */
+  --border-default: rgba(255, 255, 255, 0.10);  /* Card borders, input outlines */
+  --border-strong: rgba(255, 255, 255, 0.18);   /* Active borders, hover states */
+  --border-focus: #535bf2;                      /* High-clarity focus ring */
 
   /* Typography Colors */
-  --text-primary: #f9fafb;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
-  --text-inverse: #ffffff;
+  --text-primary: #f3f4f6;           /* Crisp primary text, headings, data */
+  --text-secondary: #9ca3af;         /* Supporting labels, descriptions */
+  --text-muted: #64748b;             /* Timestamps, subtle metadata, placeholders */
+  --text-inverse: #ffffff;           /* Text on solid accent backgrounds */
 
-  /* Restrained Accents */
-  --accent-primary: #6366f1;
-  --accent-primary-hover: #4f46e5;
-  --accent-primary-light: #818cf8;
-  --accent-primary-muted: rgba(99, 102, 241, 0.12);
+  /* Functional & Semantic Accents */
+  --accent-primary: #4f46e5;         /* Primary Indigo Action */
+  --accent-primary-hover: #4338ca;   /* Primary Hover State */
+  --accent-primary-light: #818cf8;   /* Primary Highlight */
+  --accent-primary-muted: rgba(79, 70, 229, 0.12); /* Subtle badge background */
 
-  --accent-success: #10b981;
+  --accent-success: #10b981;         /* AI Active / Success Emerald */
   --accent-success-muted: rgba(16, 185, 129, 0.12);
 
-  --accent-warning: #f59e0b;
+  --accent-warning: #f59e0b;         /* Human Review / Caution Amber */
   --accent-warning-muted: rgba(245, 158, 11, 0.12);
 
-  --accent-danger: #f43f5e;
+  --accent-danger: #f43f5e;          /* Restriction / Error Rose */
   --accent-danger-muted: rgba(244, 63, 94, 0.12);
 
-  --accent-info: #0ea5e9;
+  --accent-info: #0ea5e9;            /* Enriched / Investigation Sky */
   --accent-info-muted: rgba(14, 165, 233, 0.12);
 
-  /* Geometry & Radii */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 12px;
-  --radius-full: 9999px;
+  /* Geometry & Corner Radii */
+  --radius-xs: 4px;                  /* Tiny badges, tags */
+  --radius-sm: 6px;                  /* Inputs, standard buttons */
+  --radius-md: 10px;                 /* Cards, surface panels */
+  --radius-lg: 14px;                 /* Modals, floating sheets */
+  --radius-full: 9999px;             /* Status pills, circular avatars */
 
-  /* Precision Shadows */
-  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
-  --shadow-elevated: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  /* Shadows & Elevation (Crisp Hairline + Soft Depth) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 4px 16px -2px rgba(0, 0, 0, 0.5), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-elevated: 0 12px 32px -4px rgba(0, 0, 0, 0.7), 0 4px 8px -2px rgba(0, 0, 0, 0.4);
 
-  /* Transitions */
-  --transition-default: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* Motion & Easing Tokens */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --duration-fast: 120ms;
+  --duration-normal: 180ms;
+  --duration-modal: 240ms;
+  --transition-default: transform 140ms var(--ease-out), background-color 140ms var(--ease-out), border-color 140ms var(--ease-out);
 }
 
 * {
@@ -69,7 +78,7 @@ body {
   overflow-x: hidden;
   background-color: var(--bg-canvas);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -102,14 +111,14 @@ a {
   font-weight: 600;
   border-radius: var(--radius-full);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   line-height: 1.4;
 }
 
 .badge-primary {
   background: var(--accent-primary-muted);
   color: var(--accent-primary-light);
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  border: 1px solid rgba(79, 70, 229, 0.25);
 }
 
 .badge-success {
@@ -143,7 +152,7 @@ a {
 
 .form-label {
   display: block;
-  font-size: 0.8125rem;
+  font-size: 0.78125rem;
   font-weight: 500;
   color: var(--text-secondary);
   margin-bottom: 6px;
@@ -155,12 +164,12 @@ a {
   background: var(--bg-surface-subtle);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
-  padding: 10px 12px;
+  padding: 9px 12px;
   color: var(--text-primary);
-  font-size: 0.875rem;
+  font-size: 0.84375rem;
   line-height: 1.4;
   outline: none;
-  transition: var(--transition-default);
+  transition: border-color 140ms var(--ease-out), box-shadow 140ms var(--ease-out);
 }
 
 .form-input::placeholder {
@@ -173,15 +182,15 @@ a {
 
 .form-input:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 0 2px rgba(83, 91, 242, 0.2);
 }
 
 .form-input:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* Primary and Secondary Buttons */
+/* Primary and Secondary Buttons (Emil Kowalski Tactile Feedback) */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -190,11 +199,12 @@ a {
   color: #ffffff;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
-  padding: 10px 16px;
-  font-size: 0.875rem;
+  padding: 9px 16px;
+  font-size: 0.84375rem;
   font-weight: 500;
+  letter-spacing: -0.005em;
   cursor: pointer;
-  transition: var(--transition-default);
+  transition: transform 140ms var(--ease-out), background-color 140ms var(--ease-out);
   outline: none;
 }
 
@@ -202,12 +212,16 @@ a {
   background: var(--accent-primary-hover);
 }
 
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
 .btn-primary:focus-visible {
   box-shadow: 0 0 0 2px var(--bg-canvas), 0 0 0 4px var(--accent-primary-light);
 }
 
 .btn-primary:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -215,21 +229,26 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-surface-subtle);
   color: var(--text-primary);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
   padding: 8px 14px;
-  font-size: 0.875rem;
+  font-size: 0.84375rem;
   font-weight: 500;
+  letter-spacing: -0.005em;
   cursor: pointer;
-  transition: var(--transition-default);
+  transition: transform 140ms var(--ease-out), background-color 140ms var(--ease-out), border-color 140ms var(--ease-out);
   outline: none;
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--bg-surface-hover);
   border-color: var(--border-strong);
+}
+
+.btn-secondary:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 .btn-secondary:focus-visible {
@@ -237,6 +256,23 @@ a {
 }
 
 .btn-secondary:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+}
+
+@keyframes fast-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .btn-primary:active:not(:disabled),
+  .btn-secondary:active:not(:disabled) {
+    transform: none !important;
+  }
 }
