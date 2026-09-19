@@ -48,78 +48,83 @@ export default function LoginPage() {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '24px 16px',
-      backgroundColor: 'var(--bg-canvas)',
-      backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 50%)',
+      backgroundColor: '#090a0f',
+      backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(79, 70, 229, 0.04) 0%, transparent 60%)',
     }}>
       {/* Brand & Auth Container */}
       <div style={{
         width: '100%',
-        maxWidth: '400px',
+        maxWidth: '380px',
       }}>
         {/* Product Identity Header */}
         <div style={{
           textAlign: 'center',
-          marginBottom: '28px',
+          marginBottom: '24px',
         }}>
-          {/* Restrained Technical Icon */}
+          {/* Restrained Technical Badge */}
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '44px',
-            height: '44px',
-            borderRadius: 'var(--radius-sm)',
-            backgroundColor: 'var(--bg-surface-subtle)',
-            border: '1px solid var(--border-default)',
-            color: 'var(--accent-primary-light)',
-            marginBottom: '16px',
+            width: '38px',
+            height: '38px',
+            borderRadius: '6px',
+            backgroundColor: '#161820',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            color: '#818cf8',
+            marginBottom: '14px',
           }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5" />
               <path d="M2 12l10 5 10-5" />
             </svg>
           </div>
           <h1 style={{
-            fontSize: '1.25rem',
+            fontSize: '1.1875rem',
             fontWeight: 600,
-            color: 'var(--text-primary)',
-            letterSpacing: '-0.02em',
-            marginBottom: '6px',
+            color: '#f3f4f6',
+            letterSpacing: '-0.025em',
+            marginBottom: '5px',
           }}>
             AI Sales Agent
           </h1>
           <p style={{
             fontSize: '0.8125rem',
-            color: 'var(--text-secondary)',
-            lineHeight: 1.4,
+            color: '#9ca3af',
+            lineHeight: 1.45,
+            letterSpacing: '-0.005em',
           }}>
             Sign in to access your autonomous sales control center
           </p>
         </div>
 
         {/* Surface Card Container */}
-        <div className="surface-card" style={{
-          padding: '28px 24px',
+        <div style={{
+          backgroundColor: '#111318',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRadius: '10px',
+          boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.6), 0 1px 2px 0 rgba(0, 0, 0, 0.4)',
+          padding: '24px 22px',
         }}>
           {/* Inline Error Alert */}
           {error && (
             <div style={{
-              backgroundColor: 'var(--accent-danger-muted)',
-              border: '1px solid rgba(244, 63, 94, 0.25)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '10px 12px',
-              marginBottom: '18px',
+              backgroundColor: 'rgba(244, 63, 94, 0.08)',
+              border: '1px solid rgba(244, 63, 94, 0.22)',
+              borderRadius: '6px',
+              padding: '9px 12px',
+              marginBottom: '16px',
               display: 'flex',
               alignItems: 'flex-start',
-              gap: '10px',
+              gap: '9px',
               color: '#fb7185',
               fontSize: '0.8125rem',
               lineHeight: 1.4,
             }}>
               <svg
-                width="16"
-                height="16"
+                width="15"
+                height="15"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -138,8 +143,18 @@ export default function LoginPage() {
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} noValidate>
-            <div className="form-group">
-              <label className="form-label" htmlFor="email">
+            <div style={{ marginBottom: '14px' }}>
+              <label
+                htmlFor="email"
+                style={{
+                  display: 'block',
+                  fontSize: '0.78125rem',
+                  fontWeight: 500,
+                  color: '#9ca3af',
+                  marginBottom: '5px',
+                  letterSpacing: '-0.005em',
+                }}
+              >
                 Work Email
               </label>
               <input
@@ -147,23 +162,43 @@ export default function LoginPage() {
                 type="email"
                 required
                 autoComplete="email"
-                className="form-input"
+                className="v2-input"
                 placeholder="operator@enterprise.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={handleKeyDown}
                 disabled={isSubmitting}
+                style={{
+                  width: '100%',
+                  backgroundColor: '#161820',
+                  border: '1px solid rgba(255, 255, 255, 0.10)',
+                  borderRadius: '6px',
+                  padding: '9px 11px',
+                  color: '#f3f4f6',
+                  fontSize: '0.84375rem',
+                  lineHeight: 1.4,
+                  outline: 'none',
+                }}
               />
             </div>
 
-            <div className="form-group" style={{ marginBottom: '22px' }}>
+            <div style={{ marginBottom: '20px' }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: '6px',
+                marginBottom: '5px',
               }}>
-                <label className="form-label" htmlFor="password" style={{ marginBottom: 0 }}>
+                <label
+                  htmlFor="password"
+                  style={{
+                    display: 'block',
+                    fontSize: '0.78125rem',
+                    fontWeight: 500,
+                    color: '#9ca3af',
+                    letterSpacing: '-0.005em',
+                  }}
+                >
                   Password
                 </label>
               </div>
@@ -172,19 +207,30 @@ export default function LoginPage() {
                 type="password"
                 required
                 autoComplete="current-password"
-                className="form-input"
+                className="v2-input"
                 placeholder="••••••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={handleKeyDown}
                 disabled={isSubmitting}
+                style={{
+                  width: '100%',
+                  backgroundColor: '#161820',
+                  border: '1px solid rgba(255, 255, 255, 0.10)',
+                  borderRadius: '6px',
+                  padding: '9px 11px',
+                  color: '#f3f4f6',
+                  fontSize: '0.84375rem',
+                  lineHeight: 1.4,
+                  outline: 'none',
+                }}
               />
             </div>
 
             <button
               type="submit"
               id="login-submit-button"
-              className="btn-primary"
+              className="v2-btn-primary"
               disabled={isSubmitting}
               onClick={(e) => {
                 // Defense-in-depth: Ensure direct click triggers handleSubmit if native form submit is suppressed
@@ -194,24 +240,34 @@ export default function LoginPage() {
               }}
               style={{
                 width: '100%',
-                padding: '11px 16px',
-                fontSize: '0.875rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#4f46e5',
+                color: '#ffffff',
+                border: '1px solid transparent',
+                borderRadius: '6px',
+                padding: '9.5px 16px',
+                fontSize: '0.84375rem',
                 fontWeight: 500,
-                letterSpacing: '-0.01em',
+                letterSpacing: '-0.005em',
+                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                opacity: isSubmitting ? 0.6 : 1,
+                outline: 'none',
               }}
             >
               {isSubmitting ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '7px', justifyContent: 'center' }}>
                   <svg
-                    width="14"
-                    height="14"
+                    width="13"
+                    height="13"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    style={{ animation: 'spin 1s linear infinite' }}
+                    style={{ animation: 'fast-spin 0.6s linear infinite' }}
                   >
                     <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                   </svg>
@@ -226,32 +282,74 @@ export default function LoginPage() {
 
         {/* Subdued Footer Metadata */}
         <div style={{
-          marginTop: '20px',
+          marginTop: '18px',
           textAlign: 'center',
-          fontSize: '0.75rem',
-          color: 'var(--text-muted)',
+          fontSize: '0.71875rem',
+          color: '#64748b',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '8px',
+          gap: '7px',
+          letterSpacing: '0.01em',
         }}>
           <span style={{
             display: 'inline-block',
-            width: '6px',
-            height: '6px',
+            width: '5px',
+            height: '5px',
             borderRadius: '50%',
-            backgroundColor: 'var(--accent-success)',
+            backgroundColor: '#10b981',
           }} />
           <span>Autonomous AI Prospecting & Lead Governance Platform</span>
         </div>
       </div>
 
       <style jsx global>{`
-        @keyframes spin {
+        .v2-input {
+          transition: border-color 140ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 140ms cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .v2-input::placeholder {
+          color: #64748b;
+        }
+        .v2-input:hover:not(:disabled) {
+          border-color: rgba(255, 255, 255, 0.18) !important;
+        }
+        .v2-input:focus {
+          border-color: #535bf2 !important;
+          box-shadow: 0 0 0 2px rgba(83, 91, 242, 0.2) !important;
+        }
+        .v2-input:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .v2-btn-primary {
+          transition: transform 140ms cubic-bezier(0.23, 1, 0.32, 1), background-color 140ms cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .v2-btn-primary:hover:not(:disabled) {
+          background-color: #4338ca !important;
+        }
+        .v2-btn-primary:active:not(:disabled) {
+          transform: scale(0.97);
+        }
+        .v2-btn-primary:focus-visible {
+          box-shadow: 0 0 0 2px #090a0f, 0 0 0 4px #818cf8;
+        }
+
+        @keyframes fast-spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .v2-btn-primary, .v2-input {
+            transition: none !important;
+          }
+          .v2-btn-primary:active:not(:disabled) {
+            transform: none !important;
+          }
         }
       `}</style>
     </div>
   );
 }
+
