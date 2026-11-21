@@ -23,6 +23,7 @@ import { SellerProfileModule } from './seller-profile/seller-profile.module';
 import { HandoffModule } from './handoff/handoff.module';
 import { DiscoveryModule } from './discovery/discovery.module';
 import { ProjectsModule } from './projects/projects.module';
+import { CampaignsModule } from './campaigns/campaigns.module';
 
 import { validateEnv } from './config/validate-env';
 
@@ -60,6 +61,7 @@ const envFilePaths = [
     HandoffModule,
     DiscoveryModule,
     ProjectsModule,
+    CampaignsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

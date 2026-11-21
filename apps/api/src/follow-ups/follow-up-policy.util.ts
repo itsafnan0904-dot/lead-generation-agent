@@ -1,4 +1,5 @@
 import { AutoReplyMode, resolveAutoReplyMode } from '../auto-reply/auto-reply-policy.util';
+import { campaignAllowsAiActivity } from '../campaigns/campaign-lifecycle.util';
 
 /**
  * Follow-up mode. Defaults to 'draft'. The global AUTO_REPLY_MODE is the master kill switch and also a ceiling:
@@ -19,6 +20,8 @@ export interface FollowUpGateInput {
   mode: AutoReplyMode;
   leadStatus: string;
   aiControlState: string;
+  /** Status of the lead's campaign, if any. Anything but ACTIVE pauses follow-ups for the lead. */
+  campaignStatus?: string | null;
   autonomousOptIn: boolean;
   contactEmail?: string | null;
   lastOutboundAt: Date | null;
@@ -45,6 +48,7 @@ export function decideFollowUp(g: FollowUpGateInput): FollowUpDecision {
   if (g.mode === 'off') return { action: 'SKIP', reason: 'KILL_SWITCH_OFF' };
   if (NO_FOLLOW_UP_STATUSES.has(g.leadStatus)) return { action: 'SKIP', reason: `LEAD_STATUS_${g.leadStatus}` };
   if (g.aiControlState !== 'AI_ACTIVE') return { action: 'SKIP', reason: `AI_${g.aiControlState}` };
+  if (!campaignAllowsAiActivity(g.campaignStatus)) return { action: 'SKIP', reason: `CAMPAIGN_${g.campaignStatus}` };
   if (!g.contactEmail) return { action: 'SKIP', reason: 'NO_CONTACT_EMAIL' };
   if (!g.lastOutboundAt) return { action: 'SKIP', reason: 'NO_OUTBOUND_MESSAGE_YET' };
   if (g.lastInboundAt && g.lastInboundAt.getTime() >= g.lastOutboundAt.getTime()) {

@@ -84,6 +84,16 @@ export class ListLeadsQueryDto {
   @IsEnum(LeadLifecycleStatus)
   status?: LeadLifecycleStatus;
 
+  @IsOptional()
+  @IsUUID()
+  campaignId?: string;
+
+  /** When true, only leads that belong to no campaign. */
+  @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
+  @IsBoolean()
+  unassigned?: boolean;
+
   /** 'priority' ranks by priority score (highest first); default is newest first. */
   @IsOptional()
   @IsIn(['priority', 'newest'])

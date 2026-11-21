@@ -1,3 +1,5 @@
+import { campaignAllowsAiActivity } from '../campaigns/campaign-lifecycle.util';
+
 export type AutoReplyMode = 'off' | 'draft' | 'auto';
 
 /** Global kill switch. AUTO_REPLY_MODE=off disables everything; unknown values fail safe to 'off'. Default: draft. */
@@ -10,6 +12,8 @@ export interface ReplyGateInput {
   mode: AutoReplyMode;
   leadStatus: string;
   aiControlState: string;
+  /** Status of the lead's campaign, if any. Anything but ACTIVE pauses AI replies for the lead. */
+  campaignStatus?: string | null;
   autonomousOptIn: boolean;
   analysisRequiresHuman: boolean;
   intent?: string | null;
@@ -36,6 +40,7 @@ export function decideAutoReply(g: ReplyGateInput): ReplyDecision {
   if (g.mode === 'off') return { action: 'SKIP', reason: 'KILL_SWITCH_OFF' };
   if (NO_REPLY_STATUSES.has(g.leadStatus)) return { action: 'SKIP', reason: `LEAD_STATUS_${g.leadStatus}` };
   if (g.aiControlState !== 'AI_ACTIVE') return { action: 'SKIP', reason: `AI_${g.aiControlState}` };
+  if (!campaignAllowsAiActivity(g.campaignStatus)) return { action: 'SKIP', reason: `CAMPAIGN_${g.campaignStatus}` };
   if (g.analysisRequiresHuman) return { action: 'SKIP', reason: 'AI_ANALYSIS_REQUIRES_HUMAN' };
   if (g.intent && NO_REPLY_INTENTS.has(g.intent)) return { action: 'SKIP', reason: `INTENT_${g.intent}` };
   if (!g.contactEmail) return { action: 'SKIP', reason: 'NO_CONTACT_EMAIL' };

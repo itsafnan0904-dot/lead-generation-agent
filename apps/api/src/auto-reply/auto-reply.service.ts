@@ -50,7 +50,7 @@ export class AutoReplyService {
     const [lead, message] = await Promise.all([
       this.prisma.client.lead.findUnique({
         where: { id: leadId },
-        include: { company: true, primaryContact: true, assignedUser: true },
+        include: { company: true, primaryContact: true, assignedUser: true, campaign: { select: { status: true } } },
       }),
       this.prisma.client.message.findUnique({
         where: { id: messageId },
@@ -80,6 +80,7 @@ export class AutoReplyService {
       mode,
       leadStatus: lead.status,
       aiControlState: lead.aiControlState,
+      campaignStatus: lead.campaign?.status ?? null,
       autonomousOptIn: (lead.metadata as any)?.autonomousConversationMode === true,
       analysisRequiresHuman: analysis?.requiresHumanIntervention === true || analysis?.requires_human === true,
       intent: analysis?.intent,

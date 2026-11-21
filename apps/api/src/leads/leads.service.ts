@@ -161,6 +161,8 @@ export class LeadsService {
     const where: any = {};
     if (query.companyId) where.companyId = query.companyId;
     if (query.assignedUserId) where.assignedUserId = query.assignedUserId;
+    if (query.campaignId) where.campaignId = query.campaignId;
+    else if (query.unassigned) where.campaignId = null;
     if (query.status) where.status = query.status;
 
     const include = {

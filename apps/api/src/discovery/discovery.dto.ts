@@ -1,4 +1,4 @@
-import { IsArray, ArrayMaxSize, IsBoolean, IsObject, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsArray, ArrayMaxSize, IsBoolean, IsObject, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 
 export class ImportProspectsDto {
   /** CSV text with a header row (company, domain, industry, size, location, country, website, email, firstName, lastName, title). */
@@ -18,6 +18,11 @@ export class ImportProspectsDto {
   @IsOptional()
   @IsBoolean()
   dryRun?: boolean;
+
+  /** Put every created lead into this campaign. */
+  @IsOptional()
+  @IsUUID()
+  campaignId?: string;
 
   /** Create a lead for every imported company (default true). */
   @IsOptional()
