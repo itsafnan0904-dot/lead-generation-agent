@@ -31,12 +31,21 @@ export interface DeterministicMatchResult {
   }[];
 }
 
+/**
+ * A seller-defined restriction term (from RestrictionRule) layered on top of the built-in list.
+ */
+export interface ExtraRestrictionTerm {
+  term: string;
+  source: 'SERVICE' | 'INDUSTRY' | 'KEYWORD';
+  reason?: string | null;
+}
+
 export class DeterministicRestrictionChecker {
   /**
    * Performs high-recall keyword and phrase matching against provided text payloads.
    * Matches word boundaries, case-insensitively, and handles hyphens/plurals.
    */
-  check(textCorpus: string): DeterministicMatchResult {
+  check(textCorpus: string, extraTerms: ExtraRestrictionTerm[] = []): DeterministicMatchResult {
     if (!textCorpus || typeof textCorpus !== 'string') {
       return {
         hasMatch: false,
@@ -48,11 +57,22 @@ export class DeterministicRestrictionChecker {
     const matchedTermsSet = new Set<string>();
     const matchDetails: DeterministicMatchResult['matchDetails'] = [];
 
-    for (const term of RESTRICTED_TERMS_LIST) {
+    // Built-in locked list plus seller-defined terms (de-duplicated, case-insensitive).
+    const seen = new Set<string>(RESTRICTED_TERMS_LIST.map((t) => t.toLowerCase()));
+    const terms: string[] = [...RESTRICTED_TERMS_LIST];
+    for (const extra of extraTerms) {
+      const t = extra.term?.trim();
+      if (t && !seen.has(t.toLowerCase())) {
+        seen.add(t.toLowerCase());
+        terms.push(t);
+      }
+    }
+
+    for (const term of terms) {
       // Escape regex special chars
       const escapedTerm = term.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
       // Construct regex with word boundaries. For terms with hyphens (e.g. K-Series), allow flexible spacing/hyphens
-      const normalizedPattern = escapedTerm.replace(/\\-/g, '[-\\s]?');
+      const normalizedPattern = escapedTerm.replace(/\\-/g, '[-\\s]?').replace(/ +/g, '\\s+');
       const regex = new RegExp(`\\b${normalizedPattern}(?:s|es|ing)?\\b`, 'i');
 
       const match = textCorpus.match(regex);
