@@ -41,6 +41,8 @@ export interface GmailMessageMetadata {
   bodyText?: string;
   bodyHtml?: string;
   headers?: GmailMessageHeader[];
+  /** Gmail labels, e.g. SENT for mail this mailbox sent. */
+  labelIds?: string[];
 }
 
 export type GmailHealthStatus =
@@ -646,6 +648,16 @@ export class GmailService {
     }
   }
 
+  /** Email address of the connected Gmail account, or null when none is connected. */
+  async getActiveAccountEmail(): Promise<string | null> {
+    const account = await this.prisma.client.gmailAccount.findFirst({
+      where: { isActive: true },
+      select: { email: true },
+      orderBy: { updatedAt: 'desc' },
+    });
+    return account?.email?.toLowerCase() ?? null;
+  }
+
   /**
    * Retrieves full details and body content of a single Gmail message.
    */
@@ -879,6 +891,7 @@ export class GmailService {
       bodyText,
       bodyHtml,
       headers: headers.map((h) => ({ name: h.name || '', value: h.value || '' })),
+      labelIds: message.labelIds || undefined,
     };
   }
 }

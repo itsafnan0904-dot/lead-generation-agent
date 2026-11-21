@@ -35,6 +35,8 @@ export class PolicyEvaluator {
       failed?: boolean;
       error?: string;
     },
+    /** The analysed text. When given, an AI-only flag must quote words that really appear in it. */
+    textCorpus?: string,
   ): EvaluatedPolicyOutcome {
     const hasDeterministicMatch = deterministicResult.hasMatch;
     const aiData = aiAnalysis.data;
@@ -105,6 +107,27 @@ export class PolicyEvaluator {
       };
     }
 
+    // An AI-only flag (no keyword matched) must be grounded in the text. Models can invent a plausible-sounding
+    // restriction from a company name or a related topic; an ungrounded claim must not block a legitimate lead.
+    const aiFlagged = aiData.result !== RestrictionCheckResult.CLEAR || aiData.requiresHumanReview;
+    if (aiFlagged && textCorpus !== undefined && !isGroundedInText(aiData.evidenceQuote, textCorpus)) {
+      return {
+        finalResult: RestrictionCheckResult.CLEAR,
+        reason: 'AI flagged a possible restriction but quoted no supporting text from the content, so the flag was ignored.',
+        matchedRules: {
+          deterministicMatches: [],
+          aiAnalysis: {
+            result: aiData.result,
+            reason: aiData.reason,
+            confidence: aiData.confidence,
+            evidenceQuote: aiData.evidenceQuote ?? null,
+          },
+          ruleApplied: 'AI_FLAG_UNGROUNDED_IGNORED',
+        },
+        requiresHumanReview: false,
+      };
+    }
+
     // AI found restricted scope even without deterministic keyword
     if (aiData.result === RestrictionCheckResult.RESTRICTED) {
       return {
@@ -156,4 +179,13 @@ export class PolicyEvaluator {
       requiresHumanReview: false,
     };
   }
+}
+
+const normalizeForMatch = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+/** True when the quote (at least 4 characters once normalised) appears verbatim in the analysed text. */
+export function isGroundedInText(quote: string | undefined | null, corpus: string): boolean {
+  const q = normalizeForMatch(quote ?? '');
+  if (q.length < 4) return false;
+  return normalizeForMatch(corpus).includes(q);
 }

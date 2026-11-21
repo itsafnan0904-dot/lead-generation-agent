@@ -67,7 +67,7 @@ export class RestrictionEngineService {
           : 'No exact prohibited keyword matches detected.'
       }`,
       sellerTerms.length
-        ? `SELLER-DEFINED RESTRICTIONS (the seller refuses to sell or pursue these; treat them as prohibited scope): ${sellerTerms
+        ? `SELLER-DEFINED RESTRICTIONS (the seller refuses to sell or pursue these). Flag one ONLY if the text below shows the prospect's business or request involves it, and quote those exact words in evidenceQuote. Do NOT infer it from the company name, from missing information, or from related-sounding topics (for example, "online stores" is not gambling or crypto). If you cannot quote evidence, return CLEAR: ${sellerTerms
             .map((t) => `${t.source}: ${t.term}${t.reason ? ` (${t.reason})` : ''}`)
             .join('; ')}`
         : '',
@@ -92,7 +92,7 @@ export class RestrictionEngineService {
     }
 
     // Layer 3: Policy Evaluator Matrix
-    const outcome = this.policyEvaluator.evaluate(deterministicMatches, aiAnalysisResult);
+    const outcome = this.policyEvaluator.evaluate(deterministicMatches, aiAnalysisResult, textCorpus);
 
     // Step 4: Persistence of RestrictionCheck record
     const restrictionCheck = await this.prisma.client.restrictionCheck.create({

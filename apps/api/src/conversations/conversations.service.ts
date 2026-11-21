@@ -220,7 +220,10 @@ export class ConversationsService {
     const threadId = msg.threadId || msg.id;
     const bodyContent = (msg.bodyText || msg.snippet || '').trim();
 
-    this.logger.log(`Processing inbound message ${msg.id} from sender: ${senderEmail}`);
+    // Mail sent BY the connected mailbox (our own outreach and replies) is not a client reply
+    const isOutbound = await this.isSentByConnectedMailbox(msg, senderEmail);
+
+    this.logger.log(`Processing ${isOutbound ? 'outbound' : 'inbound'} message ${msg.id} from sender: ${senderEmail}`);
 
     // Step 2: Lead Matching Logic
     let matchedLeadId: string | null = null;
@@ -241,10 +244,23 @@ export class ConversationsService {
       },
     });
 
+    // A thread we started with an outreach email belongs to that draft's lead, whatever address replies come from
+    // (aliases, forwarding, or OUTREACH_SAFE_TEST_MODE where replies come from the test mailbox).
+    const threadLead = existingConversation?.leadId ? null : await this.findLeadByOutreachThread(threadId);
+
     if (existingConversation?.leadId) {
       matchedLeadId = existingConversation.leadId;
       matchedLead = existingConversation.lead;
       assignmentStatus = 'ASSIGNED';
+    } else if (threadLead) {
+      matchedLeadId = threadLead.id;
+      matchedLead = threadLead;
+      assignmentStatus = 'ASSIGNED';
+      this.logger.log(`Thread '${threadId}' belongs to Lead '${matchedLeadId}' via its sent outreach draft. Auto-attaching.`);
+    } else if (isOutbound) {
+      // Our own mail in a thread we cannot place: store it unassigned, never guess a lead from the sender
+      matchedLeadId = null;
+      assignmentStatus = 'NEEDS_HUMAN_ASSIGNMENT';
     } else {
       // Find matching Contact by email
       const matchingContact = await this.prisma.client.contact.findUnique({
@@ -316,7 +332,7 @@ export class ConversationsService {
         data: {
           conversationId: conversation.id,
           gmailMessageId: msg.id,
-          direction: MessageDirection.INBOUND,
+          direction: isOutbound ? MessageDirection.OUTBOUND : MessageDirection.INBOUND,
           sender: msg.from || senderEmail,
           recipient: msg.to || recipientEmail,
           subject: msg.subject || null,
@@ -347,6 +363,21 @@ export class ConversationsService {
         };
       }
       throw createErr;
+    }
+
+    // Our own sent mail is recorded for the conversation history only: no reply analysis, restriction re-check,
+    // handoff or auto-reply, which are all about what the CLIENT said.
+    if (isOutbound) {
+      return {
+        messageId: message.id,
+        gmailMessageId: msg.id,
+        conversationId: conversation.id,
+        leadId: matchedLeadId,
+        assignmentStatus,
+        aiAnalysisPerformed: false,
+        restrictionResult: undefined,
+        leadStatusUpdated: undefined,
+      };
     }
 
     // Step 3: AI Reply Analysis & Policy Evaluation (Only for Lead-attached conversations)
@@ -574,6 +605,36 @@ export class ConversationsService {
       restrictionResult,
       leadStatusUpdated,
     };
+  }
+
+  /** True when the message was sent by the connected Gmail account (SENT label, or the From address is that account). */
+  private async isSentByConnectedMailbox(msg: GmailMessageMetadata, senderEmail: string): Promise<boolean> {
+    if (msg.labelIds?.includes('SENT')) return true;
+    try {
+      const own = await this.gmailService.getActiveAccountEmail?.();
+      return !!own && own === senderEmail.toLowerCase();
+    } catch {
+      return false; // never let a lookup problem turn a client reply into "our own mail"
+    }
+  }
+
+  /** The open lead that a sent outreach draft started this Gmail thread for, if any. */
+  private async findLeadByOutreachThread(threadId: string): Promise<any | null> {
+    const draft = await this.prisma.client.outreachDraft?.findFirst({
+      where: { gmailThreadId: threadId, status: 'SENT' },
+      orderBy: { sentAt: 'desc' },
+      include: {
+        lead: {
+          include: {
+            company: true,
+            primaryContact: true,
+            research: { orderBy: { createdAt: 'desc' }, take: 1 },
+          },
+        },
+      },
+    });
+    const lead = draft?.lead;
+    return lead && OPEN_LEAD_STATUSES.includes(lead.status) ? lead : null;
   }
 
   /**
