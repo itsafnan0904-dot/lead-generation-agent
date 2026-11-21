@@ -111,99 +111,100 @@ enum HumanReviewTriggerSource {
 // -----------------------------------------------------------------------------
 
 model User {
-  id               String        @id @default(uuid())
-  email            String        @unique
+  id               String   @id @default(uuid())
+  email            String   @unique
   name             String
-  googleId         String?       @unique
+  googleId         String?  @unique
   passwordHash     String?
   refreshTokenHash String?
-  role             UserRole      @default(SALES_REP)
-  isActive         Boolean       @default(true)
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  role             UserRole @default(SALES_REP)
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  assignedLeads   Lead[]          @relation("AssignedUserLeads")
-  humanReviews    HumanReview[]   @relation("ReviewerUser")
-  resolvedReviews HumanReview[]   @relation("ResolvedByUser")
+  assignedLeads   Lead[]         @relation("AssignedUserLeads")
+  humanReviews    HumanReview[]  @relation("ReviewerUser")
+  resolvedReviews HumanReview[]  @relation("ResolvedByUser")
   notifications   Notification[]
   auditEvents     AuditEvent[]
-  gmailAccounts   GmailAccount[]  @relation("ConnectedGmailUser")
+  gmailAccounts   GmailAccount[] @relation("ConnectedGmailUser")
+  sellerProfile   SellerProfile?
 
   @@index([role])
 }
 
 model GmailAccount {
-  id                String    @id @default(uuid())
-  email             String    @unique
-  accessToken       String    @db.Text
-  refreshToken      String    @db.Text
+  id                String   @id @default(uuid())
+  email             String   @unique
+  accessToken       String   @db.Text
+  refreshToken      String   @db.Text
   tokenExpiresAt    DateTime
-  scope             String    @db.Text
-  isActive          Boolean   @default(true)
+  scope             String   @db.Text
+  isActive          Boolean  @default(true)
   connectedByUserId String?
-  connectedByUser   User?     @relation("ConnectedGmailUser", fields: [connectedByUserId], references: [id], onDelete: SetNull)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  connectedByUser   User?    @relation("ConnectedGmailUser", fields: [connectedByUserId], references: [id], onDelete: SetNull)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@index([isActive])
   @@index([connectedByUserId])
 }
 
 model Campaign {
-  id          String         @id @default(uuid())
-  name        String
-  description String?
-  status      CampaignStatus @default(DRAFT)
+  id             String         @id @default(uuid())
+  name           String
+  description    String?
+  status         CampaignStatus @default(DRAFT)
   targetCriteria Json?
-  startDate   DateTime?
-  endDate     DateTime?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  startDate      DateTime?
+  endDate        DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
-  leads       Lead[]
+  leads Lead[]
 
   @@index([status])
 }
 
 model Company {
-  id             String             @id @default(uuid())
-  name           String
-  domain         String?            @unique
-  industry       String?
-  size           String?
-  location       String?
-  country        String?
-  website        String?
-  linkedinUrl    String?
-  metadata       Json?
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  id          String   @id @default(uuid())
+  name        String
+  domain      String?  @unique
+  industry    String?
+  size        String?
+  location    String?
+  country     String?
+  website     String?
+  linkedinUrl String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  contacts       Contact[]
-  leads          Lead[]
-  research       Research[]
+  contacts          Contact[]
+  leads             Lead[]
+  research          Research[]
   restrictionChecks RestrictionCheck[]
 
   @@index([name])
 }
 
 model Contact {
-  id             String             @id @default(uuid())
-  companyId      String
-  company        Company            @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  email          String             @unique
-  firstName      String
-  lastName       String?
-  title          String?
-  phone          String?
-  linkedinUrl    String?
-  timezone       String?
-  isPrimary      Boolean            @default(false)
-  metadata       Json?
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  id          String   @id @default(uuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  email       String   @unique
+  firstName   String
+  lastName    String?
+  title       String?
+  phone       String?
+  linkedinUrl String?
+  timezone    String?
+  isPrimary   Boolean  @default(false)
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  leads          Lead[]
+  leads             Lead[]
   restrictionChecks RestrictionCheck[]
 
   @@index([companyId])
@@ -211,40 +212,40 @@ model Contact {
 }
 
 model Lead {
-  id                  String              @id @default(uuid())
-  companyId           String
-  company             Company             @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  primaryContactId    String?
-  primaryContact      Contact?            @relation(fields: [primaryContactId], references: [id], onDelete: SetNull)
-  campaignId          String?
-  campaign            Campaign?           @relation(fields: [campaignId], references: [id], onDelete: SetNull)
-  assignedUserId      String?
-  assignedUser        User?               @relation("AssignedUserLeads", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  id               String    @id @default(uuid())
+  companyId        String
+  company          Company   @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  primaryContactId String?
+  primaryContact   Contact?  @relation(fields: [primaryContactId], references: [id], onDelete: SetNull)
+  campaignId       String?
+  campaign         Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  assignedUserId   String?
+  assignedUser     User?     @relation("AssignedUserLeads", fields: [assignedUserId], references: [id], onDelete: SetNull)
 
-  status              LeadLifecycleStatus @default(COLD_LEAD)
-  aiControlState      AIControlState      @default(AI_ACTIVE)
+  status         LeadLifecycleStatus @default(COLD_LEAD)
+  aiControlState AIControlState      @default(AI_ACTIVE)
 
   // Scoring breakdown (Sum total 100 max)
-  scoreTotal          Int                 @default(0)
-  scoreServiceMatch   Int                 @default(0) // Max 40
-  scoreCompanyRelevance Int               @default(0) // Max 20
-  scoreContactQuality Int                 @default(0) // Max 15
-  scoreProjectPotential Int               @default(0) // Max 15
-  scoreLocationMatch  Int                 @default(0) // Max 10
-  scoreBreakdownReason Json?
+  scoreTotal            Int   @default(0)
+  scoreServiceMatch     Int   @default(0) // Max 40
+  scoreCompanyRelevance Int   @default(0) // Max 20
+  scoreContactQuality   Int   @default(0) // Max 15
+  scoreProjectPotential Int   @default(0) // Max 15
+  scoreLocationMatch    Int   @default(0) // Max 10
+  scoreBreakdownReason  Json?
 
-  metadata            Json?
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  research            Research[]
-  conversations       Conversation[]
-  projects            Project[]
-  qualifications      Qualification[]
-  humanReviews        HumanReview[]
-  aiActions           AIAction[]
-  restrictionChecks   RestrictionCheck[]
-  outreachDrafts      OutreachDraft[]
+  research          Research[]
+  conversations     Conversation[]
+  projects          Project[]
+  qualifications    Qualification[]
+  humanReviews      HumanReview[]
+  aiActions         AIAction[]
+  restrictionChecks RestrictionCheck[]
+  outreachDrafts    OutreachDraft[]
 
   @@index([companyId])
   @@index([primaryContactId])
@@ -256,42 +257,42 @@ model Lead {
 }
 
 model Research {
-  id             String    @id @default(uuid())
-  companyId      String
-  company        Company   @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  leadId         String?
-  lead           Lead?     @relation(fields: [leadId], references: [id], onDelete: SetNull)
-  companySummary String?   @db.Text
-  newsAndEvents  Json?
-  painPoints     Json?
-  techStack      Json?
-  keyInsights    Json?
+  id              String    @id @default(uuid())
+  companyId       String
+  company         Company   @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  leadId          String?
+  lead            Lead?     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  companySummary  String?   @db.Text
+  newsAndEvents   Json?
+  painPoints      Json?
+  techStack       Json?
+  keyInsights     Json?
   rawResearchData Json?
-  sources        Json?
-  completedAt    DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  sources         Json?
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([companyId])
   @@index([leadId])
 }
 
 model Conversation {
-  id              String       @id @default(uuid())
-  leadId          String?
-  lead            Lead?        @relation(fields: [leadId], references: [id], onDelete: SetNull)
-  gmailThreadId   String?      @unique
-  subject         String?
-  channel         String       @default("EMAIL")
-  isArchived      Boolean      @default(false)
-  lastMessageAt   DateTime?
-  metadata        Json?
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  id            String    @id @default(uuid())
+  leadId        String?
+  lead          Lead?     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  gmailThreadId String?   @unique
+  subject       String?
+  channel       String    @default("EMAIL")
+  isArchived    Boolean   @default(false)
+  lastMessageAt DateTime?
+  metadata      Json?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  messages        Message[]
-  humanReviews    HumanReview[]
-  aiActions       AIAction[]
+  messages     Message[]
+  humanReviews HumanReview[]
+  aiActions    AIAction[]
 
   @@index([leadId])
 }
@@ -312,50 +313,50 @@ model Message {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 
-  aiActions      AIAction[]
-  humanReviews   HumanReview[]
+  aiActions    AIAction[]
+  humanReviews HumanReview[]
 
   @@index([conversationId])
   @@index([sentAt])
 }
 
 model Project {
-  id             String    @id @default(uuid())
+  id             String   @id @default(uuid())
   leadId         String
-  lead           Lead      @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  lead           Lead     @relation(fields: [leadId], references: [id], onDelete: Restrict)
   title          String
-  description    String?   @db.Text
+  description    String?  @db.Text
   scope          Json?
-  budget         Decimal?  @db.Decimal(12, 2)
-  currency       String    @default("USD")
+  budget         Decimal? @db.Decimal(12, 2)
+  currency       String   @default("USD")
   timeline       String?
-  documentKey    String?   // S3/GCS object key / cloud storage pointer
-  documentBucket String?   // S3 bucket or external container name
-  documentName   String?   // Original filename
-  documentMime   String?   // MIME type (e.g. application/pdf)
-  documentSize   Int?      // Size in bytes
-  metadata       Json?     // Extracted metadata / additional doc tags
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  documentKey    String? // S3/GCS object key / cloud storage pointer
+  documentBucket String? // S3 bucket or external container name
+  documentName   String? // Original filename
+  documentMime   String? // MIME type (e.g. application/pdf)
+  documentSize   Int? // Size in bytes
+  metadata       Json? // Extracted metadata / additional doc tags
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([leadId])
 }
 
 model Qualification {
-  id             String   @id @default(uuid())
-  leadId         String
-  lead           Lead     @relation(fields: [leadId], references: [id], onDelete: Restrict)
-  budgetFit      Boolean?
-  authorityFit   Boolean?
-  needFit        Boolean?
-  timelineFit    Boolean?
-  technicalFit   Boolean?
-  fitSummary     String?  @db.Text
-  dealBlockers   Json?
-  answers        Json?
-  qualifiedBy    String?  // AI or User ID
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id           String   @id @default(uuid())
+  leadId       String
+  lead         Lead     @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  budgetFit    Boolean?
+  authorityFit Boolean?
+  needFit      Boolean?
+  timelineFit  Boolean?
+  technicalFit Boolean?
+  fitSummary   String?  @db.Text
+  dealBlockers Json?
+  answers      Json?
+  qualifiedBy  String? // AI or User ID
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([leadId])
 }
@@ -375,7 +376,7 @@ model RestrictionCheck {
   checkedPayload Json?
   createdAt      DateTime               @default(now())
 
-  humanReviews   HumanReview[]
+  humanReviews HumanReview[]
 
   @@index([entityType])
   @@index([companyId])
@@ -386,29 +387,29 @@ model RestrictionCheck {
 }
 
 model HumanReview {
-  id                      String                    @id @default(uuid())
+  id                      String                   @id @default(uuid())
   leadId                  String?
-  lead                    Lead?                     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  lead                    Lead?                    @relation(fields: [leadId], references: [id], onDelete: SetNull)
   conversationId          String?
-  conversation            Conversation?             @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  conversation            Conversation?            @relation(fields: [conversationId], references: [id], onDelete: SetNull)
   messageId               String?
-  message                 Message?                  @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  message                 Message?                 @relation(fields: [messageId], references: [id], onDelete: SetNull)
   restrictionCheckId      String?
-  restrictionCheck        RestrictionCheck?         @relation(fields: [restrictionCheckId], references: [id], onDelete: SetNull)
+  restrictionCheck        RestrictionCheck?        @relation(fields: [restrictionCheckId], references: [id], onDelete: SetNull)
   assignedToId            String?
-  assignedTo              User?                     @relation("ReviewerUser", fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedTo              User?                    @relation("ReviewerUser", fields: [assignedToId], references: [id], onDelete: SetNull)
   resolvedByUserId        String?
-  resolvedByUser          User?                     @relation("ResolvedByUser", fields: [resolvedByUserId], references: [id], onDelete: SetNull)
-  status                  HumanReviewStatus         @default(PENDING)
-  triggerSource           HumanReviewTriggerSource  @default(RESTRICTION_CHECK)
-  triggerReason           String                    @db.Text
-  resolutionJustification String?                   @db.Text
-  aiDraftContent          String?                   @db.Text
-  reviewedContent         String?                   @db.Text
-  reviewNotes             String?                   @db.Text
+  resolvedByUser          User?                    @relation("ResolvedByUser", fields: [resolvedByUserId], references: [id], onDelete: SetNull)
+  status                  HumanReviewStatus        @default(PENDING)
+  triggerSource           HumanReviewTriggerSource @default(RESTRICTION_CHECK)
+  triggerReason           String                   @db.Text
+  resolutionJustification String?                  @db.Text
+  aiDraftContent          String?                  @db.Text
+  reviewedContent         String?                  @db.Text
+  reviewNotes             String?                  @db.Text
   resolvedAt              DateTime?
-  createdAt               DateTime                  @default(now())
-  updatedAt               DateTime                  @updatedAt
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
 
   @@index([leadId])
   @@index([conversationId])
@@ -428,7 +429,7 @@ model AIAction {
   conversation   Conversation?  @relation(fields: [conversationId], references: [id], onDelete: SetNull)
   messageId      String?
   message        Message?       @relation(fields: [messageId], references: [id], onDelete: SetNull)
-  actionType     String         // e.g. DRAFT_EMAIL, SCORE_LEAD, EXTRACT_REQUIREMENTS, RESTRICTION_CHECK
+  actionType     String // e.g. DRAFT_EMAIL, SCORE_LEAD, EXTRACT_REQUIREMENTS, RESTRICTION_CHECK
   promptSnapshot String?        @db.Text
   rawOutput      String?        @db.Text
   parsedPayload  Json?
@@ -447,19 +448,19 @@ model AIAction {
 }
 
 model Notification {
-  id           String               @id @default(uuid())
-  userId       String
-  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  priority     NotificationPriority @default(INFO)
-  title        String
-  message      String               @db.Text
-  entityType   String?              // e.g. "LEAD", "CONVERSATION", "HUMAN_REVIEW"
-  entityId     String?              // UUID of referenced target entity
-  isRead       Boolean              @default(false)
-  readAt       DateTime?
-  metadata     Json?
-  createdAt    DateTime             @default(now())
-  updatedAt    DateTime             @updatedAt
+  id         String               @id @default(uuid())
+  userId     String
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  priority   NotificationPriority @default(INFO)
+  title      String
+  message    String               @db.Text
+  entityType String? // e.g. "LEAD", "CONVERSATION", "HUMAN_REVIEW"
+  entityId   String? // UUID of referenced target entity
+  isRead     Boolean              @default(false)
+  readAt     DateTime?
+  metadata   Json?
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
 
   @@index([userId])
   @@index([isRead])
@@ -468,20 +469,20 @@ model Notification {
 }
 
 model AuditEvent {
-  id           String   @id @default(uuid())
-  userId       String?
-  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  actorType    String   @default("USER") // USER, AI, SYSTEM
-  actorId      String?
-  action       String   // e.g. LEAD_CREATED, EMAIL_SENT, HUMAN_OVERRIDE, HUMAN_REVIEW_RESOLVED
-  entityType   String   // e.g. LEAD, CONVERSATION, RESTRICTION_CHECK, HUMAN_REVIEW
-  entityId     String?
-  oldState     Json?
-  newState     Json?
-  metadata     Json?
-  ipAddress    String?
-  userAgent    String?
-  createdAt    DateTime @default(now())
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  actorType  String   @default("USER") // USER, AI, SYSTEM
+  actorId    String?
+  action     String // e.g. LEAD_CREATED, EMAIL_SENT, HUMAN_OVERRIDE, HUMAN_REVIEW_RESOLVED
+  entityType String // e.g. LEAD, CONVERSATION, RESTRICTION_CHECK, HUMAN_REVIEW
+  entityId   String?
+  oldState   Json?
+  newState   Json?
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
 
   @@index([userId])
   @@index([actorType])
@@ -491,26 +492,136 @@ model AuditEvent {
 }
 
 model OutreachDraft {
-  id               String              @id @default(uuid())
-  leadId           String
-  lead             Lead                @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  subject          String
-  bodyText         String              @db.Text
-  bodyHtml         String?             @db.Text
-  callToAction     String?
-  rationale        String?             @db.Text
+  id                    String              @id @default(uuid())
+  leadId                String
+  lead                  Lead                @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  subject               String
+  bodyText              String              @db.Text
+  bodyHtml              String?             @db.Text
+  callToAction          String?
+  rationale             String?             @db.Text
   personalizationPoints Json?
-  status           OutreachDraftStatus @default(DRAFT)
-  aiUsageMetadata  Json?
-  gmailMessageId   String?             @unique
-  gmailThreadId    String?
-  sentAt           DateTime?
-  errorMessage     String?             @db.Text
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
+  status                OutreachDraftStatus @default(DRAFT)
+  aiUsageMetadata       Json?
+  gmailMessageId        String?             @unique
+  gmailThreadId         String?
+  sentAt                DateTime?
+  errorMessage          String?             @db.Text
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
 
   @@index([leadId])
   @@index([status])
   @@index([createdAt])
 }
 
+// -----------------------------------------------------------------------------
+// Seller onboarding: who is selling, what, where, and what is off-limits
+// -----------------------------------------------------------------------------
+
+enum RestrictionRuleType {
+  SERVICE
+  INDUSTRY
+  KEYWORD
+}
+
+enum InterventionTrigger {
+  PRICING_DISCUSSION
+  CONTRACT_OR_LEGAL
+  MEETING_REQUESTED
+  OBJECTION_RAISED
+  DEAL_VALUE_ABOVE
+  READINESS_ABOVE
+  CUSTOM_KEYWORD
+}
+
+model SellerProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  displayName     String
+  companyName     String?
+  title           String?
+  bio             String?  @db.Text
+  skills          String[]
+  yearsExperience Int?
+  portfolioUrls   String[]
+  caseStudies     Json?
+  tone            String?
+  signature       String?  @db.Text
+
+  resumeText       String? @db.Text
+  resumeFileName   String?
+  resumeParsedData Json?
+
+  onboardingComplete Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  services          SellerService[]
+  targetMarkets     TargetMarket[]
+  restrictionRules  RestrictionRule[]
+  interventionRules InterventionRule[]
+}
+
+model SellerService {
+  id          String        @id @default(uuid())
+  profileId   String
+  profile     SellerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  name        String
+  description String?       @db.Text
+  keywords    String[]
+  priceMin    Decimal?      @db.Decimal(12, 2)
+  priceMax    Decimal?      @db.Decimal(12, 2)
+  currency    String        @default("USD")
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([profileId])
+}
+
+model TargetMarket {
+  id             String        @id @default(uuid())
+  profileId      String
+  profile        SellerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  countryCode    String // ISO 3166-1 alpha-2
+  regions        String[]
+  industries     String[]
+  minCompanySize Int?
+  maxCompanySize Int?
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+
+  @@unique([profileId, countryCode])
+  @@index([profileId])
+}
+
+model RestrictionRule {
+  id        String              @id @default(uuid())
+  profileId String
+  profile   SellerProfile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  type      RestrictionRuleType
+  value     String
+  reason    String?
+  isActive  Boolean             @default(true)
+  createdAt DateTime            @default(now())
+
+  @@unique([profileId, type, value])
+  @@index([profileId])
+}
+
+model InterventionRule {
+  id        String              @id @default(uuid())
+  profileId String
+  profile   SellerProfile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  trigger   InterventionTrigger
+  threshold Decimal?            @db.Decimal(12, 2)
+  keyword   String?
+  note      String?
+  isActive  Boolean             @default(true)
+  createdAt DateTime            @default(now())
+
+  @@index([profileId])
+}

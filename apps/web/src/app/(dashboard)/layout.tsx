@@ -16,12 +16,12 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-primary)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#090a0f' }}>
       {/* Persistent Navigation Sidebar */}
       <Sidebar />
 
       {/* Main Content Area */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, backgroundColor: '#090a0f' }}>
         {children}
       </div>
     </div>

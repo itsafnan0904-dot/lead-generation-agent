@@ -7,7 +7,6 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
-import Chip from '@mui/material/Chip';
 import LinearProgress from '@mui/material/LinearProgress';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
@@ -115,15 +114,16 @@ export default async function LeadDetailPage({
             gap: 1,
             px: 1.5,
             py: 0.5,
-            borderRadius: 'var(--radius-full)',
-            bgcolor: 'var(--accent-danger-muted)',
-            border: '1px solid rgba(244, 63, 94, 0.3)',
+            borderRadius: '9999px',
+            bgcolor: 'rgba(244, 63, 94, 0.10)',
+            border: '1px solid rgba(244, 63, 94, 0.28)',
             color: '#fb7185',
             fontWeight: 600,
-            fontSize: '0.75rem',
+            fontSize: '0.71875rem',
+            letterSpacing: '0.04em',
           }}
         >
-          <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#fb7185' }} />
+          <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#fb7185' }} />
           POLICY RESTRICTED
         </Box>
       );
@@ -137,15 +137,16 @@ export default async function LeadDetailPage({
             gap: 1,
             px: 1.5,
             py: 0.5,
-            borderRadius: 'var(--radius-full)',
-            bgcolor: 'var(--accent-warning-muted)',
-            border: '1px solid rgba(245, 158, 11, 0.3)',
+            borderRadius: '9999px',
+            bgcolor: 'rgba(245, 158, 11, 0.10)',
+            border: '1px solid rgba(245, 158, 11, 0.28)',
             color: '#fbbf24',
             fontWeight: 600,
-            fontSize: '0.75rem',
+            fontSize: '0.71875rem',
+            letterSpacing: '0.04em',
           }}
         >
-          <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#fbbf24' }} />
+          <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#fbbf24' }} />
           AI PAUSED
         </Box>
       );
@@ -159,15 +160,16 @@ export default async function LeadDetailPage({
             gap: 1,
             px: 1.5,
             py: 0.5,
-            borderRadius: 'var(--radius-full)',
-            bgcolor: 'var(--accent-primary-muted)',
-            border: '1px solid rgba(99, 102, 241, 0.3)',
-            color: 'var(--accent-primary-light)',
+            borderRadius: '9999px',
+            bgcolor: 'rgba(79, 70, 229, 0.12)',
+            border: '1px solid rgba(99, 102, 241, 0.28)',
+            color: '#818cf8',
             fontWeight: 600,
-            fontSize: '0.75rem',
+            fontSize: '0.71875rem',
+            letterSpacing: '0.04em',
           }}
         >
-          <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'var(--accent-primary)' }} />
+          <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#6366f1' }} />
           HUMAN TAKEOVER ACTIVE
         </Box>
       );
@@ -180,22 +182,23 @@ export default async function LeadDetailPage({
           gap: 1,
           px: 1.5,
           py: 0.5,
-          borderRadius: 'var(--radius-full)',
-          bgcolor: 'var(--accent-success-muted)',
-          border: '1px solid rgba(16, 185, 129, 0.3)',
+          borderRadius: '9999px',
+          bgcolor: 'rgba(16, 185, 129, 0.10)',
+          border: '1px solid rgba(16, 185, 129, 0.28)',
           color: '#34d399',
           fontWeight: 600,
-          fontSize: '0.75rem',
+          fontSize: '0.71875rem',
+          letterSpacing: '0.04em',
         }}
       >
-        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#34d399' }} />
+        <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#10b981' }} />
         AUTONOMOUS AI ACTIVE
       </Box>
     );
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, bgcolor: '#090a0f', minHeight: '100vh' }}>
       <Header title={`Lead Workspace: ${lead.company.name}`} />
 
       <Box
@@ -204,12 +207,13 @@ export default async function LeadDetailPage({
           p: { xs: 2, sm: 3, md: 4 },
           display: 'flex',
           flexDirection: 'column',
-          gap: 3,
+          gap: 2.5,
           maxWidth: 1400,
           width: '100%',
           mx: 'auto',
         }}
       >
+        {/* Navigation & Action Bar */}
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
           spacing={2}
@@ -224,10 +228,11 @@ export default async function LeadDetailPage({
             variant="text"
             size="small"
             sx={{
-              color: 'var(--text-secondary)',
+              color: '#9ca3af',
               textTransform: 'none',
+              fontSize: '0.8125rem',
               p: 0,
-              '&:hover': { color: 'var(--text-primary)' },
+              '&:hover': { color: '#f3f4f6' },
             }}
           >
             ← Back to Leads Directory
@@ -241,29 +246,30 @@ export default async function LeadDetailPage({
           />
         </Stack>
 
+        {/* COMPLIANCE / REVIEW NOTICES */}
         {isRestricted ? (
           <Box
             sx={{
               p: 2.5,
-              borderRadius: 'var(--radius-md)',
-              bgcolor: 'var(--accent-danger-muted)',
-              border: '1px solid rgba(244, 63, 94, 0.3)',
+              borderRadius: '8px',
+              bgcolor: 'rgba(244, 63, 94, 0.08)',
+              border: '1px solid rgba(244, 63, 94, 0.24)',
               display: 'flex',
               alignItems: 'flex-start',
               gap: 2,
             }}
           >
             <Box sx={{ color: '#fb7185', mt: 0.25 }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
             </Box>
             <Box>
-              <Typography variant="body1" fontWeight={700} sx={{ color: '#fb7185', mb: 0.5 }}>
+              <Typography variant="body1" fontWeight={600} sx={{ color: '#fb7185', mb: 0.5, fontSize: '0.875rem', letterSpacing: '-0.01em' }}>
                 COMPLIANCE RESTRICTION ACTIVE — OUTREACH BLOCKED
               </Typography>
-              <Typography variant="body2" sx={{ color: 'var(--text-primary)', lineHeight: 1.5 }}>
+              <Typography variant="body2" sx={{ color: '#f3f4f6', lineHeight: 1.5, fontSize: '0.8125rem' }}>
                 This prospect is restricted by internal compliance policy. All autonomous AI outreach and drafting actions are suppressed.
               </Typography>
             </Box>
@@ -272,33 +278,34 @@ export default async function LeadDetailPage({
           <Box
             sx={{
               p: 2.5,
-              borderRadius: 'var(--radius-md)',
-              bgcolor: 'var(--accent-warning-muted)',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
+              borderRadius: '8px',
+              bgcolor: 'rgba(245, 158, 11, 0.08)',
+              border: '1px solid rgba(245, 158, 11, 0.24)',
               display: 'flex',
               alignItems: 'flex-start',
               gap: 2,
             }}
           >
             <Box sx={{ color: '#fbbf24', mt: 0.25 }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="8" x2="12" y2="12" />
                 <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
             </Box>
             <Box>
-              <Typography variant="body1" fontWeight={700} sx={{ color: '#fbbf24', mb: 0.5 }}>
+              <Typography variant="body1" fontWeight={600} sx={{ color: '#fbbf24', mb: 0.5, fontSize: '0.875rem', letterSpacing: '-0.01em' }}>
                 HUMAN GOVERNANCE REVIEW REQUIRED — OUTREACH PAUSED
               </Typography>
-              <Typography variant="body2" sx={{ color: 'var(--text-primary)', lineHeight: 1.5 }}>
-                Trigger Reason: <strong>{pendingReview.triggerReason}</strong>. Automated outreach is paused.
+              <Typography variant="body2" sx={{ color: '#f3f4f6', lineHeight: 1.5, fontSize: '0.8125rem' }}>
+                Trigger Reason: <strong>{pendingReview.triggerReason}</strong>. Automated outreach is paused pending manager clearance.
               </Typography>
             </Box>
           </Box>
         ) : null}
 
-        <Card sx={{ bgcolor: 'var(--bg-surface)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}>
+        {/* NARRATIVE SECTION 1 & 2: COMPANY OVERVIEW & PRIMARY CONTACT */}
+        <Card sx={{ bgcolor: '#111318', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.6)' }}>
           <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
             <Stack
               direction={{ xs: 'column', sm: 'row' }}
@@ -311,7 +318,7 @@ export default async function LeadDetailPage({
             >
               <Box>
                 <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-                  <Typography variant="h1" sx={{ color: 'var(--text-primary)' }}>
+                  <Typography variant="h1" sx={{ color: '#f3f4f6', fontSize: '1.25rem', fontWeight: 600, letterSpacing: '-0.025em' }}>
                     {lead.company.name}
                   </Typography>
                   <Box
@@ -321,23 +328,23 @@ export default async function LeadDetailPage({
                       gap: 0.75,
                       px: 1,
                       py: 0.35,
-                      borderRadius: 'var(--radius-sm)',
+                      borderRadius: '6px',
                       bgcolor:
                         lead.status === 'RESTRICTED'
-                          ? 'var(--accent-danger-muted)'
+                          ? 'rgba(244, 63, 94, 0.10)'
                           : lead.status === 'HUMAN_REVIEW'
-                            ? 'var(--accent-warning-muted)'
+                            ? 'rgba(245, 158, 11, 0.10)'
                             : lead.status === 'QUALIFIED'
-                              ? 'var(--accent-success-muted)'
-                              : 'var(--bg-surface-subtle)',
+                              ? 'rgba(16, 185, 129, 0.10)'
+                              : '#161820',
                       border:
                         lead.status === 'RESTRICTED'
-                          ? '1px solid rgba(244, 63, 94, 0.3)'
+                          ? '1px solid rgba(244, 63, 94, 0.28)'
                           : lead.status === 'HUMAN_REVIEW'
-                            ? '1px solid rgba(245, 158, 11, 0.3)'
+                            ? '1px solid rgba(245, 158, 11, 0.28)'
                             : lead.status === 'QUALIFIED'
-                              ? '1px solid rgba(16, 185, 129, 0.3)'
-                              : '1px solid var(--border-subtle)',
+                              ? '1px solid rgba(16, 185, 129, 0.28)'
+                              : '1px solid rgba(255, 255, 255, 0.08)',
                       color:
                         lead.status === 'RESTRICTED'
                           ? '#fb7185'
@@ -345,9 +352,9 @@ export default async function LeadDetailPage({
                             ? '#fbbf24'
                             : lead.status === 'QUALIFIED'
                               ? '#34d399'
-                              : 'var(--text-secondary)',
+                              : '#9ca3af',
                       fontSize: '0.6875rem',
-                      fontWeight: 700,
+                      fontWeight: 600,
                       letterSpacing: '0.04em',
                       textTransform: 'uppercase',
                     }}
@@ -356,7 +363,7 @@ export default async function LeadDetailPage({
                   </Box>
                 </Stack>
                 {lead.company.domain && (
-                  <Typography variant="body2" sx={{ color: 'var(--accent-info)', mt: 0.5 }}>
+                  <Typography variant="body2" sx={{ color: '#38bdf8', mt: 0.5, fontSize: '0.8125rem' }}>
                     {lead.company.domain}
                   </Typography>
                 )}
@@ -364,60 +371,62 @@ export default async function LeadDetailPage({
               <Box>{renderAIControlStateBadge(lead.aiControlState, lead.status)}</Box>
             </Stack>
 
-            <Divider sx={{ mb: 2.5, borderColor: 'var(--border-subtle)' }} />
+            <Divider sx={{ mb: 2.5, borderColor: 'rgba(255, 255, 255, 0.06)' }} />
 
             <Grid container spacing={3}>
               <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Typography variant="subtitle2" sx={{ color: 'var(--text-secondary)' }}>
+                <Typography variant="subtitle2" sx={{ color: '#9ca3af', fontSize: '0.78125rem', fontWeight: 500 }}>
                   Primary Contact
                 </Typography>
                 {lead.primaryContact ? (
                   <Box sx={{ mt: 0.5 }}>
-                    <Typography variant="body2" fontWeight={600} sx={{ color: 'var(--text-primary)' }}>
+                    <Typography variant="body2" fontWeight={600} sx={{ color: '#f3f4f6', fontSize: '0.84375rem' }}>
                       {lead.primaryContact.firstName} {lead.primaryContact.lastName || ''}
                     </Typography>
-                    <Typography variant="caption" sx={{ color: 'var(--accent-info)', display: 'block' }}>
+                    <Typography variant="caption" sx={{ color: '#38bdf8', display: 'block', fontSize: '0.75rem' }}>
                       {lead.primaryContact.email}
                     </Typography>
                   </Box>
                 ) : (
-                  <Typography variant="body2" sx={{ color: 'var(--text-muted)', mt: 0.5 }}>
+                  <Typography variant="body2" sx={{ color: '#64748b', mt: 0.5, fontSize: '0.8125rem' }}>
                     No contact assigned
                   </Typography>
                 )}
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Typography variant="subtitle2" sx={{ color: 'var(--text-secondary)' }}>
+                <Typography variant="subtitle2" sx={{ color: '#9ca3af', fontSize: '0.78125rem', fontWeight: 500 }}>
                   Industry & Location
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'var(--text-primary)', mt: 0.5 }}>
+                <Typography variant="body2" sx={{ color: '#f3f4f6', mt: 0.5, fontSize: '0.84375rem' }}>
                   {lead.company.industry || 'General Industry'}
                 </Typography>
-                <Typography variant="caption" sx={{ color: 'var(--text-muted)' }}>
+                <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.75rem' }}>
                   {lead.company.location || 'Location unspecified'}
                 </Typography>
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Typography variant="subtitle2" sx={{ color: 'var(--text-secondary)' }}>
+                <Typography variant="subtitle2" sx={{ color: '#9ca3af', fontSize: '0.78125rem', fontWeight: 500 }}>
                   Total Lead Score
                 </Typography>
                 <Typography
                   variant="h3"
-                  fontWeight={700}
+                  fontWeight={600}
                   sx={{
-                    color: lead.scoreTotal >= 70 ? '#34d399' : lead.scoreTotal >= 50 ? '#fbbf24' : 'var(--text-primary)',
+                    color: lead.scoreTotal >= 70 ? '#34d399' : lead.scoreTotal >= 50 ? '#fbbf24' : '#f3f4f6',
                     mt: 0.5,
+                    fontSize: '1.25rem',
+                    fontVariantNumeric: 'tabular-nums',
                   }}
                 >
                   {lead.scoreTotal}
-                  <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 400 }}>/100</span>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 400 }}>/100</span>
                 </Typography>
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Typography variant="subtitle2" sx={{ color: 'var(--text-secondary)' }}>
+                <Typography variant="subtitle2" sx={{ color: '#9ca3af', fontSize: '0.78125rem', fontWeight: 500 }}>
                   Created Date
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'var(--text-primary)', mt: 0.5 }}>
+                <Typography variant="body2" sx={{ color: '#f3f4f6', mt: 0.5, fontSize: '0.84375rem', fontVariantNumeric: 'tabular-nums' }}>
                   {new Date(lead.createdAt).toLocaleDateString(undefined, {
                     year: 'numeric',
                     month: 'short',
@@ -429,96 +438,97 @@ export default async function LeadDetailPage({
           </CardContent>
         </Card>
 
-        <Grid container spacing={3}>
+        {/* NARRATIVE SECTION 3 & 4: 5-FACTOR QUALIFICATION SCORE & COMPANY RESEARCH */}
+        <Grid container spacing={2.5}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Card sx={{ height: '100%', bgcolor: 'var(--bg-surface)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}>
+            <Card sx={{ height: '100%', bgcolor: '#111318', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px' }}>
               <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                <Typography variant="h3" sx={{ color: 'var(--text-primary)', mb: 0.5 }}>
+                <Typography variant="h3" sx={{ color: '#f3f4f6', mb: 1, fontSize: '0.9375rem', fontWeight: 600, letterSpacing: '-0.01em' }}>
                   5-Factor Qualification Scoring
                 </Typography>
-                <Stack spacing={2.5}>
+                <Stack spacing={2}>
                   <Box>
                     <Stack direction="row" spacing={1.5} sx={{ justifyContent: 'space-between', mb: 0.5 }}>
-                      <Typography variant="body2" sx={{ color: 'var(--text-primary)' }}>
+                      <Typography variant="body2" sx={{ color: '#f3f4f6', fontSize: '0.8125rem' }}>
                         Service & Capabilities Match
                       </Typography>
-                      <Typography variant="body2" fontWeight={600} sx={{ color: 'var(--text-primary)' }}>
+                      <Typography variant="body2" fontWeight={600} sx={{ color: '#f3f4f6', fontSize: '0.8125rem', fontVariantNumeric: 'tabular-nums' }}>
                         {lead.scoreServiceMatch} / 40
                       </Typography>
                     </Stack>
                     <LinearProgress
                       variant="determinate"
                       value={(lead.scoreServiceMatch / 40) * 100}
-                      sx={{ height: 6, borderRadius: 'var(--radius-full)', bgcolor: 'rgba(255, 255, 255, 0.05)' }}
+                      sx={{ height: 5, borderRadius: '9999px', bgcolor: 'rgba(255, 255, 255, 0.05)', '& .MuiLinearProgress-bar': { bgcolor: '#4f46e5' } }}
                     />
                   </Box>
                   <Box>
                     <Stack direction="row" spacing={1.5} sx={{ justifyContent: 'space-between', mb: 0.5 }}>
-                      <Typography variant="body2" sx={{ color: 'var(--text-primary)' }}>
+                      <Typography variant="body2" sx={{ color: '#f3f4f6', fontSize: '0.8125rem' }}>
                         Company Size & Market Relevance
                       </Typography>
-                      <Typography variant="body2" fontWeight={600} sx={{ color: 'var(--text-primary)' }}>
+                      <Typography variant="body2" fontWeight={600} sx={{ color: '#f3f4f6', fontSize: '0.8125rem', fontVariantNumeric: 'tabular-nums' }}>
                         {lead.scoreCompanyRelevance} / 20
                       </Typography>
                     </Stack>
                     <LinearProgress
                       variant="determinate"
                       value={(lead.scoreCompanyRelevance / 20) * 100}
-                      sx={{ height: 6, borderRadius: 'var(--radius-full)', bgcolor: 'rgba(255, 255, 255, 0.05)' }}
+                      sx={{ height: 5, borderRadius: '9999px', bgcolor: 'rgba(255, 255, 255, 0.05)', '& .MuiLinearProgress-bar': { bgcolor: '#4f46e5' } }}
                     />
                   </Box>
                   <Box>
                     <Stack direction="row" spacing={1.5} sx={{ justifyContent: 'space-between', mb: 0.5 }}>
-                      <Typography variant="body2" sx={{ color: 'var(--text-primary)' }}>
+                      <Typography variant="body2" sx={{ color: '#f3f4f6', fontSize: '0.8125rem' }}>
                         Decision Maker & Contact Quality
                       </Typography>
-                      <Typography variant="body2" fontWeight={600} sx={{ color: 'var(--text-primary)' }}>
+                      <Typography variant="body2" fontWeight={600} sx={{ color: '#f3f4f6', fontSize: '0.8125rem', fontVariantNumeric: 'tabular-nums' }}>
                         {lead.scoreContactQuality} / 15
                       </Typography>
                     </Stack>
                     <LinearProgress
                       variant="determinate"
                       value={(lead.scoreContactQuality / 15) * 100}
-                      sx={{ height: 6, borderRadius: 'var(--radius-full)', bgcolor: 'rgba(255, 255, 255, 0.05)' }}
+                      sx={{ height: 5, borderRadius: '9999px', bgcolor: 'rgba(255, 255, 255, 0.05)', '& .MuiLinearProgress-bar': { bgcolor: '#4f46e5' } }}
                     />
                   </Box>
                   <Box>
                     <Stack direction="row" spacing={1.5} sx={{ justifyContent: 'space-between', mb: 0.5 }}>
-                      <Typography variant="body2" sx={{ color: 'var(--text-primary)' }}>
+                      <Typography variant="body2" sx={{ color: '#f3f4f6', fontSize: '0.8125rem' }}>
                         Project & Intent Potential
                       </Typography>
-                      <Typography variant="body2" fontWeight={600} sx={{ color: 'var(--text-primary)' }}>
+                      <Typography variant="body2" fontWeight={600} sx={{ color: '#f3f4f6', fontSize: '0.8125rem', fontVariantNumeric: 'tabular-nums' }}>
                         {lead.scoreProjectPotential} / 15
                       </Typography>
                     </Stack>
                     <LinearProgress
                       variant="determinate"
                       value={(lead.scoreProjectPotential / 15) * 100}
-                      sx={{ height: 6, borderRadius: 'var(--radius-full)', bgcolor: 'rgba(255, 255, 255, 0.05)' }}
+                      sx={{ height: 5, borderRadius: '9999px', bgcolor: 'rgba(255, 255, 255, 0.05)', '& .MuiLinearProgress-bar': { bgcolor: '#4f46e5' } }}
                     />
                   </Box>
                   <Box>
                     <Stack direction="row" spacing={1.5} sx={{ justifyContent: 'space-between', mb: 0.5 }}>
-                      <Typography variant="body2" sx={{ color: 'var(--text-primary)' }}>
+                      <Typography variant="body2" sx={{ color: '#f3f4f6', fontSize: '0.8125rem' }}>
                         Geographic & Timezone Alignment
                       </Typography>
-                      <Typography variant="body2" fontWeight={600} sx={{ color: 'var(--text-primary)' }}>
+                      <Typography variant="body2" fontWeight={600} sx={{ color: '#f3f4f6', fontSize: '0.8125rem', fontVariantNumeric: 'tabular-nums' }}>
                         {lead.scoreLocationMatch} / 10
                       </Typography>
                     </Stack>
                     <LinearProgress
                       variant="determinate"
                       value={(lead.scoreLocationMatch / 10) * 100}
-                      sx={{ height: 6, borderRadius: 'var(--radius-full)', bgcolor: 'rgba(255, 255, 255, 0.05)' }}
+                      sx={{ height: 5, borderRadius: '9999px', bgcolor: 'rgba(255, 255, 255, 0.05)', '& .MuiLinearProgress-bar': { bgcolor: '#4f46e5' } }}
                     />
                   </Box>
                 </Stack>
                 {lead.scoreBreakdownReason && (
-                  <Box sx={{ mt: 3, p: 2, borderRadius: 'var(--radius-sm)', bgcolor: 'var(--bg-surface-subtle)', border: '1px solid var(--border-subtle)' }}>
-                    <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.5 }}>
+                  <Box sx={{ mt: 2.5, p: 2, borderRadius: '6px', bgcolor: '#161820', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                    <Typography variant="caption" sx={{ color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.5, fontSize: '0.6875rem' }}>
                       AI Evaluation Rationale
                     </Typography>
-                    <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', lineHeight: 1.5 }}>
+                    <Typography variant="body2" sx={{ color: '#9ca3af', fontSize: '0.8125rem', lineHeight: 1.5 }}>
                       {typeof lead.scoreBreakdownReason === 'string' ? lead.scoreBreakdownReason : JSON.stringify(lead.scoreBreakdownReason)}
                     </Typography>
                   </Box>
@@ -527,25 +537,25 @@ export default async function LeadDetailPage({
             </Card>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Stack spacing={3}>
-              <Card sx={{ bgcolor: 'var(--bg-surface)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}>
+            <Stack spacing={2.5}>
+              <Card sx={{ bgcolor: '#111318', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px' }}>
                 <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                  <Typography variant="h3" sx={{ color: 'var(--text-primary)', mb: 0.5 }}>
+                  <Typography variant="h3" sx={{ color: '#f3f4f6', mb: 1, fontSize: '0.9375rem', fontWeight: 600, letterSpacing: '-0.01em' }}>
                     Company Research Summary
                   </Typography>
                   {lead.research && lead.research.length > 0 && lead.research[0].companySummary ? (
-                    <Box sx={{ mt: 1.5 }}>
-                      <Typography variant="body2" sx={{ color: 'var(--text-secondary)', lineHeight: 1.6, mb: 2 }}>
+                    <Box sx={{ mt: 1 }}>
+                      <Typography variant="body2" sx={{ color: '#9ca3af', lineHeight: 1.6, mb: 2, fontSize: '0.8125rem' }}>
                         {lead.research[0].companySummary}
                       </Typography>
                       {lead.research[0].keyInsights && Array.isArray(lead.research[0].keyInsights) && lead.research[0].keyInsights.length > 0 && (
-                        <Box sx={{ mb: 1.5 }}>
-                          <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', display: 'block', mb: 0.5 }}>
+                        <Box sx={{ mb: 1 }}>
+                          <Typography variant="caption" sx={{ color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', display: 'block', mb: 0.5, fontSize: '0.6875rem', letterSpacing: '0.04em' }}>
                             Key Insights
                           </Typography>
                           <Box component="ul" sx={{ pl: 2, m: 0 }}>
                             {lead.research[0].keyInsights.map((insight: string, idx: number) => (
-                              <Typography key={idx} component="li" variant="caption" sx={{ color: 'var(--text-secondary)', mb: 0.25 }}>
+                              <Typography key={idx} component="li" variant="caption" sx={{ color: '#9ca3af', mb: 0.25, fontSize: '0.75rem' }}>
                                 {insight}
                               </Typography>
                             ))}
@@ -554,48 +564,48 @@ export default async function LeadDetailPage({
                       )}
                     </Box>
                   ) : (
-                    <Typography variant="body2" sx={{ color: 'var(--text-muted)', mt: 1 }}>
+                    <Typography variant="body2" sx={{ color: '#64748b', mt: 1, fontSize: '0.8125rem' }}>
                       No automated intelligence research conducted yet.
                     </Typography>
                   )}
                 </CardContent>
               </Card>
 
-              {/* Human Governance Reviews History */}
+              {/* NARRATIVE SECTION 5: HUMAN GOVERNANCE REVIEW LOG */}
               {humanReviews.length > 0 && (
-                <Card sx={{ bgcolor: 'var(--bg-surface)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}>
+                <Card sx={{ bgcolor: '#111318', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px' }}>
                   <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-                    <Typography variant="h3" sx={{ color: 'var(--text-primary)', mb: 1.5 }}>
+                    <Typography variant="h3" sx={{ color: '#f3f4f6', mb: 1.5, fontSize: '0.9375rem', fontWeight: 600, letterSpacing: '-0.01em' }}>
                       Governance Review Log
                     </Typography>
-                    <Stack spacing={1.5}>
+                    <Stack spacing={1.25}>
                       {humanReviews.map((rev) => (
                         <Box
                           key={rev.id}
                           sx={{
                             p: 2,
-                            borderRadius: 'var(--radius-sm)',
-                            bgcolor: 'var(--bg-surface-subtle)',
-                            border: '1px solid var(--border-subtle)',
+                            borderRadius: '6px',
+                            bgcolor: '#161820',
+                            border: '1px solid rgba(255, 255, 255, 0.06)',
                           }}
                         >
                           <Stack direction="row" spacing={1} sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
                             <Box
                               sx={{
-                                px: 1,
-                                py: 0.25,
-                                borderRadius: 'var(--radius-sm)',
-                                bgcolor: rev.status === 'APPROVED' ? 'var(--accent-success-muted)' : rev.status === 'REJECTED' ? 'var(--accent-danger-muted)' : 'var(--accent-warning-muted)',
+                                px: 0.85,
+                                py: 0.2,
+                                borderRadius: '4px',
+                                bgcolor: rev.status === 'APPROVED' ? 'rgba(16, 185, 129, 0.10)' : rev.status === 'REJECTED' ? 'rgba(244, 63, 94, 0.10)' : 'rgba(245, 158, 11, 0.10)',
                                 color: rev.status === 'APPROVED' ? '#34d399' : rev.status === 'REJECTED' ? '#fb7185' : '#fbbf24',
                                 fontSize: '0.625rem',
-                                fontWeight: 700,
+                                fontWeight: 600,
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.04em',
                               }}
                             >
                               {rev.status}
                             </Box>
-                            <Typography variant="caption" sx={{ color: 'var(--text-muted)' }}>
+                            <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.71875rem', fontVariantNumeric: 'tabular-nums' }}>
                               {new Date(rev.createdAt).toLocaleString(undefined, {
                                 month: 'short',
                                 day: 'numeric',
@@ -604,16 +614,16 @@ export default async function LeadDetailPage({
                               })}
                             </Typography>
                           </Stack>
-                          <Typography variant="body2" fontWeight={600} sx={{ color: 'var(--text-primary)', mb: 0.5 }}>
+                          <Typography variant="body2" fontWeight={600} sx={{ color: '#f3f4f6', mb: 0.5, fontSize: '0.8125rem' }}>
                             Trigger Reason: {rev.triggerReason}
                           </Typography>
                           {rev.resolutionJustification && (
-                            <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', mt: 0.5 }}>
+                            <Typography variant="body2" sx={{ color: '#9ca3af', fontSize: '0.8125rem', mt: 0.5 }}>
                               <strong>Resolution Justification:</strong> {rev.resolutionJustification}
                             </Typography>
                           )}
                           {rev.resolvedByUser && (
-                            <Typography variant="caption" sx={{ color: 'var(--text-muted)', display: 'block', mt: 0.5 }}>
+                            <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 0.5, fontSize: '0.71875rem' }}>
                               Resolved by: {rev.resolvedByUser.name} ({rev.resolvedByUser.email})
                             </Typography>
                           )}
@@ -644,3 +654,4 @@ export default async function LeadDetailPage({
     </Box>
   );
 }
+

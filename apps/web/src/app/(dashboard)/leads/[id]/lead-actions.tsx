@@ -158,25 +158,42 @@ export function LeadActionButtons({
 
   return (
     <Stack spacing={1.5} sx={{ alignItems: 'flex-end', width: { xs: '100%', sm: 'auto' } }}>
-      <Stack direction="row" spacing={1.5} sx={{ flexWrap: 'wrap', gap: 1 }}>
+      <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
         {/* Recalculate Score Button */}
         <Button
           onClick={handleScore}
           disabled={loadingAction !== null}
           variant="outlined"
           size="small"
-          className="btn-secondary"
           startIcon={
             loadingAction === 'score' ? (
-              <CircularProgress size={14} color="inherit" />
+              <CircularProgress size={13} color="inherit" />
             ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M23 4v6h-6" />
                 <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
               </svg>
             )
           }
-          sx={{ textTransform: 'none', fontSize: '0.8125rem' }}
+          sx={{
+            textTransform: 'none',
+            fontSize: '0.8125rem',
+            fontWeight: 500,
+            color: '#f3f4f6',
+            borderColor: 'rgba(255, 255, 255, 0.10)',
+            bgcolor: '#161820',
+            borderRadius: '6px',
+            px: 1.5,
+            py: 0.6,
+            transition: 'background-color 140ms cubic-bezier(0.23, 1, 0.32, 1), border-color 140ms cubic-bezier(0.23, 1, 0.32, 1)',
+            '&:hover:not(:disabled)': {
+              bgcolor: 'rgba(255, 255, 255, 0.06)',
+              borderColor: 'rgba(255, 255, 255, 0.18)',
+            },
+            '&:active:not(:disabled)': {
+              transform: 'scale(0.97)',
+            },
+          }}
         >
           {loadingAction === 'score' ? 'Recalculating...' : 'Recalculate Score'}
         </Button>
@@ -187,22 +204,39 @@ export function LeadActionButtons({
           disabled={loadingAction !== null}
           variant="outlined"
           size="small"
-          className="btn-secondary"
           startIcon={
             loadingAction === 'restriction' ? (
-              <CircularProgress size={14} color="inherit" />
+              <CircularProgress size={13} color="inherit" />
             ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
             )
           }
-          sx={{ textTransform: 'none', fontSize: '0.8125rem' }}
+          sx={{
+            textTransform: 'none',
+            fontSize: '0.8125rem',
+            fontWeight: 500,
+            color: '#f3f4f6',
+            borderColor: 'rgba(255, 255, 255, 0.10)',
+            bgcolor: '#161820',
+            borderRadius: '6px',
+            px: 1.5,
+            py: 0.6,
+            transition: 'background-color 140ms cubic-bezier(0.23, 1, 0.32, 1), border-color 140ms cubic-bezier(0.23, 1, 0.32, 1)',
+            '&:hover:not(:disabled)': {
+              bgcolor: 'rgba(255, 255, 255, 0.06)',
+              borderColor: 'rgba(255, 255, 255, 0.18)',
+            },
+            '&:active:not(:disabled)': {
+              transform: 'scale(0.97)',
+            },
+          }}
         >
           {loadingAction === 'restriction' ? 'Checking Safety...' : 'Run Restriction Check'}
         </Button>
 
-        {/* AI Control Buttons (Deliberate & Trustworthy Controls per Section 11) */}
+        {/* AI Control Buttons */}
         {currentAIState === 'AI_ACTIVE' && (
           <Button
             onClick={() => handleAIControl('pause')}
@@ -212,12 +246,20 @@ export function LeadActionButtons({
             sx={{
               textTransform: 'none',
               fontSize: '0.8125rem',
-              borderColor: 'rgba(245, 158, 11, 0.4)',
+              fontWeight: 500,
+              borderColor: 'rgba(245, 158, 11, 0.3)',
               color: '#fbbf24',
-              bgcolor: 'var(--accent-warning-muted)',
-              '&:hover': {
-                borderColor: 'rgba(245, 158, 11, 0.7)',
-                bgcolor: 'rgba(245, 158, 11, 0.18)',
+              bgcolor: 'rgba(245, 158, 11, 0.08)',
+              borderRadius: '6px',
+              px: 1.5,
+              py: 0.6,
+              transition: 'background-color 140ms cubic-bezier(0.23, 1, 0.32, 1), border-color 140ms cubic-bezier(0.23, 1, 0.32, 1)',
+              '&:hover:not(:disabled)': {
+                borderColor: 'rgba(245, 158, 11, 0.6)',
+                bgcolor: 'rgba(245, 158, 11, 0.14)',
+              },
+              '&:active:not(:disabled)': {
+                transform: 'scale(0.97)',
               },
             }}
           >
@@ -234,12 +276,20 @@ export function LeadActionButtons({
             sx={{
               textTransform: 'none',
               fontSize: '0.8125rem',
-              borderColor: 'rgba(99, 102, 241, 0.4)',
-              color: 'var(--accent-primary-light)',
-              bgcolor: 'var(--accent-primary-muted)',
-              '&:hover': {
-                borderColor: 'rgba(99, 102, 241, 0.7)',
-                bgcolor: 'rgba(99, 102, 241, 0.18)',
+              fontWeight: 500,
+              borderColor: 'rgba(99, 102, 241, 0.3)',
+              color: '#818cf8',
+              bgcolor: 'rgba(79, 70, 229, 0.08)',
+              borderRadius: '6px',
+              px: 1.5,
+              py: 0.6,
+              transition: 'background-color 140ms cubic-bezier(0.23, 1, 0.32, 1), border-color 140ms cubic-bezier(0.23, 1, 0.32, 1)',
+              '&:hover:not(:disabled)': {
+                borderColor: 'rgba(99, 102, 241, 0.6)',
+                bgcolor: 'rgba(79, 70, 229, 0.14)',
+              },
+              '&:active:not(:disabled)': {
+                transform: 'scale(0.97)',
               },
             }}
           >
@@ -256,12 +306,20 @@ export function LeadActionButtons({
             sx={{
               textTransform: 'none',
               fontSize: '0.8125rem',
-              borderColor: 'rgba(16, 185, 129, 0.4)',
+              fontWeight: 500,
+              borderColor: 'rgba(16, 185, 129, 0.3)',
               color: '#34d399',
-              bgcolor: 'var(--accent-success-muted)',
-              '&:hover': {
-                borderColor: 'rgba(16, 185, 129, 0.7)',
-                bgcolor: 'rgba(16, 185, 129, 0.18)',
+              bgcolor: 'rgba(16, 185, 129, 0.08)',
+              borderRadius: '6px',
+              px: 1.5,
+              py: 0.6,
+              transition: 'background-color 140ms cubic-bezier(0.23, 1, 0.32, 1), border-color 140ms cubic-bezier(0.23, 1, 0.32, 1)',
+              '&:hover:not(:disabled)': {
+                borderColor: 'rgba(16, 185, 129, 0.6)',
+                bgcolor: 'rgba(16, 185, 129, 0.14)',
+              },
+              '&:active:not(:disabled)': {
+                transform: 'scale(0.97)',
               },
             }}
           >
@@ -278,14 +336,20 @@ export function LeadActionButtons({
               variant="contained"
               size="small"
               sx={{
-                bgcolor: 'var(--accent-warning)',
+                bgcolor: '#f59e0b',
                 color: '#000000',
                 fontWeight: 600,
                 fontSize: '0.8125rem',
                 textTransform: 'none',
                 px: 2,
-                '&:hover': {
+                py: 0.6,
+                borderRadius: '6px',
+                transition: 'background-color 140ms cubic-bezier(0.23, 1, 0.32, 1)',
+                '&:hover:not(:disabled)': {
                   bgcolor: '#d97706',
+                },
+                '&:active:not(:disabled)': {
+                  transform: 'scale(0.97)',
                 },
               }}
             >
@@ -299,12 +363,15 @@ export function LeadActionButtons({
                   variant="outlined"
                   size="small"
                   sx={{
-                    opacity: 0.5,
+                    opacity: 0.4,
                     cursor: 'not-allowed',
                     textTransform: 'none',
                     fontSize: '0.8125rem',
-                    borderColor: 'var(--border-subtle)',
-                    color: 'var(--text-muted)',
+                    borderColor: 'rgba(255, 255, 255, 0.08)',
+                    color: '#64748b',
+                    borderRadius: '6px',
+                    px: 1.5,
+                    py: 0.6,
                   }}
                 >
                   Resolve Review (Admin Only)
@@ -315,21 +382,21 @@ export function LeadActionButtons({
         )}
       </Stack>
 
-      {/* Real Success Alert */}
+      {/* Success Alert */}
       {successMsg && (
-        <Alert severity="success" sx={{ py: 0.5, width: '100%', fontSize: '0.8125rem' }}>
+        <Alert severity="success" sx={{ py: 0.5, width: '100%', fontSize: '0.8125rem', bgcolor: 'rgba(16, 185, 129, 0.10)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.25)', borderRadius: '6px' }}>
           {successMsg}
         </Alert>
       )}
 
-      {/* Real Error Alert */}
+      {/* Error Alert */}
       {error && (
-        <Alert severity="error" sx={{ py: 0.5, width: '100%', fontSize: '0.8125rem' }}>
+        <Alert severity="error" sx={{ py: 0.5, width: '100%', fontSize: '0.8125rem', bgcolor: 'rgba(244, 63, 94, 0.10)', color: '#fb7185', border: '1px solid rgba(244, 63, 94, 0.25)', borderRadius: '6px' }}>
           {error}
         </Alert>
       )}
 
-      {/* MUI Dialog: Resolve Human Review */}
+      {/* Dialog: Resolve Human Review */}
       <Dialog
         open={showResolveModal}
         onClose={() => !loadingAction && setShowResolveModal(false)}
@@ -337,18 +404,18 @@ export function LeadActionButtons({
         fullWidth
         PaperProps={{
           sx: {
-            bgcolor: 'var(--bg-surface-elevated)',
-            border: '1px solid var(--border-default)',
-            borderRadius: 'var(--radius-lg)',
-            boxShadow: 'var(--shadow-elevated)',
+            bgcolor: '#111318',
+            border: '1px solid rgba(255, 255, 255, 0.10)',
+            borderRadius: '10px',
+            boxShadow: '0 12px 32px -4px rgba(0, 0, 0, 0.7)',
           },
         }}
       >
-        <DialogTitle sx={{ pb: 1, borderBottom: '1px solid var(--border-subtle)' }}>
-          <Typography variant="h3" sx={{ color: 'var(--text-primary)', mb: 0.5 }}>
+        <DialogTitle sx={{ pb: 1.5, borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+          <Typography variant="h3" sx={{ color: '#f3f4f6', mb: 0.5, fontSize: '1.0625rem', fontWeight: 600, letterSpacing: '-0.015em' }}>
             Resolve Governance Review
           </Typography>
-          <Typography variant="body2" sx={{ color: 'var(--text-secondary)' }}>
+          <Typography variant="body2" sx={{ color: '#9ca3af', fontSize: '0.8125rem' }}>
             Lead #{leadId.substring(0, 8)} • Mandatory Audit Justification Required
           </Typography>
         </DialogTitle>
@@ -356,7 +423,7 @@ export function LeadActionButtons({
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, py: 3 }}>
           {/* Decision Choice */}
           <FormControl component="fieldset">
-            <FormLabel component="legend" sx={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', mb: 1 }}>
+            <FormLabel component="legend" sx={{ fontSize: '0.78125rem', color: '#9ca3af', mb: 1, fontWeight: 500 }}>
               Resolution Clearance Decision:
             </FormLabel>
             <RadioGroup
@@ -368,7 +435,7 @@ export function LeadActionButtons({
                 value="APPROVED"
                 control={<Radio sx={{ color: '#34d399', '&.Mui-checked': { color: '#10b981' } }} size="small" />}
                 label={
-                  <Typography variant="body2" sx={{ color: '#34d399', fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: '#34d399', fontWeight: 600, fontSize: '0.8125rem' }}>
                     APPROVE (Clear & Resume Outreach)
                   </Typography>
                 }
@@ -377,7 +444,7 @@ export function LeadActionButtons({
                 value="REJECTED"
                 control={<Radio sx={{ color: '#fb7185', '&.Mui-checked': { color: '#f43f5e' } }} size="small" />}
                 label={
-                  <Typography variant="body2" sx={{ color: '#fb7185', fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: '#fb7185', fontWeight: 600, fontSize: '0.8125rem' }}>
                     REJECT (Uphold Restriction)
                   </Typography>
                 }
@@ -388,7 +455,7 @@ export function LeadActionButtons({
           {/* Written Justification Field */}
           <Box>
             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-              <Typography variant="subtitle2" sx={{ color: 'var(--text-secondary)' }}>
+              <Typography variant="subtitle2" sx={{ color: '#9ca3af', fontSize: '0.78125rem', fontWeight: 500 }}>
                 Mandatory Written Justification (min 10 chars):
               </Typography>
               <Typography
@@ -396,6 +463,8 @@ export function LeadActionButtons({
                 sx={{
                   color: justification.trim().length >= 10 ? '#34d399' : '#fbbf24',
                   fontWeight: 600,
+                  fontSize: '0.75rem',
+                  fontVariantNumeric: 'tabular-nums',
                 }}
               >
                 {justification.trim().length} / 10 min chars
@@ -411,32 +480,51 @@ export function LeadActionButtons({
               placeholder="Explain the compliance rationale for approving or rejecting this restriction..."
               size="small"
               sx={{
-                bgcolor: 'var(--bg-surface-subtle)',
-                borderRadius: 'var(--radius-sm)',
+                bgcolor: '#161820',
+                borderRadius: '6px',
                 '& .MuiOutlinedInput-root': {
-                  border: '1px solid var(--border-default)',
-                  color: 'var(--text-primary)',
-                  fontSize: '0.875rem',
+                  border: '1px solid rgba(255, 255, 255, 0.10)',
+                  color: '#f3f4f6',
+                  fontSize: '0.84375rem',
+                  '&:hover': {
+                    borderColor: 'rgba(255, 255, 255, 0.18)',
+                  },
+                  '&.Mui-focused': {
+                    borderColor: '#535bf2',
+                  },
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  border: 'none',
                 },
               }}
             />
           </Box>
 
           {resolveError && (
-            <Alert severity="error" sx={{ py: 0.5, fontSize: '0.8125rem' }}>
+            <Alert severity="error" sx={{ py: 0.5, fontSize: '0.8125rem', bgcolor: 'rgba(244, 63, 94, 0.10)', color: '#fb7185', border: '1px solid rgba(244, 63, 94, 0.25)', borderRadius: '6px' }}>
               {resolveError}
             </Alert>
           )}
         </DialogContent>
 
-        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid var(--border-subtle)' }}>
+        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
           <Button
             onClick={() => setShowResolveModal(false)}
             disabled={loadingAction !== null}
             variant="outlined"
             size="small"
-            className="btn-secondary"
-            sx={{ textTransform: 'none' }}
+            sx={{
+              textTransform: 'none',
+              fontSize: '0.8125rem',
+              color: '#f3f4f6',
+              borderColor: 'rgba(255, 255, 255, 0.10)',
+              borderRadius: '6px',
+              px: 2,
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.06)',
+                borderColor: 'rgba(255, 255, 255, 0.18)',
+              },
+            }}
           >
             Cancel
           </Button>
@@ -448,13 +536,19 @@ export function LeadActionButtons({
             sx={{
               textTransform: 'none',
               fontWeight: 600,
-              bgcolor: decision === 'APPROVED' ? 'var(--accent-success)' : 'var(--accent-danger)',
-              '&:hover': {
+              fontSize: '0.8125rem',
+              borderRadius: '6px',
+              px: 2,
+              bgcolor: decision === 'APPROVED' ? '#10b981' : '#f43f5e',
+              '&:hover:not(:disabled)': {
                 bgcolor: decision === 'APPROVED' ? '#059669' : '#e11d48',
+              },
+              '&:active:not(:disabled)': {
+                transform: 'scale(0.97)',
               },
             }}
             startIcon={
-              loadingAction === 'resolve' ? <CircularProgress size={14} color="inherit" /> : undefined
+              loadingAction === 'resolve' ? <CircularProgress size={13} color="inherit" /> : undefined
             }
           >
             {loadingAction === 'resolve' ? 'Submitting Resolution...' : `Confirm ${decision}`}
@@ -464,3 +558,4 @@ export function LeadActionButtons({
     </Stack>
   );
 }
+
