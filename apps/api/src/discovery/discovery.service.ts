@@ -80,6 +80,13 @@ export class DiscoveryService {
     if (rows.length > MAX_ROWS) throw new BadRequestException(`Too many rows (${rows.length}). The limit is ${MAX_ROWS} per import.`);
 
     const dryRun = dto.dryRun === true;
+    if (dto.campaignId) {
+      const campaign = await this.prisma.client.campaign.findUnique({ where: { id: dto.campaignId }, select: { status: true } });
+      if (!campaign) throw new BadRequestException(`Campaign '${dto.campaignId}' not found.`);
+      if (campaign.status === 'COMPLETED' || campaign.status === 'ARCHIVED') {
+        throw new BadRequestException(`Cannot import into a ${campaign.status} campaign.`);
+      }
+    }
     const createLeads = dto.createLeads !== false;
 
     const profile = await this.prisma.client.sellerProfile.findUnique({
@@ -95,7 +102,7 @@ export class DiscoveryService {
 
     for (let i = 0; i < rows.length; i++) {
       const res = await this.processRow(i + 1, rows[i], {
-        userId, dryRun, createLeads, markets, restrictionTerms, seenDomains, seenNames,
+        userId, dryRun, createLeads, campaignId: dto.campaignId, markets, restrictionTerms, seenDomains, seenNames,
       });
       results.push(res);
     }
@@ -119,7 +126,7 @@ export class DiscoveryService {
     index: number,
     raw: ImportRow,
     ctx: {
-      userId: string; dryRun: boolean; createLeads: boolean;
+      userId: string; dryRun: boolean; createLeads: boolean; campaignId?: string;
       markets: { countryCode: string; industries: string[]; isActive: boolean }[];
       restrictionTerms: { term: string; source: any; reason?: string | null }[];
       seenDomains: Set<string>; seenNames: Set<string>;
@@ -202,6 +209,7 @@ export class DiscoveryService {
           companyId: company.id,
           primaryContactId: contactId,
           assignedUserId: ctx.userId,
+          campaignId: ctx.campaignId,
         });
         leadId = lead.id;
       }

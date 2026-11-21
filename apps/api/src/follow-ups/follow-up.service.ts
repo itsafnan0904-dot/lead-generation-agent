@@ -53,7 +53,7 @@ export class FollowUpService {
 
     const leads = await db.lead.findMany({
       where: { status: { in: ELIGIBLE_STATUSES as any }, aiControlState: 'AI_ACTIVE' },
-      include: { company: true, primaryContact: true, assignedUser: true },
+      include: { company: true, primaryContact: true, assignedUser: true, campaign: { select: { status: true } } },
       orderBy: { updatedAt: 'asc' },
       take: MAX_LEADS_PER_SCAN,
     });
@@ -115,6 +115,7 @@ export class FollowUpService {
         mode: mode as any,
         leadStatus: lead.status,
         aiControlState: lead.aiControlState,
+        campaignStatus: lead.campaign?.status ?? null,
         autonomousOptIn: (lead.metadata as any)?.autonomousConversationMode === true,
         contactEmail: lead.primaryContact?.email,
         lastOutboundAt: a?.lastOutboundAt ?? null,

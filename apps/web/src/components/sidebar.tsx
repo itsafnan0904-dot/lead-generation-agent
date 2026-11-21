@@ -64,6 +64,16 @@ export function Sidebar() {
       ),
     },
     {
+      name: 'Campaigns',
+      href: '/campaigns',
+      icon: (active) => (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={active ? '#818cf8' : '#9ca3af'} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M22 2L11 13" />
+          <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+        </svg>
+      ),
+    },
+    {
       name: 'Opportunities',
       href: '/opportunities',
       icon: (active) => (
