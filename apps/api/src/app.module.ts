@@ -19,6 +19,7 @@ import { JobsModule } from './jobs/jobs.module';
 import { AuditModule } from './audit/audit.module';
 import { HumanReviewsModule } from './human-reviews/human-reviews.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { SellerProfileModule } from './seller-profile/seller-profile.module';
 
 import { validateEnv } from './config/validate-env';
 
@@ -52,6 +53,7 @@ const envFilePaths = [
     ConversationsModule,
     OutreachModule,
     JobsModule,
+    SellerProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
