@@ -116,6 +116,9 @@ export class AIOrchestratorService {
       signature?: string;
       /** When true, write a reply to the client's latest message instead of a first outreach. */
       isReply?: boolean;
+      /** When true, write a polite nudge to a client who has not answered our last message. */
+      isFollowUp?: boolean;
+      followUpIsFinal?: boolean;
     },
     context?: OrchestratorContext,
   ): Promise<OrchestratorResponse<EmailGenerationOutputDto>> {
@@ -140,7 +143,13 @@ export class AIOrchestratorService {
     if (senderEmail) senderDetails.push(`- Sender Email: ${senderEmail}`);
 
     const prompt =
-      (input.isReply
+      (input.isFollowUp
+        ? `Write a short, polite FOLLOW-UP email to ${input.recipientName} at ${input.companyName}, because they have not replied to our last message. ` +
+          `Briefly reference the earlier message, add at most one new point of value or one easy question, and apply no pressure. ` +
+          `Do not repeat the full pitch or re-introduce yourself at length. Only discuss the services listed for the seller; ` +
+          `do not quote prices or commit to terms. ` +
+          (input.followUpIsFinal ? `This is the FINAL follow-up: graciously say you will close the loop unless they would like to continue.\n` : `\n`)
+        : input.isReply
         ? `Write a concise, helpful REPLY email to ${input.recipientName} at ${input.companyName}, answering their latest message directly. ` +
           `Do not re-introduce yourself or repeat the original pitch. Only discuss the services listed for the seller; ` +
           `do not quote prices or commit to contract terms, timelines or deliverables beyond what the seller context states. ` +
