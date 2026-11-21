@@ -266,6 +266,8 @@ export class OutreachService {
         subject: draft.subject,
         bodyText: draft.bodyText,
         bodyHtml: draft.bodyHtml || undefined,
+        // Reply drafts carry the existing Gmail thread so the reply stays in the conversation
+        threadId: draft.gmailThreadId || undefined,
       });
     } catch (err: any) {
       this.logger.error(`Failed to send email via Gmail for draft '${draftId}': ${err.message}`);

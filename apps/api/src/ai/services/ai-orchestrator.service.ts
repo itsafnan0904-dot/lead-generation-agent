@@ -114,6 +114,8 @@ export class AIOrchestratorService {
       senderEmail?: string;
       sellerContext?: string;
       signature?: string;
+      /** When true, write a reply to the client's latest message instead of a first outreach. */
+      isReply?: boolean;
     },
     context?: OrchestratorContext,
   ): Promise<OrchestratorResponse<EmailGenerationOutputDto>> {
@@ -138,7 +140,12 @@ export class AIOrchestratorService {
     if (senderEmail) senderDetails.push(`- Sender Email: ${senderEmail}`);
 
     const prompt =
-      `Write a personalized sales outreach email to ${input.recipientName} at ${input.companyName}.\n` +
+      (input.isReply
+        ? `Write a concise, helpful REPLY email to ${input.recipientName} at ${input.companyName}, answering their latest message directly. ` +
+          `Do not re-introduce yourself or repeat the original pitch. Only discuss the services listed for the seller; ` +
+          `do not quote prices or commit to contract terms, timelines or deliverables beyond what the seller context states. ` +
+          `If something cannot be answered from the context, say you will follow up personally.\n`
+        : `Write a personalized sales outreach email to ${input.recipientName} at ${input.companyName}.\n`) +
       `Tone: ${input.tone || 'professional and consultative'}\n\n` +
       `SENDER DETAILS (Use these exact details for identity and signature):\n` +
       `${senderDetails.join('\n')}\n\n` +
