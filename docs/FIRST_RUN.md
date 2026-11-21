@@ -118,7 +118,7 @@ database, and restart the API. Expect a "Follow-Up Draft Ready for Approval" not
 ## Automated checks
 
 GitHub Actions (`.github/workflows/ci.yml`) runs typecheck, the API unit tests and the web build, then applies
-all migrations to a fresh Postgres and runs `scripts/e2e-smoke.mjs` (onboarding, import, ranking, handoff brief)
+all migrations to a fresh Postgres and runs `scripts/e2e-smoke.mjs` (onboarding, import, ranking, handoff brief, deals, campaigns)
 against the built API. Run the same smoke test locally against a running API with
 `API_BASE=http://localhost:4000 npm run e2e:smoke`. It creates a throwaway user in whatever database the API uses,
 so point it at a dev or test database.
