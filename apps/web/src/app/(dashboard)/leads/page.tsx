@@ -17,11 +17,13 @@ import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import { Header } from '@/components/header';
 import { serverApiFetch } from '@/lib/server-api-client';
+import { LeadPriority, PriorityBadge, ReadinessMeter, NeedsYouBadge } from '@/components/lead-priority';
 
 interface LeadItem {
   id: string;
   status: string;
   scoreTotal: number;
+  priority?: LeadPriority;
   createdAt: string;
   company: {
     id: string;
@@ -193,6 +195,7 @@ export default async function LeadsListPage({
     const queryParams = new URLSearchParams();
     queryParams.set('page', page.toString());
     queryParams.set('limit', limit.toString());
+    queryParams.set('sort', 'priority');
     if (statusFilter) {
       queryParams.set('status', statusFilter);
     }
@@ -556,6 +559,12 @@ export default async function LeadsListPage({
                     Qualification Score
                   </TableCell>
                   <TableCell sx={{ color: '#9ca3af', fontWeight: 600, fontSize: '0.71875rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', py: 1.5 }}>
+                    Priority
+                  </TableCell>
+                  <TableCell sx={{ color: '#9ca3af', fontWeight: 600, fontSize: '0.71875rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', py: 1.5 }}>
+                    Deal Readiness
+                  </TableCell>
+                  <TableCell sx={{ color: '#9ca3af', fontWeight: 600, fontSize: '0.71875rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', py: 1.5 }}>
                     Date Ingested
                   </TableCell>
                   <TableCell align="right" sx={{ color: '#9ca3af', fontWeight: 600, fontSize: '0.71875rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', py: 1.5 }}>
@@ -566,7 +575,7 @@ export default async function LeadsListPage({
               <TableBody>
                 {items.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} sx={{ textAlign: 'center', py: 8, color: '#64748b' }}>
+                    <TableCell colSpan={8} sx={{ textAlign: 'center', py: 8, color: '#64748b' }}>
                       <Typography variant="body2" sx={{ fontSize: '0.84375rem' }}>No leads found matching the selected filter preset or criteria.</Typography>
                     </TableCell>
                   </TableRow>
@@ -651,6 +660,19 @@ export default async function LeadsListPage({
                               <span style={{ fontSize: '0.71875rem', color: '#64748b', fontWeight: 400 }}>/100</span>
                             </Typography>
                           </Box>
+                        </Link>
+                      </TableCell>
+
+                      <TableCell sx={{ py: 1.5 }}>
+                        <Link href={`/leads/${lead.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'inline-flex', gap: 8, alignItems: 'center' }}>
+                          <PriorityBadge priority={lead.priority} />
+                          <NeedsYouBadge priority={lead.priority} />
+                        </Link>
+                      </TableCell>
+
+                      <TableCell sx={{ py: 1.5 }}>
+                        <Link href={`/leads/${lead.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                          <ReadinessMeter priority={lead.priority} />
                         </Link>
                       </TableCell>
 
