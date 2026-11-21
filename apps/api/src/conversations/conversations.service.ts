@@ -1,6 +1,7 @@
 import {
   Injectable,
   Logger,
+  Optional,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -9,6 +10,8 @@ import { AIOrchestratorService } from '../ai/services/ai-orchestrator.service';
 import { RestrictionEngineService } from '../restrictions/restriction-engine.service';
 import { AuditService } from '../audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { HandoffService } from '../handoff/handoff.service';
+import { AutoReplyService } from '../auto-reply/auto-reply.service';
 import {
   LeadLifecycleStatus,
   MessageDirection,
@@ -71,6 +74,8 @@ export class ConversationsService {
     private readonly restrictionEngine: RestrictionEngineService,
     private readonly auditService: AuditService,
     private readonly notificationsService: NotificationsService,
+    @Optional() private readonly handoffService?: HandoffService,
+    @Optional() private readonly autoReplyService?: AutoReplyService,
   ) {}
 
   /**
@@ -531,6 +536,26 @@ export class ConversationsService {
           }
         } else {
           this.logger.warn(`Lead '${matchedLead.id}' is RESTRICTED (or blocked). Reply-driven progression strictly skipped.`);
+        }
+
+        // Step 6: Human handoff. If the seller's intervention rules fire, pause the AI and notify the owner.
+        // Never allowed to fail ingestion.
+        if (this.handoffService && currentLead?.status !== LeadLifecycleStatus.RESTRICTED) {
+          try {
+            await this.handoffService.handleInboundMessage(matchedLead.id, message.id);
+          } catch (handoffErr: any) {
+            this.logger.error(`Handoff evaluation failed for lead '${matchedLead.id}': ${handoffErr.message}`);
+          }
+        }
+
+        // Step 7: AI reply (draft for approval, or auto-send when every gate passes). Runs after handoff so a
+        // handed-off (paused) lead is never answered by the AI. Never allowed to fail ingestion.
+        if (this.autoReplyService) {
+          try {
+            await this.autoReplyService.handleInboundMessage(matchedLead.id, message.id, analysisData as any);
+          } catch (replyErr: any) {
+            this.logger.error(`Auto-reply handling failed for lead '${matchedLead.id}': ${replyErr.message}`);
+          }
         }
       } catch (err: any) {
         this.logger.error(`Error during AI reply analysis/restriction re-check for message ${msg.id}: ${err.message}`);

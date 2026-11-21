@@ -7,7 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AIOrchestratorService } from '../ai/services/ai-orchestrator.service';
 import { AuditService } from '../audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
-import { DeterministicRestrictionChecker, DeterministicMatchResult } from './layers/deterministic-checker.layer';
+import { DeterministicRestrictionChecker, DeterministicMatchResult, ExtraRestrictionTerm } from './layers/deterministic-checker.layer';
 import { PolicyEvaluator, EvaluatedPolicyOutcome } from './layers/policy-evaluator.layer';
 import {
   RestrictionEntityType,
@@ -52,8 +52,11 @@ export class RestrictionEngineService {
   async evaluate(options: EvaluateRestrictionOptions): Promise<RestrictionCheck> {
     const { entityType, companyId, contactId, leadId, sourceTrigger, textCorpus, notes } = options;
 
+    // Seller-defined "will not sell" rules, layered on top of the built-in locked list
+    const sellerTerms = await this.loadSellerRestrictionTerms(leadId);
+
     // Layer 1: Deterministic Check
-    const deterministicMatches = this.deterministicChecker.check(textCorpus);
+    const deterministicMatches = this.deterministicChecker.check(textCorpus, sellerTerms);
 
     // Layer 2: AI Contextual Analysis
     const promptNotes = [
@@ -63,6 +66,11 @@ export class RestrictionEngineService {
           ? `Detected potential restricted terms: [${deterministicMatches.matchedTerms.join(', ')}]`
           : 'No exact prohibited keyword matches detected.'
       }`,
+      sellerTerms.length
+        ? `SELLER-DEFINED RESTRICTIONS (the seller refuses to sell or pursue these; treat them as prohibited scope): ${sellerTerms
+            .map((t) => `${t.source}: ${t.term}${t.reason ? ` (${t.reason})` : ''}`)
+            .join('; ')}`
+        : '',
       `CRITICAL POLICY RULE: Prohibited structural steel scope (OWSJ, K/LH/DLH Series joists, steel decking, joist girders, and related deck work) is STRICTLY PROHIBITED and does NOT become acceptable merely because it is a small or minor component of a larger project.`,
       `Context Content Snapshot: ${textCorpus.substring(0, 1500)}`,
     ].join('\n');
@@ -117,6 +125,36 @@ export class RestrictionEngineService {
     }
 
     return restrictionCheck;
+  }
+
+  /**
+   * Loads active seller restriction rules. For a lead whose assigned user has a seller profile,
+   * that profile's rules apply. Otherwise (no lead, unassigned lead, or assignee without a profile)
+   * the union of all active rules applies, which is the conservative choice for compliance.
+   * Lookup failures propagate: restrictions must never be silently skipped.
+   */
+  private async loadSellerRestrictionTerms(leadId?: string): Promise<ExtraRestrictionTerm[]> {
+    let profileId: string | undefined;
+    if (leadId) {
+      const lead = await this.prisma.client.lead.findUnique({
+        where: { id: leadId },
+        select: { assignedUserId: true },
+      });
+      if (lead?.assignedUserId) {
+        const profile = await this.prisma.client.sellerProfile.findUnique({
+          where: { userId: lead.assignedUserId },
+          select: { id: true },
+        });
+        profileId = profile?.id;
+      }
+    }
+
+    const rules = await this.prisma.client.restrictionRule.findMany({
+      where: { isActive: true, ...(profileId ? { profileId } : {}) },
+      select: { type: true, value: true, reason: true },
+    });
+
+    return rules.map((r) => ({ term: r.value, source: r.type, reason: r.reason }));
   }
 
   /**

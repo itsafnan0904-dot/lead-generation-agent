@@ -57,6 +57,53 @@ describe('ScoringService & Bounds Clamping Engine', () => {
     scoringService = new ScoringService(mockPrismaService, mockAIOrchestrator);
   });
 
+  describe('Seller context', () => {
+    it('passes the seller scoring context (services and target countries) to the AI', async () => {
+      const sellerContext = { getContext: jest.fn().mockResolvedValue({ scoringContext: 'SELLER OFFERING: Web development' }) };
+      const svc = new ScoringService({ client: mockPrismaClient } as any, mockAIOrchestrator, sellerContext as any);
+      mockPrismaClient.lead.findUnique.mockResolvedValue({ ...mockLead, assignedUserId: 'u1' });
+      mockPrismaClient.lead.update.mockResolvedValue(mockLead);
+      mockAIOrchestrator.analyzeLead.mockResolvedValue({
+        data: { scoreBreakdown: { serviceMatch: 10, companyRelevance: 5, contactQuality: 5, projectPotential: 5, locationMatch: 5 }, justification: 'ok', keyStrengths: [], potentialRisks: [], requiresHumanReview: false },
+        metadata: null,
+      });
+
+      await svc.calculateLeadScore('lead-test-uuid-1');
+
+      expect(sellerContext.getContext).toHaveBeenCalledWith('u1');
+      expect(mockAIOrchestrator.analyzeLead.mock.calls[0][0].sellerContext).toBe('SELLER OFFERING: Web development');
+    });
+  });
+
+  describe('Deterministic location match', () => {
+    const run = async (country: string | null, targets: string[], aiLocation: number) => {
+      const sellerContext = { getContext: jest.fn().mockResolvedValue({ scoringContext: 'x', targetCountryCodes: targets }) };
+      const svc = new ScoringService({ client: mockPrismaClient } as any, mockAIOrchestrator, sellerContext as any);
+      mockPrismaClient.lead.findUnique.mockResolvedValue({ ...mockLead, company: { ...mockLead.company, country } });
+      mockPrismaClient.lead.update.mockImplementation(async (args: any) => args.data);
+      mockAIOrchestrator.analyzeLead.mockResolvedValue({
+        data: { scoreBreakdown: { serviceMatch: 20, companyRelevance: 10, contactQuality: 10, projectPotential: 5, locationMatch: aiLocation }, justification: 'ok', keyStrengths: [], potentialRisks: [], requiresHumanReview: false },
+        metadata: null,
+      });
+      return (await svc.calculateLeadScore('lead-test-uuid-1')) as any;
+    };
+
+    it('gives full location marks (and fixes the total) for a target country, whatever the AI said', async () => {
+      const r = await run('United States', ['US'], 0);
+      expect(r.scoreLocationMatch).toBe(10);
+      expect(r.scoreTotal).toBe(20 + 10 + 10 + 5 + 10);
+    });
+    it('gives zero outside every target country', async () => {
+      const r = await run('Germany', ['US'], 9);
+      expect(r.scoreLocationMatch).toBe(0);
+      expect(r.scoreTotal).toBe(20 + 10 + 10 + 5);
+    });
+    it('keeps the AI value when the country is unknown or no targets are configured', async () => {
+      expect((await run(null, ['US'], 6)).scoreLocationMatch).toBe(6);
+      expect((await run('United States', [], 6)).scoreLocationMatch).toBe(6);
+    });
+  });
+
   describe('Valid AI Response Scoring', () => {
     it('calculates points within bounds and correctly sums total score', async () => {
       mockPrismaClient.lead.findUnique.mockResolvedValue(mockLead);

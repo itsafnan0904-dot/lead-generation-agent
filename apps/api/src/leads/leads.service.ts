@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Optional,
   NotFoundException,
   BadRequestException,
   ConflictException,
@@ -8,6 +9,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { OutreachService } from '../outreach/outreach.service';
+import { LeadPriorityService } from './services/lead-priority.service';
 import { CreateLeadDto, UpdateLeadDto, ListLeadsQueryDto } from './dto/lead.dto';
 import {
   ApproveAutonomousEngagementDto,
@@ -20,6 +22,9 @@ import {
   OutreachDraftStatus,
 } from '@ai-sales-agent/database';
 
+/** Max leads loaded when ranking/filtering by computed priority. */
+const PRIORITY_SCAN_LIMIT = 500;
+
 @Injectable()
 export class LeadsService {
   private readonly logger = new Logger(LeadsService.name);
@@ -28,6 +33,7 @@ export class LeadsService {
     private readonly prisma: PrismaService,
     private readonly auditService: AuditService,
     private readonly outreachService: OutreachService,
+    @Optional() private readonly priorityService?: LeadPriorityService,
   ) {}
 
   /**
@@ -129,11 +135,17 @@ export class LeadsService {
       throw new NotFoundException(`Lead with ID '${id}' not found.`);
     }
 
+    if (this.priorityService) {
+      const [enriched] = await this.priorityService.enrich([lead]);
+      return enriched as unknown as Lead;
+    }
     return lead;
   }
 
   /**
    * Lists Leads with pagination and filtering.
+   * Every item carries a computed `priority` block (priority + readiness scores, human-needed flag).
+   * sort=priority and needsHuman=true rank/filter across up to PRIORITY_SCAN_LIMIT matching leads in memory.
    */
   async listLeads(query: ListLeadsQueryDto): Promise<{
     items: Lead[];
@@ -151,20 +163,50 @@ export class LeadsService {
     if (query.assignedUserId) where.assignedUserId = query.assignedUserId;
     if (query.status) where.status = query.status;
 
-    const [items, total] = await Promise.all([
+    const include = {
+      company: { select: { id: true, name: true, domain: true, industry: true } },
+      primaryContact: { select: { id: true, email: true, firstName: true, lastName: true } },
+      assignedUser: { select: { id: true, name: true, email: true } },
+    };
+
+    const needsRanking = this.priorityService && (query.sort === 'priority' || query.needsHuman);
+
+    if (needsRanking) {
+      const all = await this.prisma.client.lead.findMany({
+        where,
+        take: PRIORITY_SCAN_LIMIT,
+        orderBy: { createdAt: 'desc' },
+        include,
+      });
+      let ranked: any[] = await this.priorityService!.enrich(all);
+      if (query.needsHuman) ranked = ranked.filter((l) => l.priority.needsHuman);
+      if (query.sort === 'priority') {
+        ranked.sort(
+          (a, b) =>
+            b.priority.priorityScore - a.priority.priorityScore ||
+            b.priority.readinessScore - a.priority.readinessScore,
+        );
+      }
+      return {
+        items: ranked.slice(skip, skip + limit),
+        total: ranked.length,
+        page,
+        limit,
+        totalPages: Math.ceil(ranked.length / limit),
+      };
+    }
+
+    const [rows, total] = await Promise.all([
       this.prisma.client.lead.findMany({
         where,
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
-        include: {
-          company: { select: { id: true, name: true, domain: true, industry: true } },
-          primaryContact: { select: { id: true, email: true, firstName: true, lastName: true } },
-          assignedUser: { select: { id: true, name: true, email: true } },
-        },
+        include,
       }),
       this.prisma.client.lead.count({ where }),
     ]);
+    const items: any[] = this.priorityService ? await this.priorityService.enrich(rows) : rows;
 
     return {
       items,

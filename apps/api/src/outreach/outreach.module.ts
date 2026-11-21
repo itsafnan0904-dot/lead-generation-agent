@@ -6,6 +6,7 @@ import { GmailModule } from '../gmail/gmail.module';
 import { AIModule } from '../ai/ai.module';
 import { RestrictionsModule } from '../restrictions/restrictions.module';
 import { AuthModule } from '../auth/auth.module';
+import { SellerProfileModule } from '../seller-profile/seller-profile.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AuthModule } from '../auth/auth.module';
     AIModule,
     RestrictionsModule,
     AuthModule,
+    SellerProfileModule,
   ],
   controllers: [OutreachController],
   providers: [OutreachService],

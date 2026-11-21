@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Optional,
   Logger,
   NotFoundException,
   BadRequestException,
@@ -12,6 +13,7 @@ import { AIOrchestratorService } from '../ai/services/ai-orchestrator.service';
 import { RestrictionEngineService } from '../restrictions/restriction-engine.service';
 import { AuditService } from '../audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { SellerContextService } from '../seller-profile/seller-context.service';
 import {
   LeadLifecycleStatus,
   OutreachDraftStatus,
@@ -44,6 +46,7 @@ export class OutreachService {
     private readonly restrictionEngine: RestrictionEngineService,
     private readonly auditService: AuditService,
     private readonly notificationsService: NotificationsService,
+    @Optional() private readonly sellerContext?: SellerContextService,
   ) {}
 
   /**
@@ -103,6 +106,13 @@ export class OutreachService {
       }
     }
 
+    // Seller profile overrides generic sender defaults and adds pitch context
+    const seller = this.sellerContext ? await this.sellerContext.getContext(lead.assignedUserId) : null;
+    if (seller) {
+      senderName = seller.displayName;
+      if (seller.title) senderTitle = seller.title;
+    }
+
     const contactName = lead.primaryContact
       ? `${lead.primaryContact.firstName} ${lead.primaryContact.lastName || ''}`.trim()
       : 'Business Leader';
@@ -127,11 +137,13 @@ export class OutreachService {
         recipientName: contactName,
         companyName,
         contextNotes,
-        tone: dto.tone || 'professional and consultative',
+        tone: dto.tone || seller?.tone || 'professional and consultative',
         senderName: senderName || 'Sales Team',
         senderTitle: senderTitle || 'Account Executive',
-        senderCompany: process.env.SENDER_COMPANY_NAME || 'Enterprise Solutions',
+        senderCompany: seller?.companyName || process.env.SENDER_COMPANY_NAME || 'Enterprise Solutions',
         senderEmail: senderEmail || undefined,
+        sellerContext: seller?.pitchContext,
+        signature: seller?.signature || undefined,
       },
       { leadId: lead.id },
     );
@@ -254,6 +266,8 @@ export class OutreachService {
         subject: draft.subject,
         bodyText: draft.bodyText,
         bodyHtml: draft.bodyHtml || undefined,
+        // Reply drafts carry the existing Gmail thread so the reply stays in the conversation
+        threadId: draft.gmailThreadId || undefined,
       });
     } catch (err: any) {
       this.logger.error(`Failed to send email via Gmail for draft '${draftId}': ${err.message}`);

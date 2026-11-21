@@ -17,11 +17,15 @@ for (const envPath of envCandidates) {
 validateEnv();
 
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bodyParser: false });
+  // CSV prospect imports can exceed Express's 100kb default JSON limit
+  app.useBodyParser('json', { limit: '3mb' });
+  app.useBodyParser('urlencoded', { extended: true, limit: '3mb' });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

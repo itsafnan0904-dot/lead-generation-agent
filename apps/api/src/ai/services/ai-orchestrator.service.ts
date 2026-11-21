@@ -82,12 +82,12 @@ export class AIOrchestratorService {
    * NOTE: Prompt content is a baseline placeholder — will be refined when LeadScoringModule is implemented.
    */
   async analyzeLead(
-    input: { leadSummary: string; companyData: string; contactData?: string },
+    input: { leadSummary: string; companyData: string; contactData?: string; sellerContext?: string },
     context?: OrchestratorContext,
   ): Promise<OrchestratorResponse<LeadAnalysisOutputDto>> {
     const systemPrompt =
       'You are an expert sales qualification and lead scoring AI. Evaluate lead fit across service match, company relevance, contact quality, project potential, and location into the exact requested JSON schema.';
-    const prompt = `Evaluate the following lead data:\nSummary: ${input.leadSummary}\nCompany: ${input.companyData}\nContact: ${input.contactData || 'N/A'}`;
+    const prompt = `Evaluate the following lead data:\nSummary: ${input.leadSummary}\nCompany: ${input.companyData}\nContact: ${input.contactData || 'N/A'}${input.sellerContext ? `\n\n${input.sellerContext}` : ''}`;
 
     return this.executeCapability<LeadAnalysisOutputDto>(
       'SCORE_LEAD',
@@ -112,6 +112,13 @@ export class AIOrchestratorService {
       senderTitle?: string;
       senderCompany?: string;
       senderEmail?: string;
+      sellerContext?: string;
+      signature?: string;
+      /** When true, write a reply to the client's latest message instead of a first outreach. */
+      isReply?: boolean;
+      /** When true, write a polite nudge to a client who has not answered our last message. */
+      isFollowUp?: boolean;
+      followUpIsFinal?: boolean;
     },
     context?: OrchestratorContext,
   ): Promise<OrchestratorResponse<EmailGenerationOutputDto>> {
@@ -136,10 +143,23 @@ export class AIOrchestratorService {
     if (senderEmail) senderDetails.push(`- Sender Email: ${senderEmail}`);
 
     const prompt =
-      `Write a personalized sales outreach email to ${input.recipientName} at ${input.companyName}.\n` +
+      (input.isFollowUp
+        ? `Write a short, polite FOLLOW-UP email to ${input.recipientName} at ${input.companyName}, because they have not replied to our last message. ` +
+          `Briefly reference the earlier message, add at most one new point of value or one easy question, and apply no pressure. ` +
+          `Do not repeat the full pitch or re-introduce yourself at length. Only discuss the services listed for the seller; ` +
+          `do not quote prices or commit to terms. ` +
+          (input.followUpIsFinal ? `This is the FINAL follow-up: graciously say you will close the loop unless they would like to continue.\n` : `\n`)
+        : input.isReply
+        ? `Write a concise, helpful REPLY email to ${input.recipientName} at ${input.companyName}, answering their latest message directly. ` +
+          `Do not re-introduce yourself or repeat the original pitch. Only discuss the services listed for the seller; ` +
+          `do not quote prices or commit to contract terms, timelines or deliverables beyond what the seller context states. ` +
+          `If something cannot be answered from the context, say you will follow up personally.\n`
+        : `Write a personalized sales outreach email to ${input.recipientName} at ${input.companyName}.\n`) +
       `Tone: ${input.tone || 'professional and consultative'}\n\n` +
       `SENDER DETAILS (Use these exact details for identity and signature):\n` +
       `${senderDetails.join('\n')}\n\n` +
+      (input.sellerContext ? `ABOUT THE SELLER (use for credibility and relevance, do not invent beyond this):\n${input.sellerContext}\n\n` : '') +
+      (input.signature ? `PREFERRED SIGNATURE (use verbatim as the sign-off block):\n${input.signature}\n\n` : '') +
       `CONTEXT & PROSPECT DATA:\n` +
       `${input.contextNotes}\n\n` +
       `STRICT INSTRUCTION:\n` +

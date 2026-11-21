@@ -14,12 +14,15 @@ import { Header } from '@/components/header';
 import { serverApiFetch } from '@/lib/server-api-client';
 import { LeadActionButtons } from './lead-actions';
 import { LeadOutreachSection, OutreachDraftItem } from './lead-outreach-section';
+import { HandoffCard, HandoffBriefData } from './handoff-card';
+import { LeadPriority } from '@/components/lead-priority';
 
 interface LeadDetailData {
   id: string;
   status: string;
   aiControlState: 'AI_ACTIVE' | 'PAUSED' | 'TAKEN_OVER';
   scoreTotal: number;
+  priority?: LeadPriority;
   scoreServiceMatch: number;
   scoreCompanyRelevance: number;
   scoreContactQuality: number;
@@ -86,10 +89,11 @@ export default async function LeadDetailPage({
 }) {
   const leadId = params.id;
 
-  const [leadRes, reviewsRes, draftsRes] = await Promise.all([
+  const [leadRes, reviewsRes, draftsRes, briefRes] = await Promise.all([
     serverApiFetch<LeadDetailData>(`/leads/${leadId}`),
     serverApiFetch<HumanReviewsResponse>(`/human-reviews?leadId=${leadId}`),
     serverApiFetch<OutreachDraftsResponse>(`/outreach?leadId=${leadId}`),
+    serverApiFetch<HandoffBriefData>(`/leads/${leadId}/handoff`),
   ]);
 
   if (!leadRes.data || leadRes.status === 404) {
@@ -213,6 +217,8 @@ export default async function LeadDetailPage({
           mx: 'auto',
         }}
       >
+        <HandoffCard priority={lead.priority} brief={briefRes.data} aiControlState={lead.aiControlState} />
+
         {/* Navigation & Action Bar */}
         <Stack
           direction={{ xs: 'column', sm: 'row' }}

@@ -42,6 +42,12 @@ describe('Restriction Engine Pipeline', () => {
       auditEvent: {
         create: jest.fn().mockResolvedValue({ id: 'audit-uuid-1' }),
       },
+      sellerProfile: {
+        findUnique: jest.fn().mockResolvedValue(null),
+      },
+      restrictionRule: {
+        findMany: jest.fn().mockResolvedValue([]),
+      },
     };
 
     mockAIOrchestrator = {
@@ -91,6 +97,67 @@ describe('Restriction Engine Pipeline', () => {
 
       expect(result.hasMatch).toBe(false);
       expect(result.matchedTerms.length).toBe(0);
+    });
+  });
+
+  describe('Seller-defined restriction rules', () => {
+    it('matches seller terms (multi-word, case-insensitive) alongside the built-in list', () => {
+      const r = deterministicChecker.check('We run an online Casino Gaming platform and steel decking.', [
+        { term: 'casino gaming', source: 'INDUSTRY' },
+        { term: 'owsj', source: 'KEYWORD' }, // duplicate of built-in, must not double count
+      ]);
+      expect(r.matchedTerms).toEqual(expect.arrayContaining(['casino gaming', 'Steel decking']));
+      expect(r.matchedTerms.filter((t) => t.toLowerCase() === 'owsj')).toHaveLength(0);
+    });
+
+    it('ignores seller terms that do not appear and escapes regex characters', () => {
+      const r = deterministicChecker.check('A friendly bakery in Leeds.', [
+        { term: 'C++ (legacy)', source: 'SERVICE' },
+      ]);
+      expect(r.hasMatch).toBe(false);
+    });
+
+    it('loads the assigned user profile rules and restricts the lead when matched', async () => {
+      mockPrismaClient.lead.findUnique.mockResolvedValue({ id: 'lead-1', status: 'COLD_LEAD', metadata: null, assignedUserId: 'u1' });
+      mockPrismaClient.sellerProfile.findUnique.mockResolvedValue({ id: 'prof-1' });
+      mockPrismaClient.restrictionRule.findMany.mockResolvedValue([
+        { type: 'INDUSTRY', value: 'Gambling', reason: 'Company policy' },
+      ]);
+      mockAIOrchestrator.analyzeRestriction.mockResolvedValue({
+        data: { result: 'RESTRICTED', confidence: 0.95, reasoning: 'Gambling operator', matchedTerms: ['Gambling'] },
+      });
+
+      const check = await service.evaluate({
+        entityType: 'LEAD' as any,
+        leadId: 'lead-1',
+        sourceTrigger: 'manual',
+        textCorpus: 'Prospect operates an online gambling site.',
+      });
+
+      expect(mockPrismaClient.restrictionRule.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { isActive: true, profileId: 'prof-1' } }),
+      );
+      expect(check.result).toBe('RESTRICTED');
+      expect(mockAIOrchestrator.analyzeRestriction.mock.calls[0][0].notes).toContain('SELLER-DEFINED RESTRICTIONS');
+    });
+
+    it('falls back to all active rules when the lead has no assigned seller profile', async () => {
+      mockPrismaClient.lead.findUnique.mockResolvedValue({ id: 'lead-2', status: 'COLD_LEAD', metadata: null, assignedUserId: null });
+      mockAIOrchestrator.analyzeRestriction.mockResolvedValue({
+        data: { result: 'CLEAR', confidence: 0.9, reasoning: 'ok', matchedTerms: [] },
+      });
+      await service.evaluate({ entityType: 'LEAD' as any, leadId: 'lead-2', sourceTrigger: 'manual', textCorpus: 'Bakery.' });
+      expect(mockPrismaClient.restrictionRule.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { isActive: true } }),
+      );
+    });
+
+    it('propagates rule-lookup failures instead of skipping restrictions', async () => {
+      mockPrismaClient.restrictionRule.findMany.mockRejectedValue(new Error('db down'));
+      await expect(
+        service.evaluate({ entityType: 'COMPANY' as any, companyId: 'c1', sourceTrigger: 'manual', textCorpus: 'x' }),
+      ).rejects.toThrow('db down');
+      expect(mockPrismaClient.restrictionCheck.create).not.toHaveBeenCalled();
     });
   });
 
