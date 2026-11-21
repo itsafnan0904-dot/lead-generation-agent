@@ -113,4 +113,12 @@ database, and restart the API. Expect a "Follow-Up Draft Ready for Approval" not
 - Resume upload accepts text files only (no PDF/Word parsing).
 - No built-in lead source; prospects come from CSV import.
 - Campaigns and Opportunities screens are placeholders.
-- No CI pipeline yet; run `npm run typecheck` and `npm test` before merging.
+- Gmail connection, inbox sync and real sending have not been exercised end to end.
+
+## Automated checks
+
+GitHub Actions (`.github/workflows/ci.yml`) runs typecheck, the API unit tests and the web build, then applies
+all migrations to a fresh Postgres and runs `scripts/e2e-smoke.mjs` (onboarding, import, ranking, handoff brief)
+against the built API. Run the same smoke test locally against a running API with
+`API_BASE=http://localhost:4000 npm run e2e:smoke`. It creates a throwaway user in whatever database the API uses,
+so point it at a dev or test database.
