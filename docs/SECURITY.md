@@ -84,3 +84,7 @@ An admin cannot deactivate or demote themselves, and the last active admin canno
 - [ ] HTTPS in front of both apps, `TRUST_PROXY` set to match, API not publicly reachable except through the web app
 - [ ] Turn `OUTREACH_SAFE_TEST_MODE` off only after a supervised Gmail test
 - [ ] Regular backups of the database and of `GMAIL_TOKEN_ENCRYPTION_KEY`
+- [ ] The GitHub repository is **public**: the old default test password (`Password123!`) and a few personal email
+      addresses (in unit tests and `scratch/`) remain in git history. Change any account that ever used that password,
+      and either make the repository private or accept that history is world-readable. Rewriting history is possible
+      but disruptive and does not undo copies already made.
