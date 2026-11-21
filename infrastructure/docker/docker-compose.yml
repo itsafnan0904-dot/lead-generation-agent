@@ -7,10 +7,12 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      # No default password: compose refuses to start until POSTGRES_PASSWORD is set in your .env
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD to a strong, unique value}
       POSTGRES_DB: ${POSTGRES_DB:-ai_sales_agent}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      # Bound to this machine only, so the database is never reachable from the network
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -23,8 +25,10 @@ services:
     image: redis:7-alpine
     container_name: ai_sales_agent_redis
     restart: unless-stopped
+    # Loopback only. Redis has no password here, so it must never be published on a network interface.
+    command: ["redis-server", "--appendonly", "yes", "--protected-mode", "yes"]
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
     healthcheck:

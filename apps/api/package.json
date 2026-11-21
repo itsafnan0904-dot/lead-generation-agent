@@ -7,7 +7,8 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "test": "jest",
+    "create-admin": "node dist/apps/api/src/create-admin.js"
   },
   "dependencies": {
     "@ai-sales-agent/database": "*",
@@ -17,6 +18,7 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.4.15",
+    "@nestjs/throttler": "^6.8.0",
     "@types/passport-google-oauth20": "^2.0.17",
     "bcrypt": "^6.0.0",
     "bullmq": "^6.3.4",
@@ -24,6 +26,7 @@
     "class-validator": "^0.14.4",
     "dotenv": "^17.4.2",
     "googleapis": "^176.0.0",
+    "helmet": "^8.3.0",
     "ioredis": "^6.0.0",
     "openai": "^7.8.0",
     "passport": "^0.7.0",

@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import * as path from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -24,6 +26,7 @@ import { HandoffModule } from './handoff/handoff.module';
 import { DiscoveryModule } from './discovery/discovery.module';
 import { ProjectsModule } from './projects/projects.module';
 import { CampaignsModule } from './campaigns/campaigns.module';
+import { UsersModule } from './users/users.module';
 
 import { validateEnv } from './config/validate-env';
 
@@ -36,6 +39,10 @@ const envFilePaths = [
 
 @Module({
   imports: [
+    // Per-IP request cap for every route (auth routes add stricter limits). Behind a proxy, set TRUST_PROXY.
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl: 60_000, limit: parseInt(process.env.RATE_LIMIT_PER_MINUTE || '300', 10) }],
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: envFilePaths,
@@ -62,9 +69,10 @@ const envFilePaths = [
     DiscoveryModule,
     ProjectsModule,
     CampaignsModule,
+    UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}
 

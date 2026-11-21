@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
+import { clientIpHeader } from '@/lib/server-api-client';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export async function POST() {
@@ -16,7 +18,7 @@ export async function POST() {
   try {
     const backendRes = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...clientIpHeader() },
       body: JSON.stringify({ refreshToken }),
       cache: 'no-store',
     });
@@ -49,11 +51,11 @@ export async function POST() {
     });
 
     return NextResponse.json({ success: true });
-  } catch (err: any) {
+  } catch {
     cookieStore.delete('auth_access_token');
     cookieStore.delete('auth_refresh_token');
     return NextResponse.json(
-      { error: err.message || 'Token refresh network error' },
+      { error: 'Token refresh network error' },
       { status: 500 },
     );
   }

@@ -4,7 +4,8 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  const hash = await bcrypt.hash('Password123!', 12);
+  if (!process.env.TEST_ADMIN_PASSWORD) throw new Error('Set TEST_ADMIN_PASSWORD (a throwaway password for this local test account).');
+  const hash = await bcrypt.hash(process.env.TEST_ADMIN_PASSWORD, 12);
   const user = await prisma.user.upsert({
     where: { email: 'rep@enterprise.com' },
     update: { passwordHash: hash, isActive: true, role: 'SALES_REP' },

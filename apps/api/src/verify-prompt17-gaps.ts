@@ -22,7 +22,7 @@ async function main() {
     method: 'POST',
     body: {
       email: 'admin@enterprise.com',
-      password: 'Password123!'
+      password: process.env.TEST_ADMIN_PASSWORD
     }
   });
   console.log('Admin login status:', adminLogin.status, 'token exists:', !!adminLogin.data?.tokens?.accessToken || !!adminLogin.data?.accessToken);
@@ -33,7 +33,7 @@ async function main() {
     method: 'POST',
     body: {
       email: 'rep@enterprise.com',
-      password: 'Password123!'
+      password: process.env.TEST_ADMIN_PASSWORD
     }
   });
   console.log('Rep login status:', repLogin.status, 'token exists:', !!repLogin.data?.tokens?.accessToken || !!repLogin.data?.accessToken);

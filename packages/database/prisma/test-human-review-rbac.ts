@@ -13,13 +13,13 @@ async function main() {
   const adminLogin = await fetch('http://localhost:4000/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'admin@enterprise.com', password: 'Password123!' }),
+    body: JSON.stringify({ email: 'admin@enterprise.com', password: process.env.TEST_ADMIN_PASSWORD }),
   }).then((r) => r.json());
 
   const repLogin = await fetch('http://localhost:4000/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'rep@enterprise.com', password: 'Password123!' }),
+    body: JSON.stringify({ email: 'rep@enterprise.com', password: process.env.TEST_ADMIN_PASSWORD }),
   }).then((r) => r.json());
 
   const adminToken = adminLogin.tokens.accessToken;

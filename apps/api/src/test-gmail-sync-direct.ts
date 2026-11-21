@@ -33,7 +33,7 @@ async function main() {
     method: 'POST',
     body: {
       email: 'admin@enterprise.com',
-      password: 'Password123!'
+      password: process.env.TEST_ADMIN_PASSWORD
     }
   });
   const adminToken = adminLogin.data?.accessToken || adminLogin.data?.tokens?.accessToken;

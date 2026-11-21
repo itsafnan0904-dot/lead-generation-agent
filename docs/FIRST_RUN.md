@@ -55,10 +55,16 @@ npm run dev:web
 - API: `http://localhost:4000/health` returns `status: ok` with database and redis `up`.
 - Web: `http://localhost:3000`.
 
-Create the first user. Either call `POST /auth/register`, or run the seed script
-`apps/api/src/seed-admin.ts` (needs `ts-node`, which is not a project dependency, so it is **untested**:
-`npx ts-node apps/api/src/seed-admin.ts`). The seed creates `admin@enterprise.com` with a hard-coded default
-password in the source file. If you use it, change that password straight away and never use it outside local dev.
+Create the first administrator. Public sign-up is closed by default, and there is no default account:
+
+```powershell
+npm run build --workspace=apps/api
+$env:ADMIN_EMAIL = "you@company.com"; $env:ADMIN_PASSWORD = "a long unique passphrase"
+npm run create-admin --workspace=apps/api
+```
+
+Add teammates afterwards with `POST /users` (administrators only). Only set `ALLOW_PUBLIC_REGISTRATION=true` on a private
+test setup. See `docs/SECURITY.md`.
 
 ## 6. Onboarding (first thing a user sees)
 

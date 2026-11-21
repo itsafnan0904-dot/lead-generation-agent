@@ -147,7 +147,7 @@ async function runVerification() {
   console.log(`  connectedAt Timestamp: ${beforeConnectedAt}`);
 
   // Authenticate as ADMIN
-  const adminAuth = await loginViaWeb('admin@enterprise.com', 'Password123!');
+  const adminAuth = await loginViaWeb('admin@enterprise.com', process.env.TEST_ADMIN_PASSWORD);
   console.log(`\n[ADMIN AUTHENTICATION]: Logged in as ${adminAuth.user.email} (Role: ${adminAuth.user.role})`);
 
   // Query GET /api/gmail/status
@@ -181,7 +181,7 @@ async function runVerification() {
 
   // TRACE 4: Non-ADMIN Restricted View
   console.log('--- [TRACE 4]: Non-ADMIN Restricted View (Role: SALES_REP) ---');
-  const repAuth = await loginViaWeb('rep@enterprise.com', 'Password123!');
+  const repAuth = await loginViaWeb('rep@enterprise.com', process.env.TEST_ADMIN_PASSWORD);
   console.log(`[SALES_REP AUTHENTICATION]: Logged in as ${repAuth.user.email} (Role: ${repAuth.user.role})`);
 
   if (repAuth.user.role === 'ADMIN') {

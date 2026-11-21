@@ -1,20 +1,24 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { clientIpHeader } from '@/lib/server-api-client';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, password } = body;
+    const { email, password } = body ?? {};
 
-    if (!email || !password) {
+    if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
+    }
+    if (email.length > 254 || password.length > 200) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 400 });
     }
 
     const backendRes = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...clientIpHeader() },
       body: JSON.stringify({ email, password }),
       cache: 'no-store',
     });
@@ -48,10 +52,8 @@ export async function POST(request: Request) {
 
     // Return only the non-sensitive user object to the client
     return NextResponse.json({ user: data.user });
-  } catch (err: any) {
-    return NextResponse.json(
-      { error: err.message || 'Failed to connect to authentication server' },
-      { status: 500 },
-    );
+  } catch {
+    // Never echo internal error text (it can contain hostnames or stack details) to the browser
+    return NextResponse.json({ error: 'Unable to sign in right now. Please try again.' }, { status: 500 });
   }
 }

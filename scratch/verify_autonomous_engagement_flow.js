@@ -29,7 +29,7 @@ async function runLiveVerification() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       email: 'admin@enterprise.com',
-      password: 'Password123!',
+      password: process.env.TEST_ADMIN_PASSWORD,
     }),
   });
 
@@ -327,7 +327,7 @@ async function runLiveVerification() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       email: 'rep@enterprise.com',
-      password: 'Password123!',
+      password: process.env.TEST_ADMIN_PASSWORD,
     }),
   });
   if (repLoginRes.ok) {

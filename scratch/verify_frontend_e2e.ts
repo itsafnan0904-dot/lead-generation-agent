@@ -3,7 +3,7 @@ import * as http from 'http';
 async function postLogin(): Promise<string> {
   const payload = JSON.stringify({
     email: 'admin@enterprise.com',
-    password: 'Password123!',
+    password: process.env.TEST_ADMIN_PASSWORD,
   });
 
   return new Promise((resolve, reject) => {

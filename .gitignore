@@ -12,3 +12,24 @@ pnpm-debug.log*
 .DS_Store
 
 *.tsbuildinfo
+
+# Secrets and key material: never commit these
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+id_rsa*
+service-account*.json
+credentials*.json
+gmail-run-creds.json
+
+# Logs, coverage and local data
+*.log
+coverage/
+*.sqlite
+*.sqlite3
+*.dump
+*.sql.gz

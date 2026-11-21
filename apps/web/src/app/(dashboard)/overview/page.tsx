@@ -20,7 +20,8 @@ export default async function OverviewPage() {
 
   // Fetch real data simultaneously from verified backend endpoints
   const [healthRes, leadsRes, notifsRes, needsYouRes, topLeadsRes] = await Promise.all([
-    serverApiFetch<HealthData>('/health', { skipAuth: true }),
+    // Dependency details need a login; the public /health probe only reports an overall status
+    serverApiFetch<HealthData>('/health/details'),
     serverApiFetch<LeadsData>('/leads?limit=100'),
     serverApiFetch<NotificationsData>('/notifications?isRead=false&limit=5'),
     serverApiFetch<{ items: BoardLead[] }>('/leads?needsHuman=true&sort=priority&limit=5'),
