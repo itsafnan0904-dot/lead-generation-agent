@@ -86,6 +86,9 @@ jobs:
         run: npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel packages/database/prisma/schema.prisma --exit-code
 
       - name: Build API
+        env:
+          # The API compile (decorators, specs, path alias) exceeds Node's default ~2GB heap on the runner
+          NODE_OPTIONS: --max-old-space-size=4096
         run: npm run build --workspace=apps/api
 
       - name: Start API (no OpenAI or Gmail credentials)
