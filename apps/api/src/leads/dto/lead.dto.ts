@@ -6,10 +6,12 @@ import {
   IsEnum,
   IsObject,
   IsInt,
+  IsIn,
+  IsBoolean,
   Min,
   Max,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { LeadLifecycleStatus } from '@ai-sales-agent/database';
 
 export class CreateLeadDto {
@@ -81,4 +83,15 @@ export class ListLeadsQueryDto {
   @IsOptional()
   @IsEnum(LeadLifecycleStatus)
   status?: LeadLifecycleStatus;
+
+  /** 'priority' ranks by priority score (highest first); default is newest first. */
+  @IsOptional()
+  @IsIn(['priority', 'newest'])
+  sort?: 'priority' | 'newest';
+
+  /** When true, only leads that need a human are returned. */
+  @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
+  @IsBoolean()
+  needsHuman?: boolean;
 }
