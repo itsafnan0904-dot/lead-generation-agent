@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Optional,
   NotFoundException,
   Logger,
 } from '@nestjs/common';
@@ -7,6 +8,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AIOrchestratorService } from '../../ai/services/ai-orchestrator.service';
 import { validateAndClampScoreFactors, ScoreBreakdownReason } from '../utils/scoring-validator.util';
 import { Lead } from '@ai-sales-agent/database';
+import { SellerContextService } from '../../seller-profile/seller-context.service';
 
 
 @Injectable()
@@ -16,6 +18,7 @@ export class ScoringService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly aiOrchestrator: AIOrchestratorService,
+    @Optional() private readonly sellerContext?: SellerContextService,
   ) {}
 
   /**
@@ -53,6 +56,9 @@ export class ScoringService {
       ? `Name: ${contact.firstName} ${contact.lastName || ''}\nTitle: ${contact.title || 'N/A'}\nEmail: ${contact.email}\nPhone: ${contact.phone || 'N/A'}`
       : 'No primary contact assigned';
 
+    // Seller profile (services + target countries) so scoring reflects what is actually being sold and where
+    const seller = this.sellerContext ? await this.sellerContext.getContext(lead.assignedUserId) : null;
+
     // 1. Call AIOrchestratorService.analyzeLead()
     let aiResponse: any;
     try {
@@ -61,6 +67,7 @@ export class ScoringService {
           leadSummary,
           companyData,
           contactData,
+          sellerContext: seller?.scoringContext,
         },
         { leadId: lead.id },
       );

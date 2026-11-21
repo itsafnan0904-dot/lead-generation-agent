@@ -15,9 +15,9 @@ export class QualificationsService {
 
   /**
    * Creates a Qualification record scoped to a Lead.
-   * NOTE on restriction handling: The real restriction policy engine (Prompt 10)
-   * does not exist yet. Restriction status remains in an explicit placeholder state
-   * within dealBlockers/answers ('PENDING_RESTRICTION_ENGINE').
+   * NOTE on restriction handling: `restrictionEvaluationStatus` reports the lead's most recent
+   * RestrictionCheck result (CLEAR / RESTRICTED / HUMAN_REVIEW), or NOT_EVALUATED when none exists.
+   * Saving a qualification does not itself run a restriction check.
    */
   async createQualification(leadId: string, dto: CreateQualificationDto): Promise<Qualification & { restrictionEvaluationStatus: string }> {
     const lead = await this.prisma.client.lead.findUnique({
@@ -45,7 +45,7 @@ export class QualificationsService {
 
     return {
       ...qualification,
-      restrictionEvaluationStatus: 'PENDING_RESTRICTION_ENGINE (Prompt 10)',
+      restrictionEvaluationStatus: await this.getRestrictionStatus(leadId),
     };
   }
 
@@ -66,10 +66,8 @@ export class QualificationsService {
       orderBy: { createdAt: 'desc' },
     });
 
-    return qualifications.map((q) => ({
-      ...q,
-      restrictionEvaluationStatus: 'PENDING_RESTRICTION_ENGINE (Prompt 10)',
-    }));
+    const restrictionEvaluationStatus = await this.getRestrictionStatus(leadId);
+    return qualifications.map((q) => ({ ...q, restrictionEvaluationStatus }));
   }
 
   /**
@@ -91,7 +89,7 @@ export class QualificationsService {
 
     return {
       ...qualification,
-      restrictionEvaluationStatus: 'PENDING_RESTRICTION_ENGINE (Prompt 10)',
+      restrictionEvaluationStatus: await this.getRestrictionStatus(qualification.leadId),
     };
   }
 
@@ -118,7 +116,17 @@ export class QualificationsService {
 
     return {
       ...updated,
-      restrictionEvaluationStatus: 'PENDING_RESTRICTION_ENGINE (Prompt 10)',
+      restrictionEvaluationStatus: await this.getRestrictionStatus(updated.leadId),
     };
+  }
+
+  /** Latest restriction check result for the lead, or NOT_EVALUATED if none has run. */
+  private async getRestrictionStatus(leadId: string): Promise<string> {
+    const latest = await this.prisma.client.restrictionCheck.findFirst({
+      where: { leadId },
+      orderBy: { createdAt: 'desc' },
+      select: { result: true },
+    });
+    return latest?.result ?? 'NOT_EVALUATED';
   }
 }

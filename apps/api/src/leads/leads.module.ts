@@ -1,3 +1,4 @@
+import { SellerProfileModule } from '../seller-profile/seller-profile.module';
 import { Module } from '@nestjs/common';
 import { LeadsController } from './leads.controller';
 import { LeadsService } from './leads.service';
@@ -8,7 +9,7 @@ import { AIModule } from '../ai/ai.module';
 import { OutreachModule } from '../outreach/outreach.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, AIModule, OutreachModule],
+  imports: [PrismaModule, AuthModule, AIModule, OutreachModule, SellerProfileModule],
   controllers: [LeadsController],
   providers: [LeadsService, ScoringService],
   exports: [LeadsService, ScoringService],

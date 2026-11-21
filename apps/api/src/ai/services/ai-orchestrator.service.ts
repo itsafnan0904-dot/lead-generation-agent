@@ -82,12 +82,12 @@ export class AIOrchestratorService {
    * NOTE: Prompt content is a baseline placeholder — will be refined when LeadScoringModule is implemented.
    */
   async analyzeLead(
-    input: { leadSummary: string; companyData: string; contactData?: string },
+    input: { leadSummary: string; companyData: string; contactData?: string; sellerContext?: string },
     context?: OrchestratorContext,
   ): Promise<OrchestratorResponse<LeadAnalysisOutputDto>> {
     const systemPrompt =
       'You are an expert sales qualification and lead scoring AI. Evaluate lead fit across service match, company relevance, contact quality, project potential, and location into the exact requested JSON schema.';
-    const prompt = `Evaluate the following lead data:\nSummary: ${input.leadSummary}\nCompany: ${input.companyData}\nContact: ${input.contactData || 'N/A'}`;
+    const prompt = `Evaluate the following lead data:\nSummary: ${input.leadSummary}\nCompany: ${input.companyData}\nContact: ${input.contactData || 'N/A'}${input.sellerContext ? `\n\n${input.sellerContext}` : ''}`;
 
     return this.executeCapability<LeadAnalysisOutputDto>(
       'SCORE_LEAD',
@@ -112,6 +112,8 @@ export class AIOrchestratorService {
       senderTitle?: string;
       senderCompany?: string;
       senderEmail?: string;
+      sellerContext?: string;
+      signature?: string;
     },
     context?: OrchestratorContext,
   ): Promise<OrchestratorResponse<EmailGenerationOutputDto>> {
@@ -140,6 +142,8 @@ export class AIOrchestratorService {
       `Tone: ${input.tone || 'professional and consultative'}\n\n` +
       `SENDER DETAILS (Use these exact details for identity and signature):\n` +
       `${senderDetails.join('\n')}\n\n` +
+      (input.sellerContext ? `ABOUT THE SELLER (use for credibility and relevance, do not invent beyond this):\n${input.sellerContext}\n\n` : '') +
+      (input.signature ? `PREFERRED SIGNATURE (use verbatim as the sign-off block):\n${input.signature}\n\n` : '') +
       `CONTEXT & PROSPECT DATA:\n` +
       `${input.contextNotes}\n\n` +
       `STRICT INSTRUCTION:\n` +

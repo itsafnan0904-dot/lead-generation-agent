@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { QualificationsService } from './qualifications.service';
 
-describe('QualificationsService & Placeholder Restriction State', () => {
+describe('QualificationsService & Restriction Status', () => {
   let service: QualificationsService;
   let mockPrismaClient: any;
 
@@ -31,6 +31,9 @@ describe('QualificationsService & Placeholder Restriction State', () => {
       lead: {
         findUnique: jest.fn(),
       },
+      restrictionCheck: {
+        findFirst: jest.fn().mockResolvedValue(null),
+      },
       qualification: {
         create: jest.fn(),
         findMany: jest.fn(),
@@ -44,8 +47,8 @@ describe('QualificationsService & Placeholder Restriction State', () => {
     service = new QualificationsService(mockPrismaService);
   });
 
-  describe('Qualification CRUD & Restriction Placeholder', () => {
-    it('creates a Qualification record scoped to a Lead with explicit PENDING restriction status', async () => {
+  describe('Qualification CRUD & Restriction Status', () => {
+    it('creates a Qualification record scoped to a Lead with NOT_EVALUATED restriction status when no check exists', async () => {
       mockPrismaClient.lead.findUnique.mockResolvedValue(mockLead);
       mockPrismaClient.qualification.create.mockResolvedValue(mockQualification);
 
@@ -61,7 +64,7 @@ describe('QualificationsService & Placeholder Restriction State', () => {
       expect(result.id).toBe('qual-uuid-101');
       expect(result.leadId).toBe('lead-uuid-1');
       expect(result.budgetFit).toBe(true);
-      expect(result.restrictionEvaluationStatus).toBe('PENDING_RESTRICTION_ENGINE (Prompt 10)');
+      expect(result.restrictionEvaluationStatus).toBe('NOT_EVALUATED');
       expect(mockPrismaClient.qualification.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           leadId: 'lead-uuid-1',
@@ -79,18 +82,22 @@ describe('QualificationsService & Placeholder Restriction State', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('lists multiple qualification passes for a lead with restriction placeholders intact', async () => {
+    it('lists multiple qualification passes for a lead reporting the latest restriction result', async () => {
       mockPrismaClient.lead.findUnique.mockResolvedValue(mockLead);
       mockPrismaClient.qualification.findMany.mockResolvedValue([
         mockQualification,
         { ...mockQualification, id: 'qual-uuid-102', timelineFit: true },
       ]);
 
+      mockPrismaClient.restrictionCheck.findFirst.mockResolvedValue({ result: 'HUMAN_REVIEW' });
       const results = await service.getQualificationsByLead('lead-uuid-1');
 
       expect(results.length).toBe(2);
-      expect(results[0].restrictionEvaluationStatus).toBe('PENDING_RESTRICTION_ENGINE (Prompt 10)');
-      expect(results[1].restrictionEvaluationStatus).toBe('PENDING_RESTRICTION_ENGINE (Prompt 10)');
+      expect(results[0].restrictionEvaluationStatus).toBe('HUMAN_REVIEW');
+      expect(results[1].restrictionEvaluationStatus).toBe('HUMAN_REVIEW');
+      expect(mockPrismaClient.restrictionCheck.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { leadId: 'lead-uuid-1' } }),
+      );
     });
   });
 });

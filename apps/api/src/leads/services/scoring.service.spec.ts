@@ -57,6 +57,24 @@ describe('ScoringService & Bounds Clamping Engine', () => {
     scoringService = new ScoringService(mockPrismaService, mockAIOrchestrator);
   });
 
+  describe('Seller context', () => {
+    it('passes the seller scoring context (services and target countries) to the AI', async () => {
+      const sellerContext = { getContext: jest.fn().mockResolvedValue({ scoringContext: 'SELLER OFFERING: Web development' }) };
+      const svc = new ScoringService({ client: mockPrismaClient } as any, mockAIOrchestrator, sellerContext as any);
+      mockPrismaClient.lead.findUnique.mockResolvedValue({ ...mockLead, assignedUserId: 'u1' });
+      mockPrismaClient.lead.update.mockResolvedValue(mockLead);
+      mockAIOrchestrator.analyzeLead.mockResolvedValue({
+        data: { scoreBreakdown: { serviceMatch: 10, companyRelevance: 5, contactQuality: 5, projectPotential: 5, locationMatch: 5 }, justification: 'ok', keyStrengths: [], potentialRisks: [], requiresHumanReview: false },
+        metadata: null,
+      });
+
+      await svc.calculateLeadScore('lead-test-uuid-1');
+
+      expect(sellerContext.getContext).toHaveBeenCalledWith('u1');
+      expect(mockAIOrchestrator.analyzeLead.mock.calls[0][0].sellerContext).toBe('SELLER OFFERING: Web development');
+    });
+  });
+
   describe('Valid AI Response Scoring', () => {
     it('calculates points within bounds and correctly sums total score', async () => {
       mockPrismaClient.lead.findUnique.mockResolvedValue(mockLead);
