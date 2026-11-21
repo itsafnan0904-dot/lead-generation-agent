@@ -18,23 +18,32 @@ validateEnv();
 
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, LogLevel } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { applyHttpSecurity } from './security/http-security';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bodyParser: false });
-  // CSV prospect imports can exceed Express's 100kb default JSON limit
-  app.useBodyParser('json', { limit: '3mb' });
-  app.useBodyParser('urlencoded', { extended: true, limit: '3mb' });
+  const isProduction = process.env.NODE_ENV === 'production';
+  // Production logs no debug/verbose output (those can include request details); development keeps everything.
+  const logger: LogLevel[] = isProduction ? ['log', 'warn', 'error'] : ['log', 'warn', 'error', 'debug', 'verbose'];
+
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bodyParser: false, logger });
+  applyHttpSecurity(app);
+  app.enableShutdownHooks();
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       transform: true,
       forbidNonWhitelisted: true,
+      forbidUnknownValues: true,
+      // Generic 400s in production would hide which field failed; keep messages but never echo the offending values
+      disableErrorMessages: false,
+      validationError: { target: false, value: false },
     }),
   );
+
   const port = process.env.PORT || 4000;
   await app.listen(port);
 }
 bootstrap();
-

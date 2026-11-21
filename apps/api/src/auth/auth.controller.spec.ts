@@ -118,7 +118,7 @@ describe('AuthController & Guards (e2e/controller tests)', () => {
       .send({
         email: 'sarah@example.com',
         name: 'Sarah Jenkins',
-        password: 'Password123!',
+        password: 'Unit-Test-Pass-9!',
       })
       .expect(201);
 
@@ -136,7 +136,7 @@ describe('AuthController & Guards (e2e/controller tests)', () => {
       .post('/auth/login')
       .send({
         email: 'sarah@example.com',
-        password: 'Password123!',
+        password: 'Unit-Test-Pass-9!',
       })
       .expect(200);
 
@@ -198,7 +198,7 @@ describe('AuthController & Guards (e2e/controller tests)', () => {
       .post('/auth/google/confirm-link')
       .send({
         linkToken: 'valid.link.token.xyz',
-        password: 'Password123!',
+        password: 'Unit-Test-Pass-9!',
       })
       .expect(200);
 

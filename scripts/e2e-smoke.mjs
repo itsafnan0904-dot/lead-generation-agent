@@ -6,6 +6,10 @@
  *
  * Registers a unique throwaway user, completes seller onboarding, imports prospects (preview and real),
  * and checks ranking, priority data, the handoff brief, deals and the opportunities board, and campaigns.
+ * Also checks the security posture: auth required, role rules, closed sign-up, headers, CORS, body limits, lockout.
+ * Env: API_BASE; SMOKE_EMAIL + SMOKE_PASSWORD (an existing ADMIN, enables the role checks; otherwise a throwaway
+ * user is registered, which needs ALLOW_PUBLIC_REGISTRATION=true on the API); SMOKE_TEST_LOCKOUT=1 also exercises the
+ * login lockout (it uses part of the per-IP failure budget, so run it once, e.g. in CI).
  * Safe to re-run against a non-empty database (names are unique per run). Exits non-zero if any check fails.
  */
 const BASE = (process.env.API_BASE || 'http://localhost:4000').replace(/\/$/, '');
@@ -49,15 +53,74 @@ if (!(await waitForHealth())) {
 }
 
 const tag = Date.now(); // unique per run so the script can be re-run against a non-empty database
-const email = `smoke+${tag}@example.com`;
-const password = 'SmokeTest#2026';
+const adminMode = !!(process.env.SMOKE_EMAIL && process.env.SMOKE_PASSWORD);
+const email = adminMode ? process.env.SMOKE_EMAIL : `smoke+${tag}@example.com`;
+const password = adminMode ? process.env.SMOKE_PASSWORD : `Smoke-${tag}-Aa1!`;
 let r;
 
-r = await call('POST', '/auth/register', { email, name: 'Smoke Test', password });
-check('register', r.status === 201, `status ${r.status}`);
+if (!adminMode) {
+  r = await call('POST', '/auth/register', { email, name: 'Smoke Test', password });
+  check('register (needs ALLOW_PUBLIC_REGISTRATION=true)', r.status === 201, `status ${r.status}`);
+}
 r = await call('POST', '/auth/login', { email, password });
 token = r.json?.tokens?.accessToken;
 check('login returns an access token', !!token, `status ${r.status}`);
+
+// ------------------------------------------------------------------ security posture
+const unauth = async (method, path) => (await fetch(BASE + path, { method, headers: { 'Content-Type': 'application/json' } })).status;
+for (const path of ['/leads', '/companies', '/conversations', '/users', '/audit-events', '/gmail/status', '/health/details', '/campaigns', '/opportunities', '/notifications']) {
+  check(`unauthenticated GET ${path} is refused (401)`, (await unauth('GET', path)) === 401);
+}
+r = await fetch(`${BASE}/health`);
+const health = await r.json();
+check('public /health reveals only an overall status', r.status === 200 && Object.keys(health).sort().join() === 'status,timestamp', Object.keys(health).join());
+const root = await fetch(`${BASE}/`);
+check('security headers present, no X-Powered-By', root.headers.get('x-content-type-options') === 'nosniff' && !!root.headers.get('content-security-policy') && !root.headers.get('x-powered-by'), [...root.headers.keys()].join());
+const cors = await fetch(`${BASE}/leads`, { method: 'OPTIONS', headers: { Origin: 'https://evil.example', 'Access-Control-Request-Method': 'GET' } });
+check('CORS denies a foreign origin', !cors.headers.get('access-control-allow-origin'), String(cors.headers.get('access-control-allow-origin')));
+const big = await fetch(`${BASE}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'a@b.co', password: 'x'.repeat(300_000) }) });
+check('oversized request body is rejected (413)', big.status === 413, `status ${big.status}`);
+r = await fetch(`${BASE}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: `nobody-${tag}@example.com`, password: 'Wrong-Password-1' }) });
+const loginErr = await r.text();
+check('login failure is generic and leaks no internals', r.status === 401 && /Invalid email or password/.test(loginErr) && !/stack|prisma|\.ts:|\.js:/i.test(loginErr), loginErr.slice(0, 120));
+
+if (adminMode) {
+  r = await call('POST', '/auth/register', { email: `x-${tag}@example.com`, name: 'X', password: 'Whatever-Pass-1!' });
+  check('public registration is closed by default', r.status === 403, `status ${r.status}`);
+
+  const mk = async (role) => {
+    const e = `${role.toLowerCase()}-${tag}@example.com`;
+    const pw = `Role-${tag}-Aa1!`;
+    const created = await call('POST', '/users', { email: e, name: role, password: pw, role });
+    const login = await fetch(`${BASE}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: e, password: pw }) });
+    return { created, token: (await login.json()).tokens?.accessToken, id: created.json?.id };
+  };
+  r = await call('POST', '/users', { email: `weak-${tag}@example.com`, name: 'Weak', password: 'short1A', role: 'VIEWER' });
+  check('admin cannot create a user with a weak password (400)', r.status === 400, `status ${r.status}`);
+  const rep = await mk('SALES_REP');
+  const viewer = await mk('VIEWER');
+  check('admin creates users without exposing password hashes', rep.created.status === 201 && !/hash/i.test(JSON.stringify(rep.created.json)), `status ${rep.created.status}`);
+  const as = async (t, m, path, body) => (await fetch(BASE + path, { method: m, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${t}` }, body: body ? JSON.stringify(body) : undefined })).status;
+  check('sales rep cannot list users (403)', (await as(rep.token, 'GET', '/users')) === 403);
+  check('sales rep cannot read the audit log (403)', (await as(rep.token, 'GET', '/audit-events')) === 403);
+  check('sales rep cannot start a Gmail connection (403)', (await as(rep.token, 'GET', '/gmail/connect')) === 403);
+  check('sales rep cannot create users (403)', (await as(rep.token, 'POST', '/users', { email: `y-${tag}@example.com`, name: 'Y', password: 'Whatever-Pass-1!', role: 'ADMIN' })) === 403);
+  check('viewer can read leads (200)', (await as(viewer.token, 'GET', '/leads')) === 200);
+  check('viewer cannot change anything (403)', (await as(viewer.token, 'POST', '/campaigns', { name: 'Nope' })) === 403);
+  check('viewer cannot import prospects (403)', (await as(viewer.token, 'POST', '/discovery/import', { rows: [{ companyName: 'Nope' }] })) === 403);
+  r = await call('PATCH', `/users/${viewer.id}`, { isActive: false });
+  check('admin can deactivate a user', r.status === 200 && r.json?.isActive === false, `status ${r.status}`);
+  check('a deactivated user token stops working immediately (401)', (await as(viewer.token, 'GET', '/leads')) === 401);
+}
+
+if (process.env.SMOKE_TEST_LOCKOUT === '1') {
+  const victim = `lock-${tag}@example.com`;
+  let last = 0;
+  for (let i = 0; i < 11; i++) {
+    last = (await fetch(`${BASE}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: victim, password: `Wrong-${i}-Password` }) })).status;
+  }
+  check('repeated failed logins lock the account (429)', last === 429, `last status ${last}`);
+}
 
 r = await call('GET', '/seller-profile');
 check('no seller profile before onboarding (404)', r.status === 404, `status ${r.status}`);

@@ -1,6 +1,20 @@
-import { cookies } from 'next/headers';
+import { cookies, headers as requestHeaders } from 'next/headers';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
+/**
+ * The browser's IP address as seen by this server, forwarded so the API can rate-limit the real client instead of
+ * this web server. The API only honours it from a trusted proxy (TRUST_PROXY, loopback by default).
+ */
+export function clientIpHeader(): Record<string, string> {
+  try {
+    const h = requestHeaders();
+    const ip = h.get('x-forwarded-for')?.split(',')[0]?.trim() || h.get('x-real-ip')?.trim();
+    return ip && /^[0-9a-fA-F:.]{3,45}$/.test(ip) ? { 'X-Forwarded-For': ip } : {};
+  } catch {
+    return {};
+  }
+}
 
 interface FetchOptions extends RequestInit {
   skipAuth?: boolean;
@@ -23,6 +37,7 @@ export async function serverApiFetch<T = any>(
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    ...clientIpHeader(),
     ...((options.headers as Record<string, string>) || {}),
   };
 
@@ -42,7 +57,7 @@ export async function serverApiFetch<T = any>(
       try {
         const refreshRes = await fetch(`${API_BASE_URL}/auth/refresh`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...clientIpHeader() },
           body: JSON.stringify({ refreshToken }),
           cache: 'no-store',
         });

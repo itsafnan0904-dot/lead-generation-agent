@@ -7,7 +7,8 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "test": "jest",
+    "create-admin": "node dist/apps/api/src/create-admin.js"
   },
   "dependencies": {
     "@ai-sales-agent/database": "*",

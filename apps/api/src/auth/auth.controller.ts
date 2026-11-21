@@ -17,6 +17,7 @@ import {
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { Throttle } from '@nestjs/throttler';
 import { ConfirmGoogleLinkDto } from './dto/confirm-google-link.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
@@ -27,18 +28,21 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @Throttle({ default: { limit: 5, ttl: 3_600_000 } })
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() dto: RegisterDto): Promise<AuthResponse> {
     return this.authService.register(dto);
   }
 
   @Post('login')
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
   @HttpCode(HttpStatus.OK)
-  async login(@Body() dto: LoginDto): Promise<AuthResponse> {
-    return this.authService.login(dto);
+  async login(@Body() dto: LoginDto, @Req() req: any): Promise<AuthResponse> {
+    return this.authService.login(dto, req.ip);
   }
 
   @Post('refresh')
+  @Throttle({ default: { limit: 60, ttl: 60_000 } })
   @HttpCode(HttpStatus.OK)
   async refresh(@Body() dto: RefreshTokenDto): Promise<AuthTokens> {
     return this.authService.refresh(dto);
@@ -80,6 +84,7 @@ export class AuthController {
    * Confirms linking a Google account to an existing password-based account (resolving Case C).
    */
   @Post('google/confirm-link')
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @HttpCode(HttpStatus.OK)
   async confirmGoogleLink(@Body() dto: ConfirmGoogleLinkDto): Promise<AuthResponse> {
     return this.authService.confirmGoogleLink(dto);

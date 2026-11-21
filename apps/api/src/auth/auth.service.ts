@@ -2,6 +2,9 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
   Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -13,6 +16,20 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ConfirmGoogleLinkDto } from './dto/confirm-google-link.dto';
 import { AuthenticatedUser } from './decorators/current-user.decorator';
 import { GoogleProfilePayload } from './strategies/google.strategy';
+import { LoginAttemptTracker } from './login-attempt-tracker';
+
+/** Self-service sign-up (password or Google) is closed unless explicitly enabled. Admins create accounts instead. */
+export function isPublicRegistrationAllowed(): boolean {
+  return (process.env.ALLOW_PUBLIC_REGISTRATION ?? 'false').trim().toLowerCase() === 'true';
+}
+
+/** Google sign-in may create a new account only for an allowed email domain (GOOGLE_ALLOWED_DOMAINS, comma separated). */
+export function isGoogleSignupAllowedFor(email: string): boolean {
+  if (isPublicRegistrationAllowed()) return true;
+  const domains = (process.env.GOOGLE_ALLOWED_DOMAINS ?? '').split(',').map((d) => d.trim().toLowerCase()).filter(Boolean);
+  const domain = email.toLowerCase().split('@')[1];
+  return !!domain && domains.includes(domain);
+}
 
 export interface AuthTokens {
   accessToken: string;
@@ -47,6 +64,9 @@ export interface GoogleLinkTokenPayload {
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
   private readonly saltRounds = 12;
+  private readonly loginAttempts = new LoginAttemptTracker();
+  /** Compared against when the email is unknown so response time does not reveal which accounts exist. */
+  private dummyHash: Promise<string> | null = null;
 
   private get accessSecret(): string {
     const secret = process.env.JWT_ACCESS_SECRET;
@@ -81,6 +101,9 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto): Promise<AuthResponse> {
+    if (!isPublicRegistrationAllowed()) {
+      throw new ForbiddenException('Registration is disabled. Ask an administrator to create your account.');
+    }
     const existing = await this.prisma.client.user.findUnique({
       where: { email: dto.email.toLowerCase().trim() },
       select: { id: true },
@@ -109,9 +132,19 @@ export class AuthService {
     return this.issueAuthResponse(user);
   }
 
-  async login(dto: LoginDto): Promise<AuthResponse> {
+  async login(dto: LoginDto, ip?: string): Promise<AuthResponse> {
+    const email = dto.email.toLowerCase().trim();
+    const retryAfter = this.loginAttempts.retryAfterSeconds(email, ip);
+    if (retryAfter > 0) {
+      this.logger.warn(`Login blocked for a locked account or address; retry in ${retryAfter}s.`);
+      throw new HttpException(
+        { statusCode: HttpStatus.TOO_MANY_REQUESTS, message: 'Too many failed login attempts. Try again later.', retryAfterSeconds: retryAfter },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+
     const user = await this.prisma.client.user.findUnique({
-      where: { email: dto.email.toLowerCase().trim() },
+      where: { email },
       select: {
         id: true,
         email: true,
@@ -123,13 +156,19 @@ export class AuthService {
     });
 
     if (!user || !user.passwordHash || !user.isActive) {
+      // Burn the same time as a real password check so unknown and known emails are indistinguishable
+      this.dummyHash ??= bcrypt.hash('dummy-password-for-timing', this.saltRounds);
+      await bcrypt.compare(dto.password, await this.dummyHash);
+      this.loginAttempts.recordFailure(email, ip);
       throw new UnauthorizedException('Invalid email or password.');
     }
 
     const isMatch = await bcrypt.compare(dto.password, user.passwordHash);
     if (!isMatch) {
+      this.loginAttempts.recordFailure(email, ip);
       throw new UnauthorizedException('Invalid email or password.');
     }
+    this.loginAttempts.recordSuccess(email);
 
     return this.issueAuthResponse({
       id: user.id,
@@ -214,7 +253,10 @@ export class AuthService {
       };
     }
 
-    // CASE A: Brand new user via Google OAuth
+    // CASE A: Brand new user via Google OAuth. Only for allowed domains, otherwise any Google account could join.
+    if (!isGoogleSignupAllowedFor(email)) {
+      throw new ForbiddenException('This Google account is not allowed to sign up. Ask an administrator to create your account.');
+    }
     const newUser = await this.prisma.client.user.create({
       data: {
         email,

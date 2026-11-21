@@ -25,6 +25,8 @@ describe('AuthService', () => {
   };
 
   beforeEach(async () => {
+    // These flows exercise sign-up itself; registration is closed by default (see auth.security.spec.ts)
+    process.env.ALLOW_PUBLIC_REGISTRATION = 'true';
     prismaService = {
       client: {
         user: {
@@ -51,6 +53,10 @@ describe('AuthService', () => {
     authService = module.get<AuthService>(AuthService);
   });
 
+  afterEach(() => {
+    delete process.env.ALLOW_PUBLIC_REGISTRATION;
+  });
+
   describe('Registration Flow', () => {
     it('successfully registers a new user with hashed password and returns tokens', async () => {
       prismaService.client.user.findUnique.mockResolvedValue(null);
@@ -69,7 +75,7 @@ describe('AuthService', () => {
       const result = await authService.register({
         email: 'alex@example.com',
         name: 'Alex Mercer',
-        password: 'Password123!',
+        password: 'Unit-Test-Pass-9!',
       });
 
       expect(prismaService.client.user.findUnique).toHaveBeenCalledWith({
@@ -89,7 +95,7 @@ describe('AuthService', () => {
         authService.register({
           email: 'alex@example.com',
           name: 'Alex Mercer',
-          password: 'Password123!',
+          password: 'Unit-Test-Pass-9!',
         }),
       ).rejects.toThrow(ConflictException);
     });
@@ -97,7 +103,7 @@ describe('AuthService', () => {
 
   describe('Login Flow', () => {
     it('successfully logs in with correct credentials', async () => {
-      const plainPassword = 'Password123!';
+      const plainPassword = 'Unit-Test-Pass-9!';
       const realHash = await bcrypt.hash(plainPassword, 10);
 
       prismaService.client.user.findUnique.mockResolvedValue({
@@ -142,7 +148,7 @@ describe('AuthService', () => {
       await expect(
         authService.login({
           email: 'nonexistent@example.com',
-          password: 'Password123!',
+          password: 'Unit-Test-Pass-9!',
         }),
       ).rejects.toThrow(UnauthorizedException);
     });
@@ -255,7 +261,7 @@ describe('AuthService', () => {
   });
 
   describe('Confirm Google Link Flow', () => {
-    const rawPassword = 'Password123!';
+    const rawPassword = 'Unit-Test-Pass-9!';
     let hashedPassword: string;
 
     beforeEach(async () => {

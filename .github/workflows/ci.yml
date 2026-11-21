@@ -91,17 +91,33 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=4096
         run: npm run build --workspace=apps/api
 
-      - name: Start API (no OpenAI or Gmail credentials)
+      - name: Generate throwaway secrets for this run
+        run: |
+          # Strong random values, never stored: this exercises the API's production-mode secret checks
+          rnd() { openssl rand -base64 48 | tr -d '\n=' | tr '+/' '-_'; }
+          {
+            echo "JWT_ACCESS_SECRET=$(rnd)"
+            echo "JWT_REFRESH_SECRET=$(rnd)"
+            echo "JWT_LINK_SECRET=$(rnd)"
+            echo "GMAIL_TOKEN_ENCRYPTION_KEY=$(openssl rand -hex 32)"
+            echo "GMAIL_OAUTH_CLIENT_SECRET=$(rnd)"
+            echo "ADMIN_EMAIL=ci-admin@example.com"
+            echo "ADMIN_PASSWORD=Ci-$(openssl rand -hex 12)-Aa1!"
+          } >> "$GITHUB_ENV"
+          # keep the generated values out of the logs
+          for v in JWT_ACCESS_SECRET JWT_REFRESH_SECRET JWT_LINK_SECRET GMAIL_TOKEN_ENCRYPTION_KEY GMAIL_OAUTH_CLIENT_SECRET ADMIN_PASSWORD; do
+            echo "::add-mask::$(grep "^$v=" "$GITHUB_ENV" | cut -d= -f2-)"
+          done
+
+      - name: Create the first administrator (public sign-up stays closed)
+        run: npm run create-admin --workspace=apps/api
+
+      - name: Start API in production mode (no OpenAI or Gmail credentials)
         env:
-          NODE_ENV: test
+          NODE_ENV: production
           PORT: '4000'
           REDIS_URL: redis://localhost:6379
-          JWT_ACCESS_SECRET: ci-access-secret
-          JWT_REFRESH_SECRET: ci-refresh-secret
-          JWT_LINK_SECRET: ci-link-secret
-          GMAIL_TOKEN_ENCRYPTION_KEY: '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
           GMAIL_OAUTH_CLIENT_ID: ci-client-id
-          GMAIL_OAUTH_CLIENT_SECRET: ci-client-secret
           GMAIL_OAUTH_CALLBACK_URL: http://localhost:4000/gmail/oauth/callback
           GMAIL_SYNC_AUTOMATION_ENABLED: 'false'
           FOLLOW_UP_AUTOMATION_ENABLED: 'false'
@@ -111,9 +127,12 @@ jobs:
           node apps/api/dist/apps/api/src/main.js > api.log 2>&1 &
           echo $! > api.pid
 
-      - name: Run smoke test
+      - name: Run smoke and security test
         env:
           API_BASE: http://localhost:4000
+          SMOKE_EMAIL: ${{ env.ADMIN_EMAIL }}
+          SMOKE_PASSWORD: ${{ env.ADMIN_PASSWORD }}
+          SMOKE_TEST_LOCKOUT: '1'
         run: node scripts/e2e-smoke.mjs
 
       - name: Show API log on failure
