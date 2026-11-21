@@ -1,4 +1,5 @@
 import React from 'react';
+import { redirect } from 'next/navigation';
 import Box from '@mui/material/Box';
 import { Header } from '@/components/header';
 import { serverApiFetch } from '@/lib/server-api-client';
@@ -10,6 +11,12 @@ import {
 } from './overview-metrics';
 
 export default async function OverviewPage() {
+  // Send users who haven't finished seller onboarding to the setup wizard first.
+  const profileRes = await serverApiFetch<{ onboardingComplete: boolean }>('/seller-profile');
+  if (profileRes.status === 404 || (profileRes.data && !profileRes.data.onboardingComplete)) {
+    redirect('/onboarding');
+  }
+
   // Fetch real data simultaneously from verified backend endpoints
   const [healthRes, leadsRes, notifsRes] = await Promise.all([
     serverApiFetch<HealthData>('/health', { skipAuth: true }),

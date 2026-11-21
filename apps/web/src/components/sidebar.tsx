@@ -112,6 +112,16 @@ export function Sidebar() {
       ),
     },
     {
+      name: 'Seller Profile',
+      href: '/onboarding',
+      icon: (active) => (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={active ? '#818cf8' : '#9ca3af'} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      ),
+    },
+    {
       name: 'Settings',
       href: '/settings',
       icon: (active) => (
