@@ -23,13 +23,13 @@ export function ComingSoon({ screenName, description }: { screenName: string; de
           width: '64px',
           height: '64px',
           borderRadius: '20px',
-          backgroundColor: 'rgba(99, 102, 241, 0.15)',
-          border: '1px solid rgba(99, 102, 241, 0.3)',
+          backgroundColor: 'rgba(124, 110, 224, 0.15)',
+          border: '1px solid rgba(124, 110, 224, 0.3)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: '20px',
-          color: '#818cf8',
+          color: '#a99ef2',
         }}>
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />

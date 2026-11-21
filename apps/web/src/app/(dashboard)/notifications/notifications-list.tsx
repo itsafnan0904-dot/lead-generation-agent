@@ -273,8 +273,8 @@ export function NotificationsList({
               py: 0.25,
               borderRadius: 'var(--radius-sm)',
               bgcolor: 'var(--accent-primary-muted)',
-              border: '1px solid rgba(99, 102, 241, 0.3)',
-              color: '#818cf8',
+              border: '1px solid rgba(124, 110, 224, 0.3)',
+              color: '#a99ef2',
               fontSize: '0.625rem',
               fontWeight: 700,
               letterSpacing: '0.04em',
@@ -592,9 +592,9 @@ export function NotificationsList({
               priorityLabel = 'IMPORTANT';
             } else {
               // INFO
-              cardBg = isUnread ? 'rgba(99, 102, 241, 0.03)' : 'var(--bg-surface)';
-              cardBorder = isUnread ? 'rgba(99, 102, 241, 0.20)' : 'var(--border-subtle)';
-              leftStripe = isUnread ? '3px solid rgba(99, 102, 241, 0.4)' : '3px solid transparent';
+              cardBg = isUnread ? 'rgba(124, 110, 224, 0.03)' : 'var(--bg-surface)';
+              cardBorder = isUnread ? 'rgba(124, 110, 224, 0.20)' : 'var(--border-subtle)';
+              leftStripe = isUnread ? '3px solid rgba(124, 110, 224, 0.4)' : '3px solid transparent';
             }
 
             return (
@@ -639,7 +639,7 @@ export function NotificationsList({
                               ? '0 0 8px #f43f5e'
                               : isImportant
                               ? '0 0 8px #f59e0b'
-                              : '0 0 8px #6366f1'
+                              : '0 0 8px #7c6ee0'
                             : 'none',
                         }}
                       />

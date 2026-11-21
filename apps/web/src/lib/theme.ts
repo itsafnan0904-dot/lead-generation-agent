@@ -17,11 +17,11 @@ import { createTheme } from '@mui/material/styles';
 export const tokens = {
   // --- SURFACE & BACKGROUND HIERARCHY ---
   canvas: {
-    base: '#0b0f19',        // Root canvas background
-    surface: '#111827',     // Main card & container background
-    surfaceSubtle: '#161f30', // Nested panels, inputs, table rows
-    surfaceElevated: '#1e293b', // Modals, dropdowns, popovers
-    surfaceHover: '#1f293d', // Interactive hover state
+    base: '#0d0e1b',        // Root canvas background
+    surface: '#151628',     // Main card & container background
+    surfaceSubtle: '#1a1b30', // Nested panels, inputs, table rows
+    surfaceElevated: '#202238', // Modals, dropdowns, popovers
+    surfaceHover: '#23253d', // Interactive hover state
   },
 
   // --- BORDERS & DIVIDERS ---
@@ -29,23 +29,23 @@ export const tokens = {
     subtle: 'rgba(255, 255, 255, 0.07)',  // Interior dividers, subtle grid lines
     default: 'rgba(255, 255, 255, 0.12)', // Standard card/container boundaries
     strong: 'rgba(255, 255, 255, 0.20)',  // Hovered card bounds, active borders
-    focus: '#6366f1',                     // Interactive focus ring
+    focus: '#7c6ee0',                     // Interactive focus ring
   },
 
   // --- TYPOGRAPHIC COLORS ---
   text: {
     primary: '#f9fafb',   // Headings, key values, primary readable text
-    secondary: '#9ca3af', // Labels, descriptions, secondary metadata
+    secondary: '#a1a3b8', // Labels, descriptions, secondary metadata
     muted: '#6b7280',     // Inactive badges, timestamps, subtle placeholders
     inverse: '#ffffff',   // Text on solid colored buttons
   },
 
   // --- SEMANTIC ACCENTS (Restrained, meaning-driven) ---
   accent: {
-    primary: '#6366f1',        // Indigo: Primary actions & selected navigation
-    primaryHover: '#4f46e5',   // Hover state for primary action
-    primaryLight: '#818cf8',   // Highlights and focused active borders
-    primaryMuted: 'rgba(99, 102, 241, 0.12)', // Subtle primary tag/alert backings
+    primary: '#7c6ee0',        // Indigo: Primary actions & selected navigation
+    primaryHover: '#7c6ee0',   // Hover state for primary action
+    primaryLight: '#a99ef2',   // Highlights and focused active borders
+    primaryMuted: 'rgba(124, 110, 224, 0.12)', // Subtle primary tag/alert backings
 
     success: '#10b981',        // Emerald: Active AI, approved, healthy
     successMuted: 'rgba(16, 185, 129, 0.12)',
@@ -89,7 +89,7 @@ export const tokens = {
   shadow: {
     card: '0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3)',
     elevated: '0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5)',
-    glowFocus: '0 0 0 2px rgba(99, 102, 241, 0.25)',
+    glowFocus: '0 0 0 2px rgba(124, 110, 224, 0.25)',
   }
 } as const;
 
@@ -140,14 +140,7 @@ export const darkTheme = createTheme({
     divider: tokens.border.subtle,
   },
   typography: {
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'sans-serif',
-    ].join(','),
+    fontFamily: ['var(--font-sans)', 'system-ui', '-apple-system', '"Segoe UI"', 'sans-serif'].join(','),
     h1: {
       fontWeight: 700,
       fontSize: '1.5rem', // 24px
@@ -207,7 +200,7 @@ export const darkTheme = createTheme({
         body: {
           backgroundColor: tokens.canvas.base,
           color: tokens.text.primary,
-          scrollbarColor: '#374151 #111827',
+          scrollbarColor: '#374151 #151628',
           '&::-webkit-scrollbar, & *::-webkit-scrollbar': {
             width: '6px',
             height: '6px',

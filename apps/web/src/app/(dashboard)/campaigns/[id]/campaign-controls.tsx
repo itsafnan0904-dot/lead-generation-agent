@@ -9,7 +9,7 @@ export interface PickableLead { id: string; company: { name: string }; status: s
 const btn = (primary = false, danger = false): React.CSSProperties => ({
   padding: '7px 12px', borderRadius: 6, fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer',
   border: primary ? '1px solid transparent' : `1px solid ${danger ? 'rgba(244,63,94,0.4)' : 'rgba(255,255,255,0.12)'}`,
-  background: primary ? '#4f46e5' : 'transparent', color: primary ? '#fff' : danger ? '#fb7185' : '#f3f4f6',
+  background: primary ? '#7c6ee0' : 'transparent', color: primary ? '#fff' : danger ? '#fb7185' : '#f4f4fa',
 });
 
 export function CampaignControls({ campaignId, status, transitions }: { campaignId: string; status: string; transitions: string[] }) {
@@ -28,7 +28,7 @@ export function CampaignControls({ campaignId, status, transitions }: { campaign
   return (
     <div style={{ display: 'grid', gap: 8 }}>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {transitions.length === 0 && <span style={{ color: '#64748b', fontSize: '0.8125rem' }}>No further actions: this campaign is {status}.</span>}
+        {transitions.length === 0 && <span style={{ color: '#6e7089', fontSize: '0.8125rem' }}>No further actions: this campaign is {status}.</span>}
         {transitions.map((t) => (
           <button key={t} style={btn(t === 'ACTIVE', t === 'ARCHIVED')} disabled={busy} onClick={() => change(t)}>
             {t === 'ACTIVE' && status === 'PAUSED' ? 'Resume' : t === 'ACTIVE' ? 'Launch' : TRANSITION_LABEL[t]}
@@ -60,17 +60,17 @@ export function AddLeads({ campaignId, candidates, disabled }: { campaignId: str
     setBusy(false);
   };
 
-  if (disabled) return <div style={{ color: '#64748b', fontSize: '0.8125rem' }}>This campaign is closed to new leads.</div>;
-  if (candidates.length === 0) return <div style={{ color: '#64748b', fontSize: '0.8125rem' }}>Every lead already belongs to a campaign. Import more prospects to add new ones.</div>;
+  if (disabled) return <div style={{ color: '#6e7089', fontSize: '0.8125rem' }}>This campaign is closed to new leads.</div>;
+  if (candidates.length === 0) return <div style={{ color: '#6e7089', fontSize: '0.8125rem' }}>Every lead already belongs to a campaign. Import more prospects to add new ones.</div>;
 
   return (
     <div style={{ display: 'grid', gap: 10 }}>
       <div style={{ maxHeight: 220, overflowY: 'auto', display: 'grid', gap: 4, border: '1px solid rgba(255,255,255,0.06)', borderRadius: 6, padding: 8 }}>
         {candidates.map((l) => (
-          <label key={l.id} style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: '0.8125rem', color: '#d1d5db', cursor: 'pointer' }}>
+          <label key={l.id} style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: '0.8125rem', color: '#c9cadb', cursor: 'pointer' }}>
             <input type="checkbox" checked={selected.has(l.id)} onChange={() => toggle(l.id)} />
             <span style={{ flex: 1 }}>{l.company.name}</span>
-            <span style={{ color: '#64748b', fontSize: '0.75rem' }}>{l.status.replace(/_/g, ' ')}</span>
+            <span style={{ color: '#6e7089', fontSize: '0.75rem' }}>{l.status.replace(/_/g, ' ')}</span>
           </label>
         ))}
       </div>

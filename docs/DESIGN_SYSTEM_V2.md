@@ -5,6 +5,8 @@
 > **Design Foundation**: Emil Kowalski Design Engineering Principles (`emilkowalski/skills`), Minimalist Craft, Tactile Responsiveness, Invisible Details, Perceived Performance, and Intentional Motion.  
 > **Historical Note**: `docs/DESIGN_SYSTEM.md` remains preserved for historical reference only. All future screen redesigns (Overview, Leads, Companies, Conversations, Agent Activity, Notifications, Gmail, Settings) and new frontend code MUST adhere strictly to this V2 specification.
 
+> **UI refresh (current look)**: surfaces are now navy (`#0d0e1b` canvas, `#151628` cards) with one purple accent (`#7c6ee0`), Plus Jakarta Sans, 14px card radius, and the shared `.card`, `.hero`, `.pill`, `.tbl` classes in `apps/web/src/app/globals.css`. Where this note differs from the colour values below, this note wins.
+
 ---
 
 ## 1. Product Framing: The AI Employee Control Center
