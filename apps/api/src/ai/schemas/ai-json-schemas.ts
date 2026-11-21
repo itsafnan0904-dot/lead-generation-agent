@@ -255,8 +255,13 @@ export const RESTRICTION_ANALYSIS_SCHEMA: AISchemaDefinition = {
       },
       requiresHumanReview: { type: 'boolean', description: 'Whether compliance officer review is needed' },
       confidence: { type: 'number', description: 'Confidence level between 0.0 and 1.0' },
+      evidenceQuote: {
+        type: 'string',
+        description:
+          'The exact words copied from the provided text that show prohibited scope. Empty string if there is no such quote; then the result must be CLEAR.',
+      },
     },
-    required: ['result', 'reason', 'matchedKeywordsOrEntities', 'requiresHumanReview', 'confidence'],
+    required: ['result', 'reason', 'matchedKeywordsOrEntities', 'requiresHumanReview', 'confidence', 'evidenceQuote'],
     additionalProperties: false,
   },
 };

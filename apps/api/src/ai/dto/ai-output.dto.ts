@@ -221,6 +221,11 @@ export class RestrictionAnalysisOutputDto {
   @Min(0)
   @Max(1)
   confidence: number;
+
+  /** Exact words from the analysed text that justify a restriction. Used to reject ungrounded AI flags. */
+  @IsOptional()
+  @IsString()
+  evidenceQuote?: string;
 }
 
 /**

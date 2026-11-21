@@ -268,7 +268,9 @@ export class AIOrchestratorService {
     context?: OrchestratorContext,
   ): Promise<OrchestratorResponse<RestrictionAnalysisOutputDto>> {
     const systemPrompt =
-      'You are an enterprise compliance and restriction engine. Check for competitor conflicts, embargoes, or blacklists into the exact requested JSON schema.';
+      'You are an enterprise compliance and restriction engine. Check for competitor conflicts, embargoes, or blacklists into the exact requested JSON schema. ' +
+      'Only flag restricted scope that the provided text itself shows. Never infer it from a company name, from missing information, or from loosely related topics. ' +
+      'Copy the exact words that show it into evidenceQuote; if you cannot quote any, the result must be CLEAR with an empty evidenceQuote.';
     const prompt = `Check restriction status for:\nEntity: ${input.entityName}\nDomain: ${input.domain || 'N/A'}\nNotes: ${input.notes || 'None'}`;
 
     return this.executeCapability<RestrictionAnalysisOutputDto>(
