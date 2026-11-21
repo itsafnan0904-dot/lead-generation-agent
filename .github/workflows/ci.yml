@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Typecheck, unit tests, web build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate --schema packages/database/prisma/schema.prisma
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: API unit tests
+        run: npm test --workspace=apps/api
+
+      - name: Web production build
+        run: npm run build --workspace=apps/web
+
+  e2e:
+    name: End-to-end smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ai_sales_agent_ci
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ai_sales_agent_ci?schema=public
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate --schema packages/database/prisma/schema.prisma
+
+      - name: Apply migrations to a fresh database
+        run: npx prisma migrate deploy --schema packages/database/prisma/schema.prisma
+
+      - name: Schema matches migrations (no drift)
+        run: npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel packages/database/prisma/schema.prisma --exit-code
+
+      - name: Build API
+        run: npm run build --workspace=apps/api
+
+      - name: Start API (no OpenAI or Gmail credentials)
+        env:
+          NODE_ENV: test
+          PORT: '4000'
+          REDIS_URL: redis://localhost:6379
+          JWT_ACCESS_SECRET: ci-access-secret
+          JWT_REFRESH_SECRET: ci-refresh-secret
+          JWT_LINK_SECRET: ci-link-secret
+          GMAIL_TOKEN_ENCRYPTION_KEY: '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
+          GMAIL_OAUTH_CLIENT_ID: ci-client-id
+          GMAIL_OAUTH_CLIENT_SECRET: ci-client-secret
+          GMAIL_OAUTH_CALLBACK_URL: http://localhost:4000/gmail/oauth/callback
+          GMAIL_SYNC_AUTOMATION_ENABLED: 'false'
+          FOLLOW_UP_AUTOMATION_ENABLED: 'false'
+          AUTO_REPLY_MODE: 'off'
+          OUTREACH_SAFE_TEST_MODE: 'true'
+        run: |
+          node apps/api/dist/apps/api/src/main.js > api.log 2>&1 &
+          echo $! > api.pid
+
+      - name: Run smoke test
+        env:
+          API_BASE: http://localhost:4000
+        run: node scripts/e2e-smoke.mjs
+
+      - name: Show API log on failure
+        if: failure()
+        run: tail -n 100 api.log || true
+
+      - name: Stop API
+        if: always()
+        run: kill "$(cat api.pid)" 2>/dev/null || true
