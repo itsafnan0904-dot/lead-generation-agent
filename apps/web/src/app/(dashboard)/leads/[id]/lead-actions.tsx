@@ -179,9 +179,9 @@ export function LeadActionButtons({
             textTransform: 'none',
             fontSize: '0.8125rem',
             fontWeight: 500,
-            color: '#f3f4f6',
+            color: '#f4f4fa',
             borderColor: 'rgba(255, 255, 255, 0.10)',
-            bgcolor: '#161820',
+            bgcolor: '#1a1b30',
             borderRadius: '6px',
             px: 1.5,
             py: 0.6,
@@ -217,9 +217,9 @@ export function LeadActionButtons({
             textTransform: 'none',
             fontSize: '0.8125rem',
             fontWeight: 500,
-            color: '#f3f4f6',
+            color: '#f4f4fa',
             borderColor: 'rgba(255, 255, 255, 0.10)',
-            bgcolor: '#161820',
+            bgcolor: '#1a1b30',
             borderRadius: '6px',
             px: 1.5,
             py: 0.6,
@@ -277,16 +277,16 @@ export function LeadActionButtons({
               textTransform: 'none',
               fontSize: '0.8125rem',
               fontWeight: 500,
-              borderColor: 'rgba(99, 102, 241, 0.3)',
-              color: '#818cf8',
-              bgcolor: 'rgba(79, 70, 229, 0.08)',
+              borderColor: 'rgba(124, 110, 224, 0.3)',
+              color: '#a99ef2',
+              bgcolor: 'rgba(124, 110, 224, 0.08)',
               borderRadius: '6px',
               px: 1.5,
               py: 0.6,
               transition: 'background-color 140ms cubic-bezier(0.23, 1, 0.32, 1), border-color 140ms cubic-bezier(0.23, 1, 0.32, 1)',
               '&:hover:not(:disabled)': {
-                borderColor: 'rgba(99, 102, 241, 0.6)',
-                bgcolor: 'rgba(79, 70, 229, 0.14)',
+                borderColor: 'rgba(124, 110, 224, 0.6)',
+                bgcolor: 'rgba(124, 110, 224, 0.14)',
               },
               '&:active:not(:disabled)': {
                 transform: 'scale(0.97)',
@@ -368,7 +368,7 @@ export function LeadActionButtons({
                     textTransform: 'none',
                     fontSize: '0.8125rem',
                     borderColor: 'rgba(255, 255, 255, 0.08)',
-                    color: '#64748b',
+                    color: '#6e7089',
                     borderRadius: '6px',
                     px: 1.5,
                     py: 0.6,
@@ -404,7 +404,7 @@ export function LeadActionButtons({
         fullWidth
         PaperProps={{
           sx: {
-            bgcolor: '#111318',
+            bgcolor: '#151628',
             border: '1px solid rgba(255, 255, 255, 0.10)',
             borderRadius: '10px',
             boxShadow: '0 12px 32px -4px rgba(0, 0, 0, 0.7)',
@@ -412,10 +412,10 @@ export function LeadActionButtons({
         }}
       >
         <DialogTitle sx={{ pb: 1.5, borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
-          <Typography variant="h3" sx={{ color: '#f3f4f6', mb: 0.5, fontSize: '1.0625rem', fontWeight: 600, letterSpacing: '-0.015em' }}>
+          <Typography variant="h3" sx={{ color: '#f4f4fa', mb: 0.5, fontSize: '1.0625rem', fontWeight: 600, letterSpacing: '-0.015em' }}>
             Resolve Governance Review
           </Typography>
-          <Typography variant="body2" sx={{ color: '#9ca3af', fontSize: '0.8125rem' }}>
+          <Typography variant="body2" sx={{ color: '#a1a3b8', fontSize: '0.8125rem' }}>
             Lead #{leadId.substring(0, 8)} • Mandatory Audit Justification Required
           </Typography>
         </DialogTitle>
@@ -423,7 +423,7 @@ export function LeadActionButtons({
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, py: 3 }}>
           {/* Decision Choice */}
           <FormControl component="fieldset">
-            <FormLabel component="legend" sx={{ fontSize: '0.78125rem', color: '#9ca3af', mb: 1, fontWeight: 500 }}>
+            <FormLabel component="legend" sx={{ fontSize: '0.78125rem', color: '#a1a3b8', mb: 1, fontWeight: 500 }}>
               Resolution Clearance Decision:
             </FormLabel>
             <RadioGroup
@@ -455,7 +455,7 @@ export function LeadActionButtons({
           {/* Written Justification Field */}
           <Box>
             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-              <Typography variant="subtitle2" sx={{ color: '#9ca3af', fontSize: '0.78125rem', fontWeight: 500 }}>
+              <Typography variant="subtitle2" sx={{ color: '#a1a3b8', fontSize: '0.78125rem', fontWeight: 500 }}>
                 Mandatory Written Justification (min 10 chars):
               </Typography>
               <Typography
@@ -480,17 +480,17 @@ export function LeadActionButtons({
               placeholder="Explain the compliance rationale for approving or rejecting this restriction..."
               size="small"
               sx={{
-                bgcolor: '#161820',
+                bgcolor: '#1a1b30',
                 borderRadius: '6px',
                 '& .MuiOutlinedInput-root': {
                   border: '1px solid rgba(255, 255, 255, 0.10)',
-                  color: '#f3f4f6',
+                  color: '#f4f4fa',
                   fontSize: '0.84375rem',
                   '&:hover': {
                     borderColor: 'rgba(255, 255, 255, 0.18)',
                   },
                   '&.Mui-focused': {
-                    borderColor: '#535bf2',
+                    borderColor: '#8f82e8',
                   },
                 },
                 '& .MuiOutlinedInput-notchedOutline': {
@@ -516,7 +516,7 @@ export function LeadActionButtons({
             sx={{
               textTransform: 'none',
               fontSize: '0.8125rem',
-              color: '#f3f4f6',
+              color: '#f4f4fa',
               borderColor: 'rgba(255, 255, 255, 0.10)',
               borderRadius: '6px',
               px: 2,

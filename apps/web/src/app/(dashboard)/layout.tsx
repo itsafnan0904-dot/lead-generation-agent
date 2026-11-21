@@ -1,7 +1,7 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
 import { serverApiFetch } from '@/lib/server-api-client';
-import { Sidebar } from '@/components/sidebar';
+import { Shell } from '@/components/shell';
 
 export default async function DashboardLayout({
   children,
@@ -15,15 +15,5 @@ export default async function DashboardLayout({
     redirect('/login');
   }
 
-  return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#090a0f' }}>
-      {/* Persistent Navigation Sidebar */}
-      <Sidebar />
-
-      {/* Main Content Area */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, backgroundColor: '#090a0f' }}>
-        {children}
-      </div>
-    </div>
-  );
+  return <Shell>{children}</Shell>;
 }

@@ -8,7 +8,7 @@ export interface CampaignSummary {
 }
 
 export const STATUS_COLOR: Record<string, string> = {
-  DRAFT: '#9ca3af', ACTIVE: '#34d399', PAUSED: '#fbbf24', COMPLETED: '#818cf8', ARCHIVED: '#64748b',
+  DRAFT: '#a1a3b8', ACTIVE: '#34d399', PAUSED: '#fbbf24', COMPLETED: '#a99ef2', ARCHIVED: '#6e7089',
 };
 
 export const TRANSITION_LABEL: Record<string, string> = {

@@ -33,7 +33,7 @@ export default async function SettingsPage() {
               fontWeight: 700,
               fontSize: '0.6875rem',
               letterSpacing: '0.05em',
-              border: '1px solid rgba(99, 102, 241, 0.3)',
+              border: '1px solid rgba(124, 110, 224, 0.3)',
             }}
           />
         );
@@ -142,7 +142,7 @@ export default async function SettingsPage() {
                 height: 64,
                 borderRadius: 'var(--radius-md)',
                 bgcolor: 'var(--accent-primary-muted)',
-                border: '1px solid rgba(99, 102, 241, 0.3)',
+                border: '1px solid rgba(124, 110, 224, 0.3)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -150,7 +150,7 @@ export default async function SettingsPage() {
                 fontWeight: 700,
                 fontSize: '1.35rem',
                 letterSpacing: '0.02em',
-                boxShadow: '0 4px 12px rgba(99, 102, 241, 0.15)',
+                boxShadow: '0 4px 12px rgba(124, 110, 224, 0.15)',
               }}
             >
               {user?.name ? user.name.slice(0, 2).toUpperCase() : 'US'}

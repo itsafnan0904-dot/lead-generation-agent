@@ -48,8 +48,8 @@ export default function LoginPage() {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '24px 16px',
-      backgroundColor: '#090a0f',
-      backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(79, 70, 229, 0.04) 0%, transparent 60%)',
+      backgroundColor: '#0d0e1b',
+      backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(124, 110, 224, 0.04) 0%, transparent 60%)',
     }}>
       {/* Brand & Auth Container */}
       <div style={{
@@ -69,9 +69,9 @@ export default function LoginPage() {
             width: '38px',
             height: '38px',
             borderRadius: '6px',
-            backgroundColor: '#161820',
+            backgroundColor: '#1a1b30',
             border: '1px solid rgba(255, 255, 255, 0.08)',
-            color: '#818cf8',
+            color: '#a99ef2',
             marginBottom: '14px',
           }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -83,7 +83,7 @@ export default function LoginPage() {
           <h1 style={{
             fontSize: '1.1875rem',
             fontWeight: 600,
-            color: '#f3f4f6',
+            color: '#f4f4fa',
             letterSpacing: '-0.025em',
             marginBottom: '5px',
           }}>
@@ -91,7 +91,7 @@ export default function LoginPage() {
           </h1>
           <p style={{
             fontSize: '0.8125rem',
-            color: '#9ca3af',
+            color: '#a1a3b8',
             lineHeight: 1.45,
             letterSpacing: '-0.005em',
           }}>
@@ -101,7 +101,7 @@ export default function LoginPage() {
 
         {/* Surface Card Container */}
         <div style={{
-          backgroundColor: '#111318',
+          backgroundColor: '#151628',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '10px',
           boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.6), 0 1px 2px 0 rgba(0, 0, 0, 0.4)',
@@ -150,7 +150,7 @@ export default function LoginPage() {
                   display: 'block',
                   fontSize: '0.78125rem',
                   fontWeight: 500,
-                  color: '#9ca3af',
+                  color: '#a1a3b8',
                   marginBottom: '5px',
                   letterSpacing: '-0.005em',
                 }}
@@ -170,11 +170,11 @@ export default function LoginPage() {
                 disabled={isSubmitting}
                 style={{
                   width: '100%',
-                  backgroundColor: '#161820',
+                  backgroundColor: '#1a1b30',
                   border: '1px solid rgba(255, 255, 255, 0.10)',
                   borderRadius: '6px',
                   padding: '9px 11px',
-                  color: '#f3f4f6',
+                  color: '#f4f4fa',
                   fontSize: '0.84375rem',
                   lineHeight: 1.4,
                   outline: 'none',
@@ -195,7 +195,7 @@ export default function LoginPage() {
                     display: 'block',
                     fontSize: '0.78125rem',
                     fontWeight: 500,
-                    color: '#9ca3af',
+                    color: '#a1a3b8',
                     letterSpacing: '-0.005em',
                   }}
                 >
@@ -215,11 +215,11 @@ export default function LoginPage() {
                 disabled={isSubmitting}
                 style={{
                   width: '100%',
-                  backgroundColor: '#161820',
+                  backgroundColor: '#1a1b30',
                   border: '1px solid rgba(255, 255, 255, 0.10)',
                   borderRadius: '6px',
                   padding: '9px 11px',
-                  color: '#f3f4f6',
+                  color: '#f4f4fa',
                   fontSize: '0.84375rem',
                   lineHeight: 1.4,
                   outline: 'none',
@@ -243,7 +243,7 @@ export default function LoginPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: '#4f46e5',
+                backgroundColor: '#7c6ee0',
                 color: '#ffffff',
                 border: '1px solid transparent',
                 borderRadius: '6px',
@@ -285,7 +285,7 @@ export default function LoginPage() {
           marginTop: '18px',
           textAlign: 'center',
           fontSize: '0.71875rem',
-          color: '#64748b',
+          color: '#6e7089',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -308,13 +308,13 @@ export default function LoginPage() {
           transition: border-color 140ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 140ms cubic-bezier(0.23, 1, 0.32, 1);
         }
         .v2-input::placeholder {
-          color: #64748b;
+          color: #6e7089;
         }
         .v2-input:hover:not(:disabled) {
           border-color: rgba(255, 255, 255, 0.18) !important;
         }
         .v2-input:focus {
-          border-color: #535bf2 !important;
+          border-color: #8f82e8 !important;
           box-shadow: 0 0 0 2px rgba(83, 91, 242, 0.2) !important;
         }
         .v2-input:disabled {
@@ -326,13 +326,13 @@ export default function LoginPage() {
           transition: transform 140ms cubic-bezier(0.23, 1, 0.32, 1), background-color 140ms cubic-bezier(0.23, 1, 0.32, 1);
         }
         .v2-btn-primary:hover:not(:disabled) {
-          background-color: #4338ca !important;
+          background-color: #6c5ed0 !important;
         }
         .v2-btn-primary:active:not(:disabled) {
           transform: scale(0.97);
         }
         .v2-btn-primary:focus-visible {
-          box-shadow: 0 0 0 2px #090a0f, 0 0 0 4px #818cf8;
+          box-shadow: 0 0 0 2px #0d0e1b, 0 0 0 4px #a99ef2;
         }
 
         @keyframes fast-spin {

@@ -1,15 +1,8 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
-import Box from '@mui/material/Box';
 import { Header } from '@/components/header';
 import { serverApiFetch } from '@/lib/server-api-client';
-import { PriorityBoard, BoardLead } from './priority-board';
-import {
-  OverviewMetrics,
-  HealthData,
-  LeadsData,
-  NotificationsData,
-} from './overview-metrics';
+import { Dashboard, DashboardData } from './dashboard';
 
 export default async function OverviewPage() {
   // Send users who haven't finished seller onboarding to the setup wizard first.
@@ -18,56 +11,36 @@ export default async function OverviewPage() {
     redirect('/onboarding');
   }
 
-  // Fetch real data simultaneously from verified backend endpoints
-  const [healthRes, leadsRes, notifsRes, needsYouRes, topLeadsRes] = await Promise.all([
+  const [health, leads, notifs, needsYou, top, pipeline, campaigns] = await Promise.all([
     // Dependency details need a login; the public /health probe only reports an overall status
-    serverApiFetch<HealthData>('/health/details'),
-    serverApiFetch<LeadsData>('/leads?limit=100'),
-    serverApiFetch<NotificationsData>('/notifications?isRead=false&limit=5'),
-    serverApiFetch<{ items: BoardLead[] }>('/leads?needsHuman=true&sort=priority&limit=5'),
-    serverApiFetch<{ items: BoardLead[] }>('/leads?sort=priority&limit=10'),
+    serverApiFetch<DashboardData['health']>('/health/details'),
+    serverApiFetch<{ items: { status: string }[]; total: number }>('/leads?limit=100'),
+    serverApiFetch<{ unreadCount: number }>('/notifications?isRead=false&limit=1'),
+    serverApiFetch<{ items: DashboardData['needsYou']; total: number }>('/leads?needsHuman=true&sort=priority&limit=5'),
+    serverApiFetch<{ items: DashboardData['top'] }>('/leads?sort=priority&limit=8'),
+    serverApiFetch<DashboardData['pipeline']>('/opportunities'),
+    serverApiFetch<{ status: string }[]>('/campaigns'),
   ]);
 
-  const health = healthRes.data;
-  const leads = leadsRes.data;
-  const notifs = notifsRes.data;
-
-  // Compute lead lifecycle distribution from returned leads items
-  const leadDistribution: Record<string, number> = {};
-  if (leads?.items) {
-    for (const lead of leads.items) {
-      leadDistribution[lead.status] = (leadDistribution[lead.status] || 0) + 1;
-    }
-  }
-
-  // Group notifications by priority
-  const priorityBreakdown = {
-    ACTION_REQUIRED: 0,
-    IMPORTANT: 0,
-    INFO: 0,
-  };
-
-  if (notifs?.items) {
-    for (const item of notifs.items) {
-      if (item.priority in priorityBreakdown) {
-        priorityBreakdown[item.priority]++;
-      }
-    }
-  }
+  const byStatus: Record<string, number> = {};
+  for (const l of leads.data?.items ?? []) byStatus[l.status] = (byStatus[l.status] ?? 0) + 1;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <Header title="Overview & System Status" />
-
-      <PriorityBoard needsYou={needsYouRes.data?.items ?? []} topLeads={topLeadsRes.data?.items ?? []} />
-
-      <OverviewMetrics
-        health={health}
-        leads={leads}
-        notifs={notifs}
-        leadDistribution={leadDistribution}
-        priorityBreakdown={priorityBreakdown}
+    <>
+      <Header title="Overview" />
+      <Dashboard
+        data={{
+          health: health.data,
+          totalLeads: leads.data?.total ?? 0,
+          byStatus,
+          unread: notifs.data?.unreadCount ?? 0,
+          needsYou: needsYou.data?.items ?? [],
+          needsYouTotal: needsYou.data?.total ?? 0,
+          top: top.data?.items ?? [],
+          pipeline: pipeline.data,
+          activeCampaigns: (campaigns.data ?? []).filter((c) => c.status === 'ACTIVE').length,
+        }}
       />
-    </Box>
+    </>
   );
 }

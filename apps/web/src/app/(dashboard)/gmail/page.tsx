@@ -199,7 +199,7 @@ export default function GmailPage() {
                 height: 40,
                 borderRadius: 'var(--radius-sm)',
                 bgcolor: 'var(--accent-primary-muted)',
-                border: '1px solid rgba(99, 102, 241, 0.25)',
+                border: '1px solid rgba(124, 110, 224, 0.25)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -487,7 +487,7 @@ export default function GmailPage() {
                             px: 2.5,
                             py: 0.8,
                             textTransform: 'none',
-                            boxShadow: '0 2px 8px rgba(99, 102, 241, 0.3)',
+                            boxShadow: '0 2px 8px rgba(124, 110, 224, 0.3)',
                             '&:hover': {
                               bgcolor: 'var(--accent-primary-hover)',
                             },

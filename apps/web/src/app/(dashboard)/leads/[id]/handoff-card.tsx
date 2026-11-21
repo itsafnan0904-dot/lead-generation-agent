@@ -11,10 +11,10 @@ export interface HandoffBriefData {
 }
 
 const box: React.CSSProperties = {
-  background: '#111318', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 20,
+  background: '#151628', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 20,
 };
-const h: React.CSSProperties = { margin: '0 0 8px', fontSize: '0.6875rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em' };
-const li: React.CSSProperties = { fontSize: '0.8125rem', color: '#d1d5db', margin: '3px 0' };
+const h: React.CSSProperties = { margin: '0 0 8px', fontSize: '0.6875rem', fontWeight: 600, color: '#a1a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' };
+const li: React.CSSProperties = { fontSize: '0.8125rem', color: '#c9cadb', margin: '3px 0' };
 
 /** Priority / readiness summary, plus the handoff brief when the AI needs the human. */
 export function HandoffCard({ priority, brief, aiControlState }: { priority?: LeadPriority; brief?: HandoffBriefData | null; aiControlState: string }) {
@@ -27,12 +27,12 @@ export function HandoffCard({ priority, brief, aiControlState }: { priority?: Le
         <PriorityBadge priority={priority} />
         <NeedsYouBadge priority={priority} />
         <ReadinessMeter priority={priority} />
-        <span style={{ color: '#9ca3af', fontSize: '0.8125rem' }}>
+        <span style={{ color: '#a1a3b8', fontSize: '0.8125rem' }}>
           AI: {aiControlState === 'AI_ACTIVE' ? 'active' : aiControlState === 'PAUSED' ? 'paused' : 'taken over'}
         </span>
       </div>
-      <div style={{ color: '#f3f4f6', fontSize: '0.9375rem', fontWeight: 600, marginBottom: 4 }}>{brief?.headline ?? priority.nextAction}</div>
-      <div style={{ color: '#9ca3af', fontSize: '0.8125rem', marginBottom: urgent ? 16 : 0 }}>Next action: {priority.nextAction}</div>
+      <div style={{ color: '#f4f4fa', fontSize: '0.9375rem', fontWeight: 600, marginBottom: 4 }}>{brief?.headline ?? priority.nextAction}</div>
+      <div style={{ color: '#a1a3b8', fontSize: '0.8125rem', marginBottom: urgent ? 16 : 0 }}>Next action: {priority.nextAction}</div>
 
       {urgent && brief && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20 }}>
@@ -56,8 +56,8 @@ export function HandoffCard({ priority, brief, aiControlState }: { priority?: Le
             <h3 style={h}>Recent messages</h3>
             {brief.recentMessages.map((m, i) => (
               <div key={i} style={{ ...li, padding: '6px 10px', margin: '4px 0', borderRadius: 6, background: m.direction === 'INBOUND' ? 'rgba(129,140,248,0.08)' : 'rgba(255,255,255,0.03)' }}>
-                <strong style={{ color: m.direction === 'INBOUND' ? '#818cf8' : '#9ca3af' }}>{m.direction === 'INBOUND' ? 'Client' : 'AI/You'}</strong>
-                <span style={{ color: '#64748b' }}> · {new Date(m.sentAt).toLocaleString()}</span>
+                <strong style={{ color: m.direction === 'INBOUND' ? '#a99ef2' : '#a1a3b8' }}>{m.direction === 'INBOUND' ? 'Client' : 'AI/You'}</strong>
+                <span style={{ color: '#6e7089' }}> · {new Date(m.sentAt).toLocaleString()}</span>
                 <div>{m.excerpt}</div>
               </div>
             ))}

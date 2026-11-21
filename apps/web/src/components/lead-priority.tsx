@@ -14,15 +14,15 @@ const PRIORITY_STYLE: Record<LeadPriority['priorityLabel'], { fg: string; bg: st
   HOT: { fg: '#fb7185', bg: 'rgba(244, 63, 94, 0.12)', border: 'rgba(244, 63, 94, 0.3)' },
   WARM: { fg: '#fbbf24', bg: 'rgba(245, 158, 11, 0.12)', border: 'rgba(245, 158, 11, 0.3)' },
   COOL: { fg: '#38bdf8', bg: 'rgba(14, 165, 233, 0.12)', border: 'rgba(14, 165, 233, 0.3)' },
-  COLD: { fg: '#9ca3af', bg: 'rgba(255, 255, 255, 0.05)', border: 'rgba(255, 255, 255, 0.1)' },
+  COLD: { fg: '#a1a3b8', bg: 'rgba(255, 255, 255, 0.05)', border: 'rgba(255, 255, 255, 0.1)' },
   BLOCKED: { fg: '#f43f5e', bg: 'rgba(244, 63, 94, 0.08)', border: 'rgba(244, 63, 94, 0.25)' },
-  CLOSED: { fg: '#64748b', bg: 'rgba(255, 255, 255, 0.04)', border: 'rgba(255, 255, 255, 0.08)' },
+  CLOSED: { fg: '#6e7089', bg: 'rgba(255, 255, 255, 0.04)', border: 'rgba(255, 255, 255, 0.08)' },
 };
 
-const READINESS_COLOR = (score: number) => (score >= 75 ? '#10b981' : score >= 45 ? '#818cf8' : score >= 20 ? '#64748b' : '#374151');
+const READINESS_COLOR = (score: number) => (score >= 75 ? '#10b981' : score >= 45 ? '#a99ef2' : score >= 20 ? '#6e7089' : '#374151');
 
 export function PriorityBadge({ priority }: { priority?: LeadPriority | null }) {
-  if (!priority) return <span style={{ color: '#64748b', fontSize: '0.75rem' }}>—</span>;
+  if (!priority) return <span style={{ color: '#6e7089', fontSize: '0.75rem' }}>—</span>;
   const s = PRIORITY_STYLE[priority.priorityLabel];
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -34,20 +34,20 @@ export function PriorityBadge({ priority }: { priority?: LeadPriority | null }) 
       >
         {priority.priorityLabel}
       </span>
-      <span style={{ color: '#9ca3af', fontSize: '0.75rem', fontVariantNumeric: 'tabular-nums' }}>{priority.priorityScore}</span>
+      <span style={{ color: '#a1a3b8', fontSize: '0.75rem', fontVariantNumeric: 'tabular-nums' }}>{priority.priorityScore}</span>
     </span>
   );
 }
 
 export function ReadinessMeter({ priority }: { priority?: LeadPriority | null }) {
-  if (!priority) return <span style={{ color: '#64748b', fontSize: '0.75rem' }}>—</span>;
+  if (!priority) return <span style={{ color: '#6e7089', fontSize: '0.75rem' }}>—</span>;
   const pct = Math.max(0, Math.min(100, priority.readinessScore));
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 110 }} title={`${priority.readinessLabel.replace('_', ' ')} (${pct}/100)`}>
       <span style={{ flex: 1, height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.08)', overflow: 'hidden', minWidth: 60 }}>
         <span style={{ display: 'block', height: '100%', width: `${pct}%`, background: READINESS_COLOR(pct) }} />
       </span>
-      <span style={{ color: '#9ca3af', fontSize: '0.75rem', fontVariantNumeric: 'tabular-nums', width: 24, textAlign: 'right' }}>{pct}</span>
+      <span style={{ color: '#a1a3b8', fontSize: '0.75rem', fontVariantNumeric: 'tabular-nums', width: 24, textAlign: 'right' }}>{pct}</span>
     </span>
   );
 }
