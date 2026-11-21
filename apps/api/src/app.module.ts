@@ -21,6 +21,7 @@ import { HumanReviewsModule } from './human-reviews/human-reviews.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SellerProfileModule } from './seller-profile/seller-profile.module';
 import { HandoffModule } from './handoff/handoff.module';
+import { DiscoveryModule } from './discovery/discovery.module';
 
 import { validateEnv } from './config/validate-env';
 
@@ -56,6 +57,7 @@ const envFilePaths = [
     JobsModule,
     SellerProfileModule,
     HandoffModule,
+    DiscoveryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
