@@ -15,6 +15,7 @@ import { serverApiFetch } from '@/lib/server-api-client';
 import { LeadActionButtons } from './lead-actions';
 import { LeadOutreachSection, OutreachDraftItem } from './lead-outreach-section';
 import { HandoffCard, HandoffBriefData } from './handoff-card';
+import { DealSection, DealItem } from './deal-section';
 import { LeadPriority } from '@/components/lead-priority';
 
 interface LeadDetailData {
@@ -89,11 +90,12 @@ export default async function LeadDetailPage({
 }) {
   const leadId = params.id;
 
-  const [leadRes, reviewsRes, draftsRes, briefRes] = await Promise.all([
+  const [leadRes, reviewsRes, draftsRes, briefRes, dealsRes] = await Promise.all([
     serverApiFetch<LeadDetailData>(`/leads/${leadId}`),
     serverApiFetch<HumanReviewsResponse>(`/human-reviews?leadId=${leadId}`),
     serverApiFetch<OutreachDraftsResponse>(`/outreach?leadId=${leadId}`),
     serverApiFetch<HandoffBriefData>(`/leads/${leadId}/handoff`),
+    serverApiFetch<DealItem[]>(`/leads/${leadId}/projects`),
   ]);
 
   if (!leadRes.data || leadRes.status === 404) {
@@ -218,6 +220,8 @@ export default async function LeadDetailPage({
         }}
       >
         <HandoffCard priority={lead.priority} brief={briefRes.data} aiControlState={lead.aiControlState} />
+
+        <DealSection leadId={lead.id} status={lead.status} deals={dealsRes.data ?? []} />
 
         {/* Navigation & Action Bar */}
         <Stack
