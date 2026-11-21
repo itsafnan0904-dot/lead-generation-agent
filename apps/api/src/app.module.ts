@@ -20,6 +20,7 @@ import { AuditModule } from './audit/audit.module';
 import { HumanReviewsModule } from './human-reviews/human-reviews.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SellerProfileModule } from './seller-profile/seller-profile.module';
+import { HandoffModule } from './handoff/handoff.module';
 
 import { validateEnv } from './config/validate-env';
 
@@ -54,6 +55,7 @@ const envFilePaths = [
     OutreachModule,
     JobsModule,
     SellerProfileModule,
+    HandoffModule,
   ],
   controllers: [AppController],
   providers: [AppService],
