@@ -6,7 +6,8 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AIOrchestratorService } from '../../ai/services/ai-orchestrator.service';
-import { validateAndClampScoreFactors, ScoreBreakdownReason } from '../utils/scoring-validator.util';
+import { validateAndClampScoreFactors, ScoreBreakdownReason, SCORING_BOUNDS } from '../utils/scoring-validator.util';
+import { normalizeCountry } from '../../discovery/discovery.util';
 import { Lead } from '@ai-sales-agent/database';
 import { SellerContextService } from '../../seller-profile/seller-context.service';
 
@@ -102,6 +103,19 @@ export class ScoringService {
       aiData.requiresHumanReview,
       aiResponse.metadata,
     );
+
+    // 2b. Location match is objective once we know the company's country and the seller's target countries,
+    // so override the AI's guess: in a target country = full marks, outside every target country = 0.
+    const companyCountry = normalizeCountry(company.country);
+    if (seller?.targetCountryCodes?.length && companyCountry) {
+      const inMarket = seller.targetCountryCodes.map((c) => c.toUpperCase()).includes(companyCountry);
+      const location = inMarket ? SCORING_BOUNDS.locationMatch.max : 0;
+      factors.scoreTotal += location - factors.scoreLocationMatch;
+      factors.scoreLocationMatch = location;
+      (breakdownReason as any).locationMatchNote = inMarket
+        ? `${companyCountry} is one of the seller's target countries`
+        : `${companyCountry} is not one of the seller's target countries`;
+    }
 
     // 3. Persist scoreTotal, factor columns, and scoreBreakdownReason
     const updatedLead = await this.prisma.client.lead.update({
