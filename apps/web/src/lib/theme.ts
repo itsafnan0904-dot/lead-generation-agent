@@ -1,315 +1,135 @@
 import { createTheme } from '@mui/material/styles';
 
 /**
- * ============================================================================
- * AI SALES AGENT — CENTRALIZED DESIGN TOKENS & ENTERPRISE DARK THEME
- * Reference: docs/DESIGN_SYSTEM.md (Linear / Vercel / Stripe discipline)
- * ============================================================================
- * 
- * DESIGN SYSTEM PRINCIPLES:
- * 1. Restrained dark neutral surface hierarchy (no heavy glass/rainbow gradients).
- * 2. High-contrast, intentional accent usage (color communicates meaning, not decoration).
- * 3. Precise 1px hairline borders over fuzzy outer glows.
- * 4. Crisp typographic hierarchy with defined scale and weights.
- * 5. Built for MUI v9 (@mui/material 9.4.0) with consistent web tokens.
+ * Design tokens for the MUI layer. Values mirror the CSS variables in app/globals.css.
+ * Graphite neutrals, one cobalt accent, IBM Plex, weights 400/500, 4px grid.
  */
-
 export const tokens = {
-  // --- SURFACE & BACKGROUND HIERARCHY ---
   canvas: {
-    base: '#0d0e1b',        // Root canvas background
-    surface: '#151628',     // Main card & container background
-    surfaceSubtle: '#1a1b30', // Nested panels, inputs, table rows
-    surfaceElevated: '#202238', // Modals, dropdowns, popovers
-    surfaceHover: '#23253d', // Interactive hover state
+    base: '#141415',
+    surface: '#19191b',
+    surfaceSubtle: '#1e1e20',
+    surfaceElevated: '#232325',
+    surfaceHover: '#28282b',
   },
-
-  // --- BORDERS & DIVIDERS ---
   border: {
-    subtle: 'rgba(255, 255, 255, 0.07)',  // Interior dividers, subtle grid lines
-    default: 'rgba(255, 255, 255, 0.12)', // Standard card/container boundaries
-    strong: 'rgba(255, 255, 255, 0.20)',  // Hovered card bounds, active borders
-    focus: '#7c6ee0',                     // Interactive focus ring
+    subtle: 'rgba(237, 237, 237, 0.06)',
+    default: 'rgba(237, 237, 237, 0.09)',
+    strong: 'rgba(237, 237, 237, 0.16)',
+    focus: '#86a9f2',
   },
-
-  // --- TYPOGRAPHIC COLORS ---
   text: {
-    primary: '#f9fafb',   // Headings, key values, primary readable text
-    secondary: '#a1a3b8', // Labels, descriptions, secondary metadata
-    muted: '#6b7280',     // Inactive badges, timestamps, subtle placeholders
-    inverse: '#ffffff',   // Text on solid colored buttons
+    primary: '#ededed',
+    secondary: '#a1a1a6',
+    muted: '#85858b',
+    inverse: '#ffffff',
   },
-
-  // --- SEMANTIC ACCENTS (Restrained, meaning-driven) ---
   accent: {
-    primary: '#7c6ee0',        // Indigo: Primary actions & selected navigation
-    primaryHover: '#7c6ee0',   // Hover state for primary action
-    primaryLight: '#a99ef2',   // Highlights and focused active borders
-    primaryMuted: 'rgba(124, 110, 224, 0.12)', // Subtle primary tag/alert backings
-
-    success: '#10b981',        // Emerald: Active AI, approved, healthy
-    successMuted: 'rgba(16, 185, 129, 0.12)',
-
-    warning: '#f59e0b',        // Amber: Human review required, paused AI
-    warningMuted: 'rgba(245, 158, 11, 0.12)',
-
-    danger: '#f43f5e',         // Rose: Errors, restrictions, destructive actions
-    dangerMuted: 'rgba(244, 63, 94, 0.12)',
-
-    info: '#0ea5e9',           // Sky: AI research, info signals, enrichment
-    infoMuted: 'rgba(14, 165, 233, 0.12)',
+    primary: '#3d6fd8',
+    primaryHover: '#3563c4',
+    primaryLight: '#86a9f2',
+    primaryMuted: 'rgba(94, 140, 235, 0.14)',
+    success: '#4cc38a',
+    successMuted: 'rgba(76, 195, 138, 0.12)',
+    warning: '#e3a94d',
+    warningMuted: 'rgba(227, 169, 77, 0.12)',
+    danger: '#ee7378',
+    dangerMuted: 'rgba(229, 72, 77, 0.14)',
+    info: '#86a9f2',
+    infoMuted: 'rgba(94, 140, 235, 0.12)',
   },
-
-  // --- SPACING SCALE (4px grid rhythm) ---
-  spacing: {
-    xxs: '4px',
-    xs: '8px',
-    sm: '12px',
-    md: '16px',
-    lg: '24px',
-    xl: '32px',
-    xxl: '48px',
-  },
-
-  // --- CORNER RADII ---
-  radius: {
-    sm: '6px',      // Inputs, buttons, small tags
-    md: '10px',     // Standard cards, table containers
-    lg: '12px',     // Large modals, major section wrappers
-    full: '9999px', // Pill badges, status indicators
-  },
-
-  // --- TRANSITIONS ---
+  spacing: { xxs: '4px', xs: '8px', sm: '12px', md: '16px', lg: '24px', xl: '32px', xxl: '48px' },
+  radius: { xs: '4px', sm: '8px', md: '12px', lg: '16px', full: '999px' },
   transition: {
-    default: 'all 150ms cubic-bezier(0.4, 0, 0.2, 1)',
-    fast: 'all 100ms cubic-bezier(0.4, 0, 0.2, 1)',
+    default: 'background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1)',
+    fast: 'background-color 120ms cubic-bezier(0.22, 1, 0.36, 1), border-color 120ms cubic-bezier(0.22, 1, 0.36, 1)',
   },
-
-  // --- RESTRAINED SHADOWS (Hairline elevations, no fuzzy neon) ---
   shadow: {
-    card: '0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3)',
-    elevated: '0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5)',
-    glowFocus: '0 0 0 2px rgba(124, 110, 224, 0.25)',
-  }
+    card: 'none',
+    elevated: '0 8px 24px rgba(0, 0, 0, 0.4)',
+  },
 } as const;
 
 export const darkTheme = createTheme({
   palette: {
     mode: 'dark',
-    background: {
-      default: tokens.canvas.base,
-      paper: tokens.canvas.surface,
-    },
-    primary: {
-      main: tokens.accent.primary,
-      light: tokens.accent.primaryLight,
-      dark: tokens.accent.primaryHover,
-      contrastText: tokens.text.inverse,
-    },
-    secondary: {
-      main: tokens.accent.info,
-      light: '#38bdf8',
-      dark: '#0284c7',
-      contrastText: tokens.text.inverse,
-    },
-    info: {
-      main: tokens.accent.info,
-      light: '#38bdf8',
-      dark: '#0284c7',
-    },
-    success: {
-      main: tokens.accent.success,
-      light: '#34d399',
-      dark: '#059669',
-    },
-    warning: {
-      main: tokens.accent.warning,
-      light: '#fbbf24',
-      dark: '#d97706',
-    },
-    error: {
-      main: tokens.accent.danger,
-      light: '#fb7185',
-      dark: '#e11d48',
-    },
-    text: {
-      primary: tokens.text.primary,
-      secondary: tokens.text.secondary,
-      disabled: tokens.text.muted,
-    },
+    background: { default: tokens.canvas.base, paper: tokens.canvas.surface },
+    primary: { main: tokens.accent.primary, light: tokens.accent.primaryLight, dark: tokens.accent.primaryHover, contrastText: tokens.text.inverse },
+    secondary: { main: tokens.accent.info, light: tokens.accent.primaryLight, dark: tokens.accent.primaryHover, contrastText: tokens.text.inverse },
+    info: { main: tokens.accent.info, light: tokens.accent.primaryLight, dark: tokens.accent.primaryHover },
+    success: { main: tokens.accent.success, light: '#6fd3a4', dark: '#3aa874' },
+    warning: { main: tokens.accent.warning, light: '#edbd6f', dark: '#c48c32' },
+    error: { main: tokens.accent.danger, light: '#f29296', dark: '#d2565b' },
+    text: { primary: tokens.text.primary, secondary: tokens.text.secondary, disabled: tokens.text.muted },
     divider: tokens.border.subtle,
   },
   typography: {
     fontFamily: ['var(--font-sans)', 'system-ui', '-apple-system', '"Segoe UI"', 'sans-serif'].join(','),
-    h1: {
-      fontWeight: 700,
-      fontSize: '1.5rem', // 24px
-      lineHeight: 1.25,
-      letterSpacing: '-0.025em',
-    },
-    h2: {
-      fontWeight: 600,
-      fontSize: '1.125rem', // 18px
-      lineHeight: 1.3,
-      letterSpacing: '-0.015em',
-    },
-    h3: {
-      fontWeight: 600,
-      fontSize: '0.9375rem', // 15px
-      lineHeight: 1.4,
-      letterSpacing: '-0.01em',
-    },
-    subtitle1: {
-      fontSize: '0.875rem',
-      color: tokens.text.secondary,
-      lineHeight: 1.5,
-    },
-    subtitle2: {
-      fontSize: '0.8125rem',
-      color: tokens.text.secondary,
-      fontWeight: 500,
-      letterSpacing: '0.01em',
-    },
-    body1: {
-      fontSize: '0.875rem',
-      lineHeight: 1.5,
-      color: tokens.text.primary,
-    },
-    body2: {
-      fontSize: '0.8125rem',
-      lineHeight: 1.45,
-      color: tokens.text.secondary,
-    },
-    caption: {
-      fontSize: '0.75rem',
-      lineHeight: 1.33,
-      color: tokens.text.muted,
-    },
-    button: {
-      textTransform: 'none',
-      fontWeight: 500,
-      fontSize: '0.875rem',
-    },
+    h1: { fontWeight: 500, fontSize: '1.5rem', lineHeight: 1.25, letterSpacing: '-0.02em' },
+    h2: { fontWeight: 500, fontSize: '1.125rem', lineHeight: 1.3 },
+    h3: { fontWeight: 500, fontSize: '0.9375rem', lineHeight: 1.4 },
+    subtitle1: { fontSize: '0.875rem', color: tokens.text.secondary, lineHeight: 1.5 },
+    subtitle2: { fontSize: '0.8125rem', color: tokens.text.secondary, fontWeight: 500 },
+    body1: { fontSize: '0.875rem', lineHeight: 1.5, color: tokens.text.primary },
+    body2: { fontSize: '0.8125rem', lineHeight: 1.5, color: tokens.text.secondary },
+    caption: { fontSize: '0.75rem', lineHeight: 1.33, color: tokens.text.muted },
+    button: { textTransform: 'none', fontWeight: 500, fontSize: '0.875rem' },
   },
-  shape: {
-    borderRadius: 8,
-  },
+  shape: { borderRadius: 8 },
   components: {
     MuiCssBaseline: {
       styleOverrides: {
         body: {
           backgroundColor: tokens.canvas.base,
           color: tokens.text.primary,
-          scrollbarColor: '#374151 #151628',
-          '&::-webkit-scrollbar, & *::-webkit-scrollbar': {
-            width: '6px',
-            height: '6px',
-          },
-          '&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb': {
-            borderRadius: 6,
-            backgroundColor: 'rgba(255, 255, 255, 0.15)',
-          },
-          '&::-webkit-scrollbar-track, & *::-webkit-scrollbar-track': {
-            backgroundColor: tokens.canvas.surface,
-          },
+          scrollbarColor: 'rgba(237,237,237,0.14) transparent',
         },
       },
     },
     MuiCard: {
       styleOverrides: {
-        root: {
-          backgroundColor: tokens.canvas.surface,
-          border: `1px solid ${tokens.border.default}`,
-          boxShadow: tokens.shadow.card,
-          borderRadius: 10,
-        },
+        root: { backgroundColor: tokens.canvas.surface, border: `1px solid ${tokens.border.subtle}`, boxShadow: tokens.shadow.card, borderRadius: 12 },
       },
     },
     MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundImage: 'none',
-          backgroundColor: tokens.canvas.surface,
-        },
-      },
+      styleOverrides: { root: { backgroundImage: 'none', backgroundColor: tokens.canvas.surface } },
     },
     MuiButton: {
       styleOverrides: {
-        root: {
-          borderRadius: 6,
-          padding: '8px 16px',
-          fontWeight: 500,
-          transition: tokens.transition.default,
-        },
+        root: { borderRadius: 8, padding: '8px 16px', fontWeight: 500, transition: tokens.transition.default },
         contained: {
           backgroundColor: tokens.accent.primary,
           color: '#ffffff',
           boxShadow: 'none',
-          '&:hover': {
-            backgroundColor: tokens.accent.primaryHover,
-            boxShadow: 'none',
-          },
+          '&:hover': { backgroundColor: tokens.accent.primaryHover, boxShadow: 'none' },
         },
         outlined: {
           borderColor: tokens.border.default,
-          backgroundColor: 'rgba(255, 255, 255, 0.02)',
+          backgroundColor: 'transparent',
           color: tokens.text.primary,
-          '&:hover': {
-            borderColor: tokens.border.strong,
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-          },
+          '&:hover': { borderColor: tokens.border.strong, backgroundColor: tokens.canvas.surfaceHover },
         },
       },
     },
     MuiChip: {
-      styleOverrides: {
-        root: {
-          fontWeight: 500,
-          fontSize: '0.75rem',
-          borderRadius: 9999,
-          height: '24px',
-        },
-      },
+      styleOverrides: { root: { fontWeight: 500, fontSize: '0.75rem', borderRadius: 4, height: '24px' } },
     },
     MuiTableCell: {
       styleOverrides: {
-        root: {
-          borderBottom: `1px solid ${tokens.border.subtle}`,
-          padding: '12px 16px',
-        },
-        head: {
-          backgroundColor: tokens.canvas.surfaceSubtle,
-          color: tokens.text.secondary,
-          fontWeight: 600,
-          fontSize: '0.75rem',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-        },
+        root: { borderBottom: `1px solid ${tokens.border.subtle}`, padding: '12px 16px' },
+        head: { backgroundColor: tokens.canvas.surfaceSubtle, color: tokens.text.muted, fontWeight: 400, fontSize: '0.8125rem' },
       },
     },
     MuiTableRow: {
-      styleOverrides: {
-        root: {
-          '&:hover': {
-            backgroundColor: `${tokens.canvas.surfaceHover} !important`,
-          },
-        },
-      },
+      styleOverrides: { root: { '&:hover': { backgroundColor: `${tokens.canvas.surfaceHover} !important` } } },
     },
-    MuiAlert: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-          border: '1px solid',
-        },
-      },
-    },
+    MuiAlert: { styleOverrides: { root: { borderRadius: 8, border: '1px solid' } } },
     MuiDialog: {
       styleOverrides: {
         paper: {
           backgroundColor: tokens.canvas.surfaceElevated,
           border: `1px solid ${tokens.border.default}`,
-          borderRadius: 12,
+          borderRadius: 16,
           boxShadow: tokens.shadow.elevated,
         },
       },

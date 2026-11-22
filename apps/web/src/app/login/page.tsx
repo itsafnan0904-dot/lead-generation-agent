@@ -48,8 +48,8 @@ export default function LoginPage() {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '24px 16px',
-      backgroundColor: '#0d0e1b',
-      backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(124, 110, 224, 0.04) 0%, transparent 60%)',
+      backgroundColor: '#141415',
+      
     }}>
       {/* Brand & Auth Container */}
       <div style={{
@@ -68,11 +68,11 @@ export default function LoginPage() {
             justifyContent: 'center',
             width: '38px',
             height: '38px',
-            borderRadius: '6px',
-            backgroundColor: '#1a1b30',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            color: '#a99ef2',
-            marginBottom: '14px',
+            borderRadius: '8px',
+            backgroundColor: '#1e1e20',
+            border: '1px solid rgba(237, 237, 237, 0.09)',
+            color: '#86a9f2',
+            marginBottom: '16px',
           }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
@@ -81,44 +81,42 @@ export default function LoginPage() {
             </svg>
           </div>
           <h1 style={{
-            fontSize: '1.1875rem',
-            fontWeight: 600,
-            color: '#f4f4fa',
-            letterSpacing: '-0.025em',
-            marginBottom: '5px',
+            fontSize: '1.125rem',
+            fontWeight: 500,
+            color: '#ededed',
+            marginBottom: '4px',
           }}>
             AI Sales Agent
           </h1>
           <p style={{
             fontSize: '0.8125rem',
-            color: '#a1a3b8',
+            color: '#a1a1a6',
             lineHeight: 1.45,
-            letterSpacing: '-0.005em',
           }}>
-            Sign in to access your autonomous sales control center
+            Sign in to continue
           </p>
         </div>
 
         {/* Surface Card Container */}
         <div style={{
-          backgroundColor: '#151628',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '10px',
-          boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.6), 0 1px 2px 0 rgba(0, 0, 0, 0.4)',
-          padding: '24px 22px',
+          backgroundColor: '#19191b',
+          border: '1px solid rgba(237, 237, 237, 0.09)',
+          borderRadius: '12px',
+          boxShadow: 'none',
+          padding: '24px 24px',
         }}>
           {/* Inline Error Alert */}
           {error && (
             <div style={{
-              backgroundColor: 'rgba(244, 63, 94, 0.08)',
-              border: '1px solid rgba(244, 63, 94, 0.22)',
-              borderRadius: '6px',
-              padding: '9px 12px',
+              backgroundColor: 'rgba(229, 72, 77, 0.08)',
+              border: '1px solid rgba(229, 72, 77, 0.22)',
+              borderRadius: '8px',
+              padding: '8px 12px',
               marginBottom: '16px',
               display: 'flex',
               alignItems: 'flex-start',
-              gap: '9px',
-              color: '#fb7185',
+              gap: '8px',
+              color: '#ee7378',
               fontSize: '0.8125rem',
               lineHeight: 1.4,
             }}>
@@ -143,19 +141,18 @@ export default function LoginPage() {
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} noValidate>
-            <div style={{ marginBottom: '14px' }}>
+            <div style={{ marginBottom: '16px' }}>
               <label
                 htmlFor="email"
                 style={{
                   display: 'block',
-                  fontSize: '0.78125rem',
+                  fontSize: '0.8125rem',
                   fontWeight: 500,
-                  color: '#a1a3b8',
-                  marginBottom: '5px',
-                  letterSpacing: '-0.005em',
+                  color: '#a1a1a6',
+                  marginBottom: '4px',
                 }}
               >
-                Work Email
+                Work email
               </label>
               <input
                 id="email"
@@ -170,12 +167,12 @@ export default function LoginPage() {
                 disabled={isSubmitting}
                 style={{
                   width: '100%',
-                  backgroundColor: '#1a1b30',
-                  border: '1px solid rgba(255, 255, 255, 0.10)',
-                  borderRadius: '6px',
-                  padding: '9px 11px',
-                  color: '#f4f4fa',
-                  fontSize: '0.84375rem',
+                  backgroundColor: '#1e1e20',
+                  border: '1px solid rgba(237, 237, 237, 0.09)',
+                  borderRadius: '8px',
+                  padding: '8px 12px',
+                  color: '#ededed',
+                  fontSize: '0.875rem',
                   lineHeight: 1.4,
                   outline: 'none',
                 }}
@@ -187,16 +184,15 @@ export default function LoginPage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: '5px',
+                marginBottom: '4px',
               }}>
                 <label
                   htmlFor="password"
                   style={{
                     display: 'block',
-                    fontSize: '0.78125rem',
+                    fontSize: '0.8125rem',
                     fontWeight: 500,
-                    color: '#a1a3b8',
-                    letterSpacing: '-0.005em',
+                    color: '#a1a1a6',
                   }}
                 >
                   Password
@@ -215,12 +211,12 @@ export default function LoginPage() {
                 disabled={isSubmitting}
                 style={{
                   width: '100%',
-                  backgroundColor: '#1a1b30',
-                  border: '1px solid rgba(255, 255, 255, 0.10)',
-                  borderRadius: '6px',
-                  padding: '9px 11px',
-                  color: '#f4f4fa',
-                  fontSize: '0.84375rem',
+                  backgroundColor: '#1e1e20',
+                  border: '1px solid rgba(237, 237, 237, 0.09)',
+                  borderRadius: '8px',
+                  padding: '8px 12px',
+                  color: '#ededed',
+                  fontSize: '0.875rem',
                   lineHeight: 1.4,
                   outline: 'none',
                 }}
@@ -243,21 +239,20 @@ export default function LoginPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: '#7c6ee0',
+                backgroundColor: '#3d6fd8',
                 color: '#ffffff',
                 border: '1px solid transparent',
-                borderRadius: '6px',
+                borderRadius: '8px',
                 padding: '9.5px 16px',
-                fontSize: '0.84375rem',
+                fontSize: '0.875rem',
                 fontWeight: 500,
-                letterSpacing: '-0.005em',
                 cursor: isSubmitting ? 'not-allowed' : 'pointer',
                 opacity: isSubmitting ? 0.6 : 1,
                 outline: 'none',
               }}
             >
               {isSubmitting ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '7px', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
                   <svg
                     width="13"
                     height="13"
@@ -274,7 +269,7 @@ export default function LoginPage() {
                   <span>Authenticating...</span>
                 </div>
               ) : (
-                <span>Sign in to Dashboard</span>
+                <span>Sign in</span>
               )}
             </button>
           </form>
@@ -282,24 +277,23 @@ export default function LoginPage() {
 
         {/* Subdued Footer Metadata */}
         <div style={{
-          marginTop: '18px',
+          marginTop: '16px',
           textAlign: 'center',
-          fontSize: '0.71875rem',
-          color: '#6e7089',
+          fontSize: '0.75rem',
+          color: '#85858b',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '7px',
-          letterSpacing: '0.01em',
+          gap: '8px',
         }}>
           <span style={{
             display: 'inline-block',
             width: '5px',
             height: '5px',
             borderRadius: '50%',
-            backgroundColor: '#10b981',
+            backgroundColor: '#4cc38a',
           }} />
-          <span>Autonomous AI Prospecting & Lead Governance Platform</span>
+          <span>Finds prospects, writes outreach, hands you the lead when it is ready to talk money</span>
         </div>
       </div>
 
@@ -308,14 +302,14 @@ export default function LoginPage() {
           transition: border-color 140ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 140ms cubic-bezier(0.23, 1, 0.32, 1);
         }
         .v2-input::placeholder {
-          color: #6e7089;
+          color: #85858b;
         }
         .v2-input:hover:not(:disabled) {
-          border-color: rgba(255, 255, 255, 0.18) !important;
+          border-color: rgba(237, 237, 237, 0.16) !important;
         }
         .v2-input:focus {
-          border-color: #8f82e8 !important;
-          box-shadow: 0 0 0 2px rgba(83, 91, 242, 0.2) !important;
+          border-color: #4f82e6 !important;
+          box-shadow: 0 0 0 2px rgba(94, 140, 235, 0.2) !important;
         }
         .v2-input:disabled {
           opacity: 0.5;
@@ -326,13 +320,13 @@ export default function LoginPage() {
           transition: transform 140ms cubic-bezier(0.23, 1, 0.32, 1), background-color 140ms cubic-bezier(0.23, 1, 0.32, 1);
         }
         .v2-btn-primary:hover:not(:disabled) {
-          background-color: #6c5ed0 !important;
+          background-color: #3563c4 !important;
         }
         .v2-btn-primary:active:not(:disabled) {
           transform: scale(0.97);
         }
         .v2-btn-primary:focus-visible {
-          box-shadow: 0 0 0 2px #0d0e1b, 0 0 0 4px #a99ef2;
+          box-shadow: 0 0 0 2px #141415, 0 0 0 4px #86a9f2;
         }
 
         @keyframes fast-spin {

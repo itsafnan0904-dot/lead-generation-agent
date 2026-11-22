@@ -42,7 +42,7 @@ export default async function NotificationsPage({
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <Header title="Notifications & System Alerts" />
+      <Header title="Notifications" />
 
       <Box
         component="main"
@@ -58,13 +58,12 @@ export default async function NotificationsPage({
             variant="h1"
             sx={{
               fontSize: '1.5rem',
-              fontWeight: 700,
+              fontWeight: 600,
               lineHeight: 1.2,
-              letterSpacing: '-0.025em',
               color: 'var(--text-primary)',
             }}
           >
-            Notifications & System Alerts
+            Notifications
           </Typography>
           <Typography
             variant="body2"

@@ -87,7 +87,7 @@ export default function GmailPage() {
     const errorParam = searchParams.get('error');
 
     if (connectedParam === 'true') {
-      setSuccessBanner('Gmail account connected and authorized successfully!');
+      setSuccessBanner('Gmail account connected');
       // Clean query params from URL without refreshing
       router.replace('/gmail');
     } else if (errorParam) {
@@ -179,7 +179,7 @@ export default function GmailPage() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <Header title="Gmail Integration & Mailbox Hub" />
+      <Header title="Gmail" />
 
       <Box
         component="main"
@@ -199,26 +199,25 @@ export default function GmailPage() {
                 height: 40,
                 borderRadius: 'var(--radius-sm)',
                 bgcolor: 'var(--accent-primary-muted)',
-                border: '1px solid rgba(124, 110, 224, 0.25)',
+                border: '1px solid rgba(237, 237, 237, 0.09)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <MailOutlineIcon sx={{ color: 'var(--accent-primary-light)', fontSize: 22 }} />
+              <MailOutlineIcon sx={{ color: 'var(--accent-primary-light)', fontSize: 24 }} />
             </Box>
             <Box>
               <Typography
                 variant="h1"
                 sx={{
                   fontSize: '1.5rem',
-                  fontWeight: 700,
+                  fontWeight: 600,
                   lineHeight: 1.2,
-                  letterSpacing: '-0.025em',
                   color: 'var(--text-primary)',
                 }}
               >
-                Enterprise Gmail Mailbox
+                Connected mailbox
               </Typography>
               <Typography
                 variant="body2"
@@ -243,16 +242,16 @@ export default function GmailPage() {
             sx={{
               mb: 3,
               bgcolor: 'var(--accent-success-muted)',
-              color: '#34d399',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
+              color: '#4cc38a',
+              border: '1px solid rgba(237, 237, 237, 0.09)',
               borderRadius: 'var(--radius-sm)',
-              '& .MuiAlert-icon': { color: '#34d399' },
+              '& .MuiAlert-icon': { color: '#4cc38a' },
             }}
           >
-            <AlertTitle sx={{ fontWeight: 700, fontSize: '0.875rem', color: '#34d399', mb: 0.25 }}>
-              Connection Successful
+            <AlertTitle sx={{ fontWeight: 600, fontSize: '0.875rem', color: '#4cc38a', mb: 0.25 }}>
+              Connection successful
             </AlertTitle>
-            <Typography variant="body2" sx={{ fontSize: '0.8125rem', color: '#34d399' }}>
+            <Typography variant="body2" sx={{ fontSize: '0.8125rem', color: '#4cc38a' }}>
               {successBanner}
             </Typography>
           </Alert>
@@ -266,16 +265,16 @@ export default function GmailPage() {
             sx={{
               mb: 3,
               bgcolor: 'var(--accent-danger-muted)',
-              color: '#fb7185',
-              border: '1px solid rgba(244, 63, 94, 0.3)',
+              color: '#ee7378',
+              border: '1px solid rgba(237, 237, 237, 0.09)',
               borderRadius: 'var(--radius-sm)',
-              '& .MuiAlert-icon': { color: '#fb7185' },
+              '& .MuiAlert-icon': { color: '#ee7378' },
             }}
           >
-            <AlertTitle sx={{ fontWeight: 700, fontSize: '0.875rem', color: '#fb7185', mb: 0.25 }}>
-              Connection Notice
+            <AlertTitle sx={{ fontWeight: 600, fontSize: '0.875rem', color: '#ee7378', mb: 0.25 }}>
+              Connection notice
             </AlertTitle>
-            <Typography variant="body2" sx={{ fontSize: '0.8125rem', color: '#fb7185' }}>
+            <Typography variant="body2" sx={{ fontSize: '0.8125rem', color: '#ee7378' }}>
               {errorBanner}
             </Typography>
           </Alert>
@@ -295,13 +294,13 @@ export default function GmailPage() {
             sx={{
               mb: 3,
               bgcolor: 'var(--accent-danger-muted)',
-              color: '#fb7185',
-              border: '1px solid rgba(244, 63, 94, 0.3)',
+              color: '#ee7378',
+              border: '1px solid rgba(237, 237, 237, 0.09)',
               borderRadius: 'var(--radius-sm)',
-              '& .MuiAlert-icon': { color: '#fb7185' },
+              '& .MuiAlert-icon': { color: '#ee7378' },
             }}
           >
-            <AlertTitle sx={{ fontWeight: 700, fontSize: '0.875rem' }}>Error Loading Status</AlertTitle>
+            <AlertTitle sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Error Loading Status</AlertTitle>
             <Typography variant="body2" sx={{ fontSize: '0.8125rem' }}>
               {errorMessage}
             </Typography>
@@ -314,7 +313,7 @@ export default function GmailPage() {
                 bgcolor: 'var(--bg-surface)',
                 border: '1px solid var(--border-default)',
                 borderRadius: 'var(--radius-md)',
-                boxShadow: 'var(--shadow-card)',
+                boxShadow: 'none',
               }}
             >
               <CardContent sx={{ p: { xs: 2.5, sm: 3.5 } }}>
@@ -340,17 +339,17 @@ export default function GmailPage() {
                           justifyContent: 'center',
                           bgcolor: statusData?.isConnected
                             ? 'var(--accent-success-muted)'
-                            : 'rgba(255, 255, 255, 0.03)',
+                            : 'rgba(237, 237, 237, 0.03)',
                           border: '1px solid',
                           borderColor: statusData?.isConnected
-                            ? 'rgba(16, 185, 129, 0.35)'
+                            ? 'rgba(237, 237, 237, 0.09)'
                             : 'var(--border-subtle)',
                         }}
                       >
                         {statusData?.isConnected ? (
-                          <CheckCircleOutlineIcon sx={{ color: '#34d399', fontSize: 26 }} />
+                          <CheckCircleOutlineIcon sx={{ color: '#4cc38a', fontSize: 24 }} />
                         ) : (
-                          <ErrorOutlineIcon sx={{ color: 'var(--text-muted)', fontSize: 26 }} />
+                          <ErrorOutlineIcon sx={{ color: 'var(--text-muted)', fontSize: 24 }} />
                         )}
                       </Box>
 
@@ -361,9 +360,8 @@ export default function GmailPage() {
                             variant="h2"
                             sx={{
                               fontSize: '1.125rem',
-                              fontWeight: 600,
+                              fontWeight: 500,
                               color: 'var(--text-primary)',
-                              letterSpacing: '-0.015em',
                             }}
                           >
                             {statusData?.isConnected ? statusData.email : 'No Mailbox Connected'}
@@ -375,16 +373,14 @@ export default function GmailPage() {
                               borderRadius: 'var(--radius-sm)',
                               bgcolor: statusData?.isConnected
                                 ? 'var(--accent-success-muted)'
-                                : 'rgba(255, 255, 255, 0.04)',
+                                : 'rgba(237, 237, 237, 0.06)',
                               border: '1px solid',
                               borderColor: statusData?.isConnected
-                                ? 'rgba(16, 185, 129, 0.3)'
+                                ? 'rgba(237, 237, 237, 0.09)'
                                 : 'var(--border-subtle)',
-                              color: statusData?.isConnected ? '#34d399' : 'var(--text-muted)',
-                              fontSize: '0.6875rem',
-                              fontWeight: 700,
-                              letterSpacing: '0.05em',
-                              textTransform: 'uppercase',
+                              color: statusData?.isConnected ? '#4cc38a' : 'var(--text-muted)',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: 0.5,
@@ -395,11 +391,11 @@ export default function GmailPage() {
                                 width: 6,
                                 height: 6,
                                 borderRadius: '50%',
-                                bgcolor: statusData?.isConnected ? '#10b981' : 'var(--text-muted)',
-                                boxShadow: statusData?.isConnected ? '0 0 6px #10b981' : 'none',
+                                bgcolor: statusData?.isConnected ? '#4cc38a' : 'var(--text-muted)',
+                                boxShadow: statusData?.isConnected ? '0 0 6px #4cc38a' : 'none',
                               }}
                             />
-                            <span>{statusData?.isConnected ? 'CONNECTED' : 'DISCONNECTED'}</span>
+                            <span>{statusData?.isConnected ? 'Connected' : 'Disconnected'}</span>
                           </Box>
                         </Stack>
                         <Typography
@@ -424,24 +420,24 @@ export default function GmailPage() {
                             onClick={() => setDisconnectDialogOpen(true)}
                             disabled={actionLoading}
                             sx={{
-                              borderColor: 'rgba(244, 63, 94, 0.35)',
-                              color: '#fb7185',
-                              bgcolor: 'rgba(244, 63, 94, 0.05)',
+                              borderColor: 'rgba(237, 237, 237, 0.09)',
+                              color: '#ee7378',
+                              bgcolor: 'rgba(229, 72, 77, 0.05)',
                               fontSize: '0.8125rem',
-                              fontWeight: 600,
+                              fontWeight: 500,
                               borderRadius: 'var(--radius-sm)',
                               py: 0.6,
                               px: 1.75,
                               textTransform: 'none',
-                              transition: 'all 150ms cubic-bezier(0.4, 0, 0.2, 1)',
+                              transition: 'background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1)',
                               '&:hover': {
-                                borderColor: '#f43f5e',
-                                bgcolor: 'rgba(244, 63, 94, 0.12)',
+                                borderColor: '#e5484d',
+                                bgcolor: 'rgba(229, 72, 77, 0.12)',
                                 color: '#ffffff',
                               },
                             }}
                           >
-                            Disconnect Mailbox
+                            Disconnect mailbox
                           </Button>
                         ) : (
                           <Tooltip title="Only Administrators can disconnect the shared Gmail account" arrow>
@@ -481,13 +477,12 @@ export default function GmailPage() {
                           sx={{
                             bgcolor: 'var(--accent-primary)',
                             color: '#ffffff',
-                            fontWeight: 600,
+                            fontWeight: 500,
                             fontSize: '0.875rem',
                             borderRadius: 'var(--radius-sm)',
                             px: 2.5,
                             py: 0.8,
                             textTransform: 'none',
-                            boxShadow: '0 2px 8px rgba(124, 110, 224, 0.3)',
                             '&:hover': {
                               bgcolor: 'var(--accent-primary-hover)',
                             },
@@ -539,10 +534,8 @@ export default function GmailPage() {
                                 variant="caption"
                                 sx={{
                                   color: 'var(--text-secondary)',
-                                  fontWeight: 600,
-                                  fontSize: '0.6875rem',
-                                  letterSpacing: '0.06em',
-                                  textTransform: 'uppercase',
+                                  fontWeight: 500,
+                                  fontSize: '0.75rem',
                                 }}
                               >
                                 CONNECTED BY
@@ -552,7 +545,7 @@ export default function GmailPage() {
                               variant="body2"
                               sx={{
                                 color: 'var(--text-primary)',
-                                fontWeight: 600,
+                                fontWeight: 500,
                                 fontSize: '0.875rem',
                                 lineHeight: 1.4,
                               }}
@@ -590,10 +583,8 @@ export default function GmailPage() {
                                 variant="caption"
                                 sx={{
                                   color: 'var(--text-secondary)',
-                                  fontWeight: 600,
-                                  fontSize: '0.6875rem',
-                                  letterSpacing: '0.06em',
-                                  textTransform: 'uppercase',
+                                  fontWeight: 500,
+                                  fontSize: '0.75rem',
                                 }}
                               >
                                 CONNECTED AT
@@ -603,7 +594,7 @@ export default function GmailPage() {
                               variant="body2"
                               sx={{
                                 color: 'var(--text-primary)',
-                                fontWeight: 600,
+                                fontWeight: 500,
                                 fontSize: '0.875rem',
                                 lineHeight: 1.4,
                               }}
@@ -652,10 +643,8 @@ export default function GmailPage() {
                                 variant="caption"
                                 sx={{
                                   color: 'var(--text-secondary)',
-                                  fontWeight: 600,
-                                  fontSize: '0.6875rem',
-                                  letterSpacing: '0.06em',
-                                  textTransform: 'uppercase',
+                                  fontWeight: 500,
+                                  fontSize: '0.75rem',
                                 }}
                               >
                                 TOKEN STATUS
@@ -672,13 +661,11 @@ export default function GmailPage() {
                                     : 'var(--accent-success-muted)',
                                   border: '1px solid',
                                   borderColor: statusData.isTokenExpired
-                                    ? 'rgba(245, 158, 11, 0.35)'
-                                    : 'rgba(16, 185, 129, 0.3)',
-                                  color: statusData.isTokenExpired ? '#fbbf24' : '#34d399',
-                                  fontSize: '0.625rem',
-                                  fontWeight: 700,
-                                  letterSpacing: '0.04em',
-                                  textTransform: 'uppercase',
+                                    ? 'rgba(237, 237, 237, 0.09)'
+                                    : 'rgba(237, 237, 237, 0.09)',
+                                  color: statusData.isTokenExpired ? '#e3a94d' : '#4cc38a',
+                                  fontSize: '0.75rem',
+                                  fontWeight: 600,
                                 }}
                               >
                                 {statusData.isTokenExpired ? 'AUTO-REFRESH PENDING' : 'HEALTHY & VALID'}
@@ -714,11 +701,11 @@ export default function GmailPage() {
                             variant="subtitle2"
                             sx={{
                               fontSize: '0.875rem',
-                              fontWeight: 600,
+                              fontWeight: 500,
                               color: 'var(--text-primary)',
                             }}
                           >
-                            Inbox Reply Sync Engine
+                            Inbox reply sync engine
                           </Typography>
                           <Typography
                             variant="caption"
@@ -748,7 +735,7 @@ export default function GmailPage() {
                           sx={{
                             color: 'var(--text-primary)',
                             borderColor: 'var(--border-default)',
-                            bgcolor: 'rgba(255, 255, 255, 0.02)',
+                            bgcolor: 'rgba(237, 237, 237, 0.03)',
                             fontSize: '0.8125rem',
                             fontWeight: 500,
                             borderRadius: 'var(--radius-sm)',
@@ -756,7 +743,7 @@ export default function GmailPage() {
                             py: 0.5,
                             px: 1.5,
                             '&:hover': {
-                              bgcolor: 'rgba(255, 255, 255, 0.06)',
+                              bgcolor: 'rgba(237, 237, 237, 0.06)',
                               borderColor: 'var(--border-strong)',
                             },
                           }}
@@ -773,11 +760,11 @@ export default function GmailPage() {
                             bgcolor: syncResult.success
                               ? 'var(--accent-success-muted)'
                               : 'var(--accent-danger-muted)',
-                            color: syncResult.success ? '#34d399' : '#fb7185',
+                            color: syncResult.success ? '#4cc38a' : '#ee7378',
                             border: '1px solid',
                             borderColor: syncResult.success
-                              ? 'rgba(16, 185, 129, 0.3)'
-                              : 'rgba(244, 63, 94, 0.3)',
+                              ? 'rgba(237, 237, 237, 0.09)'
+                              : 'rgba(237, 237, 237, 0.09)',
                             borderRadius: 'var(--radius-sm)',
                             fontSize: '0.8125rem',
                           }}
@@ -807,12 +794,11 @@ export default function GmailPage() {
                       variant="h3"
                       sx={{
                         fontSize: '0.9375rem',
-                        fontWeight: 600,
+                        fontWeight: 500,
                         color: 'var(--text-primary)',
-                        letterSpacing: '-0.01em',
                       }}
                     >
-                      Security &amp; Governance Model
+                      How access is controlled
                     </Typography>
                   </Stack>
                   <Typography
@@ -849,14 +835,13 @@ export default function GmailPage() {
         }}
       >
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, pb: 1 }}>
-          <WarningAmberIcon sx={{ color: '#fb7185', fontSize: 24 }} />
+          <WarningAmberIcon sx={{ color: '#ee7378', fontSize: 24 }} />
           <Typography
             variant="h3"
             sx={{
               fontSize: '1.125rem',
-              fontWeight: 600,
+              fontWeight: 500,
               color: 'var(--text-primary)',
-              letterSpacing: '-0.01em',
             }}
           >
             Disconnect Shared Gmail?
@@ -873,7 +858,7 @@ export default function GmailPage() {
             Disconnecting <strong>{statusData?.email}</strong> will immediately halt all automated cold outreach email dispatches and pause inbox reply synchronization across the entire workspace.
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ p: 2, pt: 1.5, gap: 1 }}>
+        <DialogActions sx={{ p: 2, pt: 1.5, gap: 4 }}>
           <Button
             onClick={() => setDisconnectDialogOpen(false)}
             disabled={actionLoading}
@@ -887,7 +872,7 @@ export default function GmailPage() {
               textTransform: 'none',
               px: 1.5,
               '&:hover': {
-                bgcolor: 'rgba(255, 255, 255, 0.04)',
+                bgcolor: 'rgba(237, 237, 237, 0.06)',
                 color: 'var(--text-primary)',
               },
             }}
@@ -903,12 +888,11 @@ export default function GmailPage() {
               color: '#ffffff',
               borderRadius: 'var(--radius-sm)',
               fontSize: '0.8125rem',
-              fontWeight: 600,
+              fontWeight: 500,
               textTransform: 'none',
               px: 2,
-              boxShadow: '0 2px 8px rgba(244, 63, 94, 0.3)',
               '&:hover': {
-                bgcolor: '#e11d48',
+                bgcolor: '#d2565b',
               },
             }}
           >

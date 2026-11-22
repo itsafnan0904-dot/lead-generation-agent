@@ -53,7 +53,7 @@ const GROUPS: { label: string; items: NavItem[] }[] = [
 
 function Icon({ name, active }: { name: keyof typeof ICONS; active: boolean }) {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={active ? '#a99ef2' : 'currentColor'} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={active ? '#86a9f2' : 'currentColor'} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d={ICONS[name]} />
     </svg>
   );
@@ -87,22 +87,22 @@ export function Sidebar({ open = false }: { open?: boolean }) {
       aria-label="Main navigation"
       style={{
         width: 'var(--sidebar-width)', flexShrink: 0, minHeight: '100vh', background: 'var(--bg-surface)',
-        borderRight: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', padding: '20px 14px',
+        borderRight: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', padding: '20px 16px',
       }}
     >
-      <Link href="/overview" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 8px 22px' }}>
-        <span style={{ width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg, #6f60d4, #8a7ce6)', display: 'grid', placeItems: 'center', color: '#fff', flexShrink: 0 }}>
+      <Link href="/overview" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 8px 24px' }}>
+        <span style={{ width: 34, height: 34, borderRadius: 12, background: 'var(--accent-primary)', display: 'grid', placeItems: 'center', color: '#ffffff', flexShrink: 0 }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
           </svg>
         </span>
-        <span style={{ fontWeight: 800, fontSize: '1.0625rem', letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>AI Sales Agent</span>
+        <span style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)' }}>AI Sales Agent</span>
       </Link>
 
-      <nav style={{ display: 'grid', gap: 18, flex: 1, alignContent: 'start' }}>
+      <nav style={{ display: 'grid', gap: 20, flex: 1, alignContent: 'start' }}>
         {GROUPS.map((group) => (
           <div key={group.label}>
-            <div style={{ fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-muted)', padding: '0 10px 6px' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)', padding: '0 10px 6px' }}>
               {group.label}
             </div>
             <div style={{ display: 'grid', gap: 2 }}>
@@ -114,7 +114,7 @@ export function Sidebar({ open = false }: { open?: boolean }) {
                     href={item.href}
                     aria-current={active ? 'page' : undefined}
                     style={{
-                      display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 10,
+                      display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 12,
                       fontSize: '0.8125rem', fontWeight: active ? 600 : 500,
                       color: active ? 'var(--text-primary)' : 'var(--text-secondary)',
                       background: active ? 'var(--accent-primary-muted)' : 'transparent',
@@ -124,7 +124,7 @@ export function Sidebar({ open = false }: { open?: boolean }) {
                     <Icon name={item.icon} active={active} />
                     <span style={{ flex: 1 }}>{item.name}</span>
                     {item.icon === 'notifications' && unread > 0 && (
-                      <span className="pill pill-bad" aria-label={`${unread} unread`}>{unread}</span>
+                      <span className="mono" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }} aria-label={`${unread} unread`}>{unread}</span>
                     )}
                   </Link>
                 );
@@ -134,8 +134,8 @@ export function Sidebar({ open = false }: { open?: boolean }) {
         ))}
       </nav>
 
-      <div style={{ marginTop: 16, padding: '10px 12px', borderRadius: 10, background: 'var(--bg-surface-subtle)', border: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#2fbf8a', flexShrink: 0 }} />
+      <div style={{ marginTop: 16, padding: '10px 12px', borderRadius: 12, background: 'var(--bg-surface-subtle)', border: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4cc38a', flexShrink: 0 }} />
         <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>AI engine active</span>
       </div>
     </aside>

@@ -67,7 +67,7 @@ export default async function CompaniesListPage({
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <Header title="Company & Account Intelligence" />
+      <Header title="Companies" />
 
       <Box
         component="main"
@@ -75,7 +75,7 @@ export default async function CompaniesListPage({
           p: { xs: 2, sm: 3, md: 4 },
           display: 'flex',
           flexDirection: 'column',
-          gap: 3,
+          gap: 4,
           maxWidth: 1400,
           width: '100%',
           mx: 'auto',
@@ -92,7 +92,7 @@ export default async function CompaniesListPage({
         >
           <Box>
             <Typography variant="h2" sx={{ color: 'var(--text-primary)', mb: 0.5 }}>
-              Company Directory
+              All companies
             </Typography>
             <Typography variant="body2" sx={{ color: 'var(--text-secondary)' }}>
               Showing {items.length} of {total} enterprise accounts undergoing autonomous market intelligence
@@ -177,29 +177,29 @@ export default async function CompaniesListPage({
             bgcolor: 'var(--bg-surface)',
             border: '1px solid var(--border-default)',
             borderRadius: 'var(--radius-md)',
-            boxShadow: 'var(--shadow-card)',
+            boxShadow: 'none',
           }}
         >
           <TableContainer>
             <Table>
               <TableHead>
                 <TableRow sx={{ bgcolor: 'var(--bg-surface-subtle)' }}>
-                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)' }}>
+                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
                     Company / Domain
                   </TableCell>
-                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)' }}>
+                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
                     Industry
                   </TableCell>
-                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)' }}>
+                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
                     Location
                   </TableCell>
-                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)' }}>
+                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
                     Size
                   </TableCell>
-                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)' }}>
-                    Date Ingested
+                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
+                    Date ingested
                   </TableCell>
-                  <TableCell align="right" sx={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)' }}>
+                  <TableCell align="right" sx={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
                     Action
                   </TableCell>
                 </TableRow>
@@ -249,7 +249,7 @@ export default async function CompaniesListPage({
                               bgcolor: 'var(--bg-surface-subtle)',
                               border: '1px solid var(--border-subtle)',
                               color: 'var(--text-secondary)',
-                              fontSize: '0.6875rem',
+                              fontSize: '0.75rem',
                               fontWeight: 500,
                             }}
                           />
@@ -309,7 +309,7 @@ export default async function CompaniesListPage({
                             p: '4px 8px',
                           }}
                         >
-                          View Dossier →
+                          Open company
                         </Button>
                       </TableCell>
                     </TableRow>

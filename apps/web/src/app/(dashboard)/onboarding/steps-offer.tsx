@@ -25,7 +25,7 @@ export function ServicesStep({ profile, busy, run }: StepProps) {
         {profile.services.map((s) => (
           <div key={s.id} style={row}>
             <div>
-              <div style={{ fontSize: '0.8125rem', fontWeight: 600 }}>{s.name}</div>
+              <div style={{ fontSize: '0.8125rem', fontWeight: 500 }}>{s.name}</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                 {s.keywords.join(', ')}{(s.priceMin || s.priceMax) && ` · ${s.currency} ${s.priceMin ?? '…'}–${s.priceMax ?? '…'}`}
               </div>

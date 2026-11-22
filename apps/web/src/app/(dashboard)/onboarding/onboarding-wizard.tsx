@@ -48,15 +48,15 @@ export function OnboardingWizard() {
       <ol style={{ display: 'flex', flexWrap: 'wrap', gap: 6, listStyle: 'none', padding: 0, margin: '0 0 20px' }}>
         {STEPS.map((s, i) => (
           <li key={s}>
-            <button onClick={() => go(i)} style={{ ...btn(i === step), padding: '5px 10px', fontSize: '0.75rem', opacity: i > 0 && !profile ? 0.5 : 1 }}>
+            <button onClick={() => go(i)} style={{ ...btn(i === step), padding: '4px 10px', fontSize: '0.75rem', opacity: i > 0 && !profile ? 0.5 : 1 }}>
               {i + 1}. {s}
             </button>
           </li>
         ))}
       </ol>
 
-      {error && <div role="alert" style={{ ...card, marginBottom: 12, padding: 12, borderColor: 'var(--accent-danger)', color: '#fb7185', fontSize: '0.8125rem' }}>{error}</div>}
-      {notice && <div role="status" style={{ ...card, marginBottom: 12, padding: 12, borderColor: 'var(--accent-success)', color: '#34d399', fontSize: '0.8125rem' }}>{notice}</div>}
+      {error && <div role="alert" style={{ ...card, marginBottom: 12, padding: 12, borderColor: 'var(--accent-danger)', color: '#ee7378', fontSize: '0.8125rem' }}>{error}</div>}
+      {notice && <div role="status" style={{ ...card, marginBottom: 12, padding: 12, borderColor: 'var(--accent-success)', color: '#4cc38a', fontSize: '0.8125rem' }}>{notice}</div>}
 
       <div style={card}>
         {needsProfile ? (

@@ -16,6 +16,8 @@ import Tooltip from '@mui/material/Tooltip';
 import { Header } from '@/components/header';
 import { serverApiFetch } from '@/lib/server-api-client';
 import { SyncInboxButton } from './sync-button';
+import { StatusDot } from '@/components/ui';
+import { LeadStatus } from '@/components/ui';
 
 interface MessageSummary {
   id: string;
@@ -91,25 +93,7 @@ export default async function ConversationsListPage({
     if (leadStatus === 'HUMAN_REVIEW') {
       return (
         <Tooltip title="Human review required before outbound transmission" arrow>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.6,
-              px: 0.85,
-              py: 0.25,
-              borderRadius: 'var(--radius-sm)',
-              bgcolor: 'var(--accent-warning-muted)',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
-              color: '#fbbf24',
-              fontSize: '0.625rem',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span>⚠ Review Required</span>
-          </Box>
+          <StatusDot tone="paused">Needs review</StatusDot>
         </Tooltip>
       );
     }
@@ -117,25 +101,7 @@ export default async function ConversationsListPage({
     if (controlState === 'PAUSED') {
       return (
         <Tooltip title="AI autonomous agent is paused by operator" arrow>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.6,
-              px: 0.85,
-              py: 0.25,
-              borderRadius: 'var(--radius-sm)',
-              bgcolor: 'var(--accent-warning-muted)',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
-              color: '#fbbf24',
-              fontSize: '0.625rem',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span>Ⅱ AI Paused</span>
-          </Box>
+          <StatusDot tone="paused">AI paused</StatusDot>
         </Tooltip>
       );
     }
@@ -143,25 +109,7 @@ export default async function ConversationsListPage({
     if (controlState === 'TAKEN_OVER') {
       return (
         <Tooltip title="Thread taken over by human sales representative" arrow>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.6,
-              px: 0.85,
-              py: 0.25,
-              borderRadius: 'var(--radius-sm)',
-              bgcolor: 'var(--accent-primary-muted)',
-              border: '1px solid rgba(124, 110, 224, 0.3)',
-              color: '#a99ef2',
-              fontSize: '0.625rem',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span>✋ Human Controlled</span>
-          </Box>
+          <StatusDot tone="turn">Human handling</StatusDot>
         </Tooltip>
       );
     }
@@ -169,25 +117,7 @@ export default async function ConversationsListPage({
     if (controlState === 'AI_ACTIVE' || (!controlState && leadStatus)) {
       return (
         <Tooltip title="AI autonomous agent is actively handling this thread" arrow>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.6,
-              px: 0.85,
-              py: 0.25,
-              borderRadius: 'var(--radius-sm)',
-              bgcolor: 'var(--accent-success-muted)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              color: '#34d399',
-              fontSize: '0.625rem',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span>● Autonomous Active</span>
-          </Box>
+          <StatusDot tone="active">AI active</StatusDot>
         </Tooltip>
       );
     }
@@ -203,8 +133,8 @@ export default async function ConversationsListPage({
           bgcolor: 'var(--bg-surface-subtle)',
           border: '1px solid var(--border-subtle)',
           color: 'var(--text-muted)',
-          fontSize: '0.625rem',
-          fontWeight: 600,
+          fontSize: '0.75rem',
+          fontWeight: 500,
         }}
       >
         <span>Unassigned</span>
@@ -213,33 +143,11 @@ export default async function ConversationsListPage({
   };
 
   // Render lead lifecycle stage badge
-  const renderLeadStatusBadge = (status?: string) => {
-    if (!status) return null;
-    return (
-      <Box
-        sx={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          px: 0.85,
-          py: 0.2,
-          borderRadius: 'var(--radius-sm)',
-          bgcolor: 'var(--bg-surface-subtle)',
-          border: '1px solid var(--border-subtle)',
-          color: 'var(--text-secondary)',
-          fontSize: '0.625rem',
-          fontWeight: 600,
-          letterSpacing: '0.04em',
-          textTransform: 'uppercase',
-        }}
-      >
-        <span>{status.replace(/_/g, ' ')}</span>
-      </Box>
-    );
-  };
+  const renderLeadStatusBadge = (status?: string) => <LeadStatus status={status} />;
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <Header title="Inbox & Conversations" />
+      <Header title="Conversations" />
 
       <Box
         component="main"
@@ -247,7 +155,7 @@ export default async function ConversationsListPage({
           p: { xs: 2, sm: 3, md: 4 },
           display: 'flex',
           flexDirection: 'column',
-          gap: 3,
+          gap: 4,
           maxWidth: 1400,
           width: '100%',
           mx: 'auto',
@@ -264,7 +172,7 @@ export default async function ConversationsListPage({
         >
           <Box>
             <Typography variant="h2" sx={{ color: 'var(--text-primary)', mb: 0.5 }}>
-              Email Conversations & Inbound Replies
+              Email conversations and replies
             </Typography>
             <Typography variant="body2" sx={{ color: 'var(--text-secondary)', mb: 2 }}>
               Showing {items.length} of {total} synchronized omnichannel threads across active sales pipelines
@@ -322,17 +230,17 @@ export default async function ConversationsListPage({
                 sx={{
                   textTransform: 'none',
                   fontSize: '0.8125rem',
-                  fontWeight: 600,
+                  fontWeight: 500,
                   bgcolor: statusFilter === 'UNASSIGNED' ? 'var(--accent-warning)' : 'var(--bg-surface-subtle)',
-                  color: statusFilter === 'UNASSIGNED' ? '#000000' : '#fbbf24',
-                  borderColor: statusFilter === 'UNASSIGNED' ? 'transparent' : 'rgba(245, 158, 11, 0.4)',
+                  color: statusFilter === 'UNASSIGNED' ? '#000000' : '#e3a94d',
+                  borderColor: statusFilter === 'UNASSIGNED' ? 'transparent' : 'rgba(237, 237, 237, 0.09)',
                   '&:hover': {
-                    bgcolor: statusFilter === 'UNASSIGNED' ? '#d97706' : 'rgba(245, 158, 11, 0.1)',
-                    borderColor: '#f59e0b',
+                    bgcolor: statusFilter === 'UNASSIGNED' ? '#c48c32' : 'rgba(227, 169, 77, 0.1)',
+                    borderColor: '#e3a94d',
                   },
                 }}
               >
-                Needs Assignment (Unassigned)
+                Needs a lead
               </Button>
             </Stack>
           </Box>
@@ -348,32 +256,32 @@ export default async function ConversationsListPage({
             bgcolor: 'var(--bg-surface)',
             border: '1px solid var(--border-default)',
             borderRadius: 'var(--radius-md)',
-            boxShadow: 'var(--shadow-card)',
+            boxShadow: 'none',
           }}
         >
           <TableContainer>
             <Table>
               <TableHead>
                 <TableRow sx={{ bgcolor: 'var(--bg-surface-subtle)' }}>
-                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)' }}>
+                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
                     Account / Prospect
                   </TableCell>
-                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)' }}>
+                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
                     AI Operating State
                   </TableCell>
-                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)' }}>
-                    Lifecycle Stage
+                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
+                    Lifecycle stage
                   </TableCell>
-                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)' }}>
+                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
                     Latest Message / Subject
                   </TableCell>
-                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)' }}>
+                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
                     Messages
                   </TableCell>
-                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)' }}>
-                    Last Activity
+                  <TableCell sx={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
+                    Last activity
                   </TableCell>
-                  <TableCell align="right" sx={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-subtle)' }}>
+                  <TableCell align="right" sx={{ color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
                     Action
                   </TableCell>
                 </TableRow>
@@ -428,8 +336,8 @@ export default async function ConversationsListPage({
                               </>
                             ) : (
                               <>
-                                <Typography variant="body2" fontWeight={600} sx={{ color: '#fbbf24' }}>
-                                  Unassigned Prospect
+                                <Typography variant="body2" fontWeight={600} sx={{ color: '#e3a94d' }}>
+                                  No lead assigned
                                 </Typography>
                                 <Typography variant="caption" sx={{ color: 'var(--text-muted)' }}>
                                   {conv.metadata?.senderEmail || latestMsg?.sender || 'Unknown Sender'}
@@ -456,13 +364,13 @@ export default async function ConversationsListPage({
                             {isUnassigned ? (
                               <Chip
                                 size="small"
-                                label="NEEDS ASSIGNMENT"
+                                label="Needs a lead"
                                 sx={{
                                   bgcolor: 'var(--accent-warning-muted)',
-                                  border: '1px solid rgba(245, 158, 11, 0.3)',
-                                  color: '#fbbf24',
-                                  fontWeight: 700,
-                                  fontSize: '0.625rem',
+                                  border: '1px solid rgba(237, 237, 237, 0.09)',
+                                  color: '#e3a94d',
+                                  fontWeight: 600,
+                                  fontSize: '0.75rem',
                                 }}
                               />
                             ) : (
@@ -480,14 +388,14 @@ export default async function ConversationsListPage({
                               {latestMsg && (
                                 <Chip
                                   size="small"
-                                  label={isInbound ? 'INBOUND' : 'OUTBOUND'}
+                                  label={isInbound ? 'Inbound' : 'Outbound'}
                                   sx={{
                                     height: 18,
                                     fontSize: '0.5625rem',
-                                    fontWeight: 700,
+                                    fontWeight: 600,
                                     bgcolor: isInbound ? 'var(--accent-info-muted)' : 'var(--accent-success-muted)',
-                                    color: isInbound ? '#38bdf8' : '#34d399',
-                                    border: isInbound ? '1px solid rgba(14, 165, 233, 0.3)' : '1px solid rgba(16, 185, 129, 0.3)',
+                                    color: isInbound ? '#86a9f2' : '#4cc38a',
+                                    border: isInbound ? '1px solid rgba(237, 237, 237, 0.09)' : '1px solid rgba(237, 237, 237, 0.09)',
                                   }}
                                 />
                               )}
@@ -513,7 +421,7 @@ export default async function ConversationsListPage({
                                 bgcolor: 'var(--bg-surface-subtle)',
                                 border: '1px solid var(--border-subtle)',
                                 color: 'var(--text-secondary)',
-                                fontSize: '0.6875rem',
+                                fontSize: '0.75rem',
                               }}
                             />
                           </Link>
@@ -551,7 +459,7 @@ export default async function ConversationsListPage({
                               p: '4px 8px',
                             }}
                           >
-                            Inspect Thread →
+                            Open thread
                           </Button>
                         </TableCell>
                       </TableRow>

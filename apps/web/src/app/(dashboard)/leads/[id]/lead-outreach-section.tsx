@@ -169,8 +169,8 @@ export function LeadOutreachSection({
     <Box
       sx={{
         width: '100%',
-        bgcolor: '#151628',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
+        bgcolor: '#19191b',
+        border: '1px solid rgba(237, 237, 237, 0.09)',
         borderRadius: '8px',
         p: { xs: 2, sm: 3 },
       }}
@@ -184,7 +184,7 @@ export function LeadOutreachSection({
           alignItems: { xs: 'flex-start', sm: 'center' },
           mb: 2.5,
           pb: 2,
-          borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+          borderBottom: '1px solid rgba(237, 237, 237, 0.06)',
         }}
       >
         <Box>
@@ -192,31 +192,30 @@ export function LeadOutreachSection({
             <Typography
               variant="h3"
               sx={{
-                color: '#f4f4fa',
+                color: '#ededed',
                 fontSize: '0.9375rem',
-                fontWeight: 600,
-                letterSpacing: '-0.015em',
+                fontWeight: 500,
               }}
             >
-              Conversations & Outreach Sequences
+              Conversations and outreach sequences
             </Typography>
             <Box
               sx={{
                 px: 1,
                 py: 0.25,
                 borderRadius: '4px',
-                bgcolor: 'rgba(124, 110, 224, 0.12)',
-                color: '#a99ef2',
-                border: '1px solid rgba(124, 110, 224, 0.25)',
-                fontSize: '0.6875rem',
-                fontWeight: 600,
+                bgcolor: 'rgba(94, 140, 235, 0.12)',
+                color: '#86a9f2',
+                border: '1px solid rgba(237, 237, 237, 0.09)',
+                fontSize: '0.75rem',
+                fontWeight: 500,
                 fontVariantNumeric: 'tabular-nums',
               }}
             >
               {drafts.length} {drafts.length === 1 ? 'draft' : 'drafts'}
             </Box>
           </Stack>
-          <Typography variant="body2" sx={{ color: '#a1a3b8', mt: 0.5, fontSize: '0.8125rem' }}>
+          <Typography variant="body2" sx={{ color: '#a1a1a6', mt: 0.5, fontSize: '0.8125rem' }}>
             AI-generated personalized email sequences with mandatory human-in-the-loop review before sending.
           </Typography>
         </Box>
@@ -234,10 +233,10 @@ export function LeadOutreachSection({
                   cursor: 'not-allowed',
                   textTransform: 'none',
                   fontSize: '0.8125rem',
-                  color: '#6e7089',
-                  borderColor: 'rgba(255, 255, 255, 0.08)',
-                  bgcolor: '#1a1b30',
-                  borderRadius: '6px',
+                  color: '#85858b',
+                  borderColor: 'rgba(237, 237, 237, 0.09)',
+                  bgcolor: '#1e1e20',
+                  borderRadius: '8px',
                   px: 2,
                   py: 0.6,
                 }}
@@ -263,17 +262,17 @@ export function LeadOutreachSection({
             }
             sx={{
               textTransform: 'none',
-              bgcolor: '#8f82e8',
+              bgcolor: '#4f82e6',
               color: '#ffffff',
               fontWeight: 500,
               fontSize: '0.8125rem',
-              borderRadius: '6px',
+              borderRadius: '8px',
               px: 2,
               py: 0.6,
               boxShadow: 'none',
               transition: 'background-color 140ms cubic-bezier(0.23, 1, 0.32, 1)',
               '&:hover:not(:disabled)': {
-                bgcolor: '#6c5ed0',
+                bgcolor: '#3563c4',
                 boxShadow: 'none',
               },
               '&:active:not(:disabled)': {
@@ -293,10 +292,10 @@ export function LeadOutreachSection({
           sx={{
             mb: 2,
             fontSize: '0.8125rem',
-            bgcolor: 'rgba(244, 63, 94, 0.10)',
-            color: '#fb7185',
-            border: '1px solid rgba(244, 63, 94, 0.25)',
-            borderRadius: '6px',
+            bgcolor: 'rgba(229, 72, 77, 0.10)',
+            color: '#ee7378',
+            border: '1px solid rgba(237, 237, 237, 0.09)',
+            borderRadius: '8px',
           }}
           onClose={() => setGenError(null)}
         >
@@ -309,10 +308,10 @@ export function LeadOutreachSection({
           sx={{
             mb: 2,
             fontSize: '0.8125rem',
-            bgcolor: 'rgba(16, 185, 129, 0.10)',
-            color: '#34d399',
-            border: '1px solid rgba(16, 185, 129, 0.25)',
-            borderRadius: '6px',
+            bgcolor: 'rgba(76, 195, 138, 0.10)',
+            color: '#4cc38a',
+            border: '1px solid rgba(237, 237, 237, 0.09)',
+            borderRadius: '8px',
           }}
           onClose={() => setGenSuccessMsg(null)}
         >
@@ -325,14 +324,14 @@ export function LeadOutreachSection({
           sx={{
             mb: 2.5,
             fontSize: '0.8125rem',
-            bgcolor: 'rgba(16, 185, 129, 0.10)',
-            color: '#34d399',
-            border: '1px solid rgba(16, 185, 129, 0.25)',
-            borderRadius: '6px',
+            bgcolor: 'rgba(76, 195, 138, 0.10)',
+            color: '#4cc38a',
+            border: '1px solid rgba(237, 237, 237, 0.09)',
+            borderRadius: '8px',
           }}
           onClose={() => setSendResult(null)}
         >
-          <AlertTitle sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Outreach Email Successfully Dispatched</AlertTitle>
+          <AlertTitle sx={{ fontWeight: 500, fontSize: '0.875rem' }}>Outreach Email Successfully Dispatched</AlertTitle>
           <Typography variant="body2" component="div" sx={{ fontSize: '0.8125rem', mt: 0.5 }}>
             • <strong>Gmail Message ID:</strong> <code style={{ fontFamily: 'ui-monospace, monospace', fontSize: '0.75rem', background: 'rgba(0,0,0,0.3)', padding: '2px 4px', borderRadius: '4px' }}>{sendResult.gmailMessageId}</code>
             <br />
@@ -347,11 +346,11 @@ export function LeadOutreachSection({
                   px: 0.75,
                   py: 0.25,
                   borderRadius: '4px',
-                  bgcolor: 'rgba(245, 158, 11, 0.15)',
-                  color: '#fbbf24',
-                  border: '1px solid rgba(245, 158, 11, 0.3)',
-                  fontSize: '0.625rem',
-                  fontWeight: 700,
+                  bgcolor: 'rgba(227, 169, 77, 0.15)',
+                  color: '#e3a94d',
+                  border: '1px solid rgba(237, 237, 237, 0.09)',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
                 }}
               >
                 SAFE TEST MODE ACTIVE
@@ -367,16 +366,16 @@ export function LeadOutreachSection({
           sx={{
             p: 4,
             textAlign: 'center',
-            borderRadius: '6px',
-            border: '1px dashed rgba(255, 255, 255, 0.08)',
-            bgcolor: '#0d0e1b',
+            borderRadius: '8px',
+            border: '1px dashed rgba(237, 237, 237, 0.09)',
+            bgcolor: '#141415',
           }}
         >
-          <Typography variant="body2" sx={{ color: '#a1a3b8', fontSize: '0.84375rem' }}>
+          <Typography variant="body2" sx={{ color: '#a1a1a6', fontSize: '0.875rem' }}>
             No outreach email drafts created yet for {companyName}.
           </Typography>
           {!isRestricted && (
-            <Typography variant="caption" sx={{ color: '#6e7089', mt: 0.5, display: 'block' }}>
+            <Typography variant="caption" sx={{ color: '#85858b', mt: 0.5, display: 'block' }}>
               Click &quot;Generate Outreach Draft&quot; to formulate a tailored outreach message using company research.
             </Typography>
           )}
@@ -393,11 +392,11 @@ export function LeadOutreachSection({
                 key={draft.id}
                 sx={{
                   p: 2.5,
-                  borderRadius: '6px',
-                  bgcolor: '#1a1b30',
+                  borderRadius: '8px',
+                  bgcolor: '#1e1e20',
                   border: isDraftStatus
-                    ? '1px solid rgba(245, 158, 11, 0.35)'
-                    : '1px solid rgba(255, 255, 255, 0.08)',
+                    ? '1px solid rgba(237, 237, 237, 0.09)'
+                    : '1px solid rgba(237, 237, 237, 0.09)',
                 }}
               >
                 {/* Draft Header Bar */}
@@ -417,31 +416,29 @@ export function LeadOutreachSection({
                         py: 0.25,
                         borderRadius: '4px',
                         bgcolor: isDraftStatus
-                          ? 'rgba(245, 158, 11, 0.12)'
+                          ? 'rgba(227, 169, 77, 0.12)'
                           : isSentStatus
-                            ? 'rgba(16, 185, 129, 0.12)'
-                            : 'rgba(244, 63, 94, 0.12)',
-                        color: isDraftStatus ? '#fbbf24' : isSentStatus ? '#34d399' : '#fb7185',
+                            ? 'rgba(76, 195, 138, 0.12)'
+                            : 'rgba(229, 72, 77, 0.12)',
+                        color: isDraftStatus ? '#e3a94d' : isSentStatus ? '#4cc38a' : '#ee7378',
                         border: isDraftStatus
-                          ? '1px solid rgba(245, 158, 11, 0.25)'
+                          ? '1px solid rgba(237, 237, 237, 0.09)'
                           : isSentStatus
-                            ? '1px solid rgba(16, 185, 129, 0.25)'
-                            : '1px solid rgba(244, 63, 94, 0.25)',
-                        fontSize: '0.625rem',
-                        fontWeight: 700,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.04em',
+                            ? '1px solid rgba(237, 237, 237, 0.09)'
+                            : '1px solid rgba(237, 237, 237, 0.09)',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
                       }}
                     >
                       {draft.status}
                     </Box>
-                    <Typography variant="subtitle2" sx={{ color: '#f4f4fa', fontWeight: 600, fontSize: '0.875rem' }}>
+                    <Typography variant="subtitle2" sx={{ color: '#ededed', fontWeight: 500, fontSize: '0.875rem' }}>
                       Subject: {draft.subject}
                     </Typography>
                   </Stack>
 
                   <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-                    <Typography variant="caption" sx={{ color: '#6e7089', fontSize: '0.75rem', fontVariantNumeric: 'tabular-nums' }}>
+                    <Typography variant="caption" sx={{ color: '#85858b', fontSize: '0.75rem', fontVariantNumeric: 'tabular-nums' }}>
                       {new Date(draft.createdAt).toLocaleString(undefined, {
                         month: 'short',
                         day: 'numeric',
@@ -460,15 +457,15 @@ export function LeadOutreachSection({
                           textTransform: 'none',
                           fontSize: '0.8125rem',
                           fontWeight: 500,
-                          bgcolor: '#8f82e8',
+                          bgcolor: '#4f82e6',
                           color: '#ffffff',
-                          borderRadius: '6px',
+                          borderRadius: '8px',
                           py: 0.5,
                           px: 1.5,
                           boxShadow: 'none',
                           transition: 'background-color 140ms cubic-bezier(0.23, 1, 0.32, 1)',
                           '&:hover:not(:disabled)': {
-                            bgcolor: '#6c5ed0',
+                            bgcolor: '#3563c4',
                             boxShadow: 'none',
                           },
                           '&:active:not(:disabled)': {
@@ -487,12 +484,12 @@ export function LeadOutreachSection({
                   sx={{
                     p: 2,
                     borderRadius: '4px',
-                    bgcolor: '#0d0e1b',
-                    border: '1px solid rgba(255, 255, 255, 0.06)',
+                    bgcolor: '#141415',
+                    border: '1px solid rgba(237, 237, 237, 0.06)',
                     whiteSpace: 'pre-wrap',
-                    fontSize: '0.84375rem',
+                    fontSize: '0.875rem',
                     lineHeight: 1.6,
-                    color: '#e5e7eb',
+                    color: '#ededed',
                     mb: 1.5,
                   }}
                 >
@@ -510,24 +507,24 @@ export function LeadOutreachSection({
                 >
                   <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
                     {draft.callToAction && (
-                      <Typography variant="caption" sx={{ color: '#a1a3b8', fontSize: '0.75rem' }}>
-                        <strong style={{ color: '#c9cadb' }}>Call to Action:</strong> {draft.callToAction}
+                      <Typography variant="caption" sx={{ color: '#a1a1a6', fontSize: '0.75rem' }}>
+                        <strong style={{ color: '#c4c4c8' }}>Call to Action:</strong> {draft.callToAction}
                       </Typography>
                     )}
                     {draft.gmailMessageId && (
-                      <Typography variant="caption" sx={{ color: '#6e7089', fontSize: '0.75rem' }}>
-                        <strong style={{ color: '#a1a3b8' }}>Gmail ID:</strong> {draft.gmailMessageId}
+                      <Typography variant="caption" sx={{ color: '#85858b', fontSize: '0.75rem' }}>
+                        <strong style={{ color: '#a1a1a6' }}>Gmail ID:</strong> {draft.gmailMessageId}
                       </Typography>
                     )}
                     {draft.errorMessage && (
-                      <Typography variant="caption" sx={{ color: '#fb7185', fontSize: '0.75rem' }}>
+                      <Typography variant="caption" sx={{ color: '#ee7378', fontSize: '0.75rem' }}>
                         <strong>Error:</strong> {draft.errorMessage}
                       </Typography>
                     )}
                   </Stack>
 
                   {aiMeta && (
-                    <Typography variant="caption" sx={{ color: '#6e7089', fontSize: '0.75rem', fontVariantNumeric: 'tabular-nums' }}>
+                    <Typography variant="caption" sx={{ color: '#85858b', fontSize: '0.75rem', fontVariantNumeric: 'tabular-nums' }}>
                       AI Model: {aiMeta.model || 'gpt-4o-mini'} | {aiMeta.totalTokens || 0} tokens
                       {aiMeta.estimatedCostUsd ? ` (~$${aiMeta.estimatedCostUsd.toFixed(5)})` : ''}
                     </Typography>
@@ -548,16 +545,16 @@ export function LeadOutreachSection({
         disableEscapeKeyDown={isSending}
         PaperProps={{
           sx: {
-            bgcolor: '#151628',
-            border: '1px solid rgba(255, 255, 255, 0.10)',
-            borderRadius: '10px',
+            bgcolor: '#19191b',
+            border: '1px solid rgba(237, 237, 237, 0.09)',
+            borderRadius: '12px',
             boxShadow: '0 12px 32px -4px rgba(0, 0, 0, 0.7)',
           },
         }}
       >
-        <DialogTitle sx={{ pb: 1.5, borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
-          <Typography variant="h3" sx={{ color: '#f4f4fa', fontSize: '1.0625rem', fontWeight: 600, letterSpacing: '-0.015em' }}>
-            Confirm Live Outreach Email Send
+        <DialogTitle sx={{ pb: 1.5, borderBottom: '1px solid rgba(237, 237, 237, 0.06)' }}>
+          <Typography variant="h3" sx={{ color: '#ededed', fontSize: '1rem', fontWeight: 500, }}>
+            Confirm live outreach email send
           </Typography>
         </DialogTitle>
 
@@ -568,18 +565,18 @@ export function LeadOutreachSection({
               sx={{
                 mb: 2.5,
                 fontSize: '0.8125rem',
-                bgcolor: 'rgba(244, 63, 94, 0.10)',
-                color: '#fb7185',
-                border: '1px solid rgba(244, 63, 94, 0.25)',
-                borderRadius: '6px',
+                bgcolor: 'rgba(229, 72, 77, 0.10)',
+                color: '#ee7378',
+                border: '1px solid rgba(237, 237, 237, 0.09)',
+                borderRadius: '8px',
               }}
             >
-              <AlertTitle sx={{ fontWeight: 600 }}>Dispatch Failed</AlertTitle>
+              <AlertTitle sx={{ fontWeight: 500 }}>Dispatch Failed</AlertTitle>
               {sendError}
             </Alert>
           )}
 
-          <DialogContentText sx={{ color: '#a1a3b8', mb: 2, fontSize: '0.84375rem' }}>
+          <DialogContentText sx={{ color: '#a1a1a6', mb: 2, fontSize: '0.875rem' }}>
             Please carefully review the recipient and email content before confirming dispatch.
             This action will trigger an authentic email via the system Gmail integration.
           </DialogContentText>
@@ -589,26 +586,26 @@ export function LeadOutreachSection({
             sx={{
               p: 2,
               mb: 2.5,
-              borderRadius: '6px',
-              bgcolor: '#1a1b30',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '8px',
+              bgcolor: '#1e1e20',
+              border: '1px solid rgba(237, 237, 237, 0.09)',
             }}
           >
             <Stack spacing={1}>
               <Box>
-                <Typography variant="caption" sx={{ color: '#6e7089', fontWeight: 600, display: 'block', fontSize: '0.6875rem', letterSpacing: '0.04em' }}>
+                <Typography variant="caption" sx={{ color: '#85858b', fontWeight: 500, display: 'block', fontSize: '0.75rem', }}>
                   INTENDED RECIPIENT EMAIL
                 </Typography>
-                <Typography variant="body1" sx={{ color: '#a99ef2', fontWeight: 600, fontSize: '0.9375rem' }}>
+                <Typography variant="body1" sx={{ color: '#86a9f2', fontWeight: 500, fontSize: '0.9375rem' }}>
                   {recipientTarget} {primaryContactName ? `(${primaryContactName})` : ''}
                 </Typography>
               </Box>
-              <Divider sx={{ my: 0.5, borderColor: 'rgba(255, 255, 255, 0.06)' }} />
+              <Divider sx={{ my: 0.5, borderColor: 'rgba(237, 237, 237, 0.06)' }} />
               <Box>
-                <Typography variant="caption" sx={{ color: '#6e7089', fontWeight: 600, display: 'block', fontSize: '0.6875rem', letterSpacing: '0.04em' }}>
+                <Typography variant="caption" sx={{ color: '#85858b', fontWeight: 500, display: 'block', fontSize: '0.75rem', }}>
                   SUBJECT LINE
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#f4f4fa', fontWeight: 600, fontSize: '0.875rem' }}>
+                <Typography variant="body2" sx={{ color: '#ededed', fontWeight: 500, fontSize: '0.875rem' }}>
                   {selectedDraftForSend?.subject}
                 </Typography>
               </Box>
@@ -617,21 +614,21 @@ export function LeadOutreachSection({
 
           {/* Body Preview Excerpt */}
           <Box sx={{ mb: 2.5 }}>
-            <Typography variant="caption" sx={{ color: '#a1a3b8', fontWeight: 500, display: 'block', mb: 0.75, fontSize: '0.78125rem' }}>
+            <Typography variant="caption" sx={{ color: '#a1a1a6', fontWeight: 500, display: 'block', mb: 0.75, fontSize: '0.8125rem' }}>
               MESSAGE BODY PREVIEW
             </Typography>
             <Box
               sx={{
                 p: 2,
                 borderRadius: '4px',
-                bgcolor: '#0d0e1b',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
+                bgcolor: '#141415',
+                border: '1px solid rgba(237, 237, 237, 0.06)',
                 maxHeight: 180,
                 overflowY: 'auto',
                 whiteSpace: 'pre-wrap',
                 fontSize: '0.8125rem',
                 lineHeight: 1.5,
-                color: '#a1a3b8',
+                color: '#a1a1a6',
               }}
             >
               {selectedDraftForSend?.bodyText}
@@ -642,16 +639,16 @@ export function LeadOutreachSection({
           <Alert
             severity="warning"
             sx={{
-              bgcolor: 'rgba(245, 158, 11, 0.10)',
-              border: '1px solid rgba(245, 158, 11, 0.25)',
-              borderRadius: '6px',
-              color: '#fbbf24',
+              bgcolor: 'rgba(227, 169, 77, 0.10)',
+              border: '1px solid rgba(237, 237, 237, 0.09)',
+              borderRadius: '8px',
+              color: '#e3a94d',
             }}
           >
-            <AlertTitle sx={{ fontWeight: 600, fontSize: '0.84375rem', color: '#fbbf24' }}>
-              Safety Notice & Environment Routing
+            <AlertTitle sx={{ fontWeight: 500, fontSize: '0.875rem', color: '#e3a94d' }}>
+              Safety notice and environment routing
             </AlertTitle>
-            <Typography variant="caption" sx={{ color: '#c9cadb', fontSize: '0.75rem' }} component="div">
+            <Typography variant="caption" sx={{ color: '#c4c4c8', fontSize: '0.75rem' }} component="div">
               • If Safe Test Mode is active on the server, this email will be safely redirected to the server&apos;s configured test inbox.
               <br />
               • Full delivery target confirmation will be verified and displayed immediately upon completion.
@@ -659,7 +656,7 @@ export function LeadOutreachSection({
           </Alert>
         </DialogContent>
 
-        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid rgba(237, 237, 237, 0.06)' }}>
           <Button
             onClick={handleCloseSendDialog}
             disabled={isSending}
@@ -668,14 +665,14 @@ export function LeadOutreachSection({
             sx={{
               textTransform: 'none',
               fontSize: '0.8125rem',
-              color: '#f4f4fa',
-              borderColor: 'rgba(255, 255, 255, 0.10)',
-              bgcolor: '#1a1b30',
-              borderRadius: '6px',
+              color: '#ededed',
+              borderColor: 'rgba(237, 237, 237, 0.09)',
+              bgcolor: '#1e1e20',
+              borderRadius: '8px',
               px: 2,
               '&:hover': {
-                bgcolor: 'rgba(255, 255, 255, 0.06)',
-                borderColor: 'rgba(255, 255, 255, 0.18)',
+                bgcolor: 'rgba(237, 237, 237, 0.06)',
+                borderColor: 'rgba(237, 237, 237, 0.16)',
               },
             }}
           >
@@ -695,14 +692,14 @@ export function LeadOutreachSection({
               minWidth: 160,
               fontSize: '0.8125rem',
               fontWeight: 500,
-              bgcolor: '#8f82e8',
+              bgcolor: '#4f82e6',
               color: '#ffffff',
-              borderRadius: '6px',
+              borderRadius: '8px',
               px: 2,
               boxShadow: 'none',
               transition: 'background-color 140ms cubic-bezier(0.23, 1, 0.32, 1)',
               '&:hover:not(:disabled)': {
-                bgcolor: '#6c5ed0',
+                bgcolor: '#3563c4',
                 boxShadow: 'none',
               },
               '&:active:not(:disabled)': {

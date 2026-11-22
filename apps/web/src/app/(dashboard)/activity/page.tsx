@@ -73,7 +73,7 @@ export default function ActivityPage() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <Header title="Agent Activity & Audit Trail" />
+      <Header title="Activity" />
 
       <Box
         component="main"
@@ -84,15 +84,15 @@ export default function ActivityPage() {
           mx: 'auto',
           display: 'flex',
           flexDirection: 'column',
-          gap: 3,
+          gap: 4,
         }}
       >
         {/* Screen Title & Subtitle */}
         <Box>
           <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-            <SecurityIcon sx={{ fontSize: 26, color: 'var(--accent-primary-light)' }} />
+            <SecurityIcon sx={{ fontSize: 24, color: 'var(--accent-primary-light)' }} />
             <Typography variant="h2" sx={{ color: 'var(--text-primary)' }}>
-              Immutable Audit & Governance Trail
+              Audit trail
             </Typography>
           </Stack>
           <Typography variant="body2" sx={{ color: 'var(--text-secondary)', mt: 0.5 }}>
@@ -112,15 +112,15 @@ export default function ActivityPage() {
           <Card
             sx={{
               bgcolor: 'var(--bg-surface)',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
+              border: '1px solid rgba(237, 237, 237, 0.09)',
               borderRadius: 'var(--radius-md)',
-              boxShadow: 'var(--shadow-card)',
+              boxShadow: 'none',
             }}
           >
             <CardContent sx={{ textAlign: 'center', py: 6, px: 3 }}>
-              <LockPersonOutlinedIcon sx={{ fontSize: 48, color: '#fbbf24', mb: 2 }} />
+              <LockPersonOutlinedIcon sx={{ fontSize: 48, color: '#e3a94d', mb: 2 }} />
               <Typography variant="h3" sx={{ color: 'var(--text-primary)', mb: 1 }}>
-                Administrator Privileges Required
+                Administrator privileges required
               </Typography>
               <Typography
                 variant="body2"
@@ -145,7 +145,7 @@ export default function ActivityPage() {
                 size="small"
                 sx={{ textTransform: 'none', px: 2.5, py: 0.75 }}
               >
-                ← Return to Overview Dashboard
+                Back to overview
               </Button>
             </CardContent>
           </Card>
@@ -154,12 +154,12 @@ export default function ActivityPage() {
             severity="error"
             sx={{
               bgcolor: 'var(--accent-danger-muted)',
-              border: '1px solid rgba(244, 63, 94, 0.3)',
-              color: '#fb7185',
-              '& .MuiAlert-icon': { color: '#fb7185' },
+              border: '1px solid rgba(237, 237, 237, 0.09)',
+              color: '#ee7378',
+              '& .MuiAlert-icon': { color: '#ee7378' },
             }}
           >
-            <AlertTitle sx={{ fontWeight: 700 }}>Failed to Load Audit Logs</AlertTitle>
+            <AlertTitle sx={{ fontWeight: 600 }}>Failed to Load Audit Logs</AlertTitle>
             {error}
           </Alert>
         ) : initialData ? (

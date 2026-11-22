@@ -14,6 +14,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { Header } from '@/components/header';
 import { serverApiFetch } from '@/lib/server-api-client';
 import { CompanyActionButtons } from './company-actions';
+import { LeadStatus } from '@/components/ui';
 
 interface ResearchRecord {
   id: string;
@@ -91,100 +92,7 @@ export default async function CompanyDetailPage({
   const latestResearch = researchHistory[0];
 
   // Render lead lifecycle status badge consistent with Lead Detail & Directory
-  const getLeadStatusBadge = (leadStatus: string) => {
-    if (leadStatus === 'RESTRICTED') {
-      return (
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 0.5,
-            px: 0.85,
-            py: 0.25,
-            borderRadius: 'var(--radius-sm)',
-            bgcolor: 'var(--accent-danger-muted)',
-            border: '1px solid rgba(244, 63, 94, 0.3)',
-            color: '#fb7185',
-            fontSize: '0.625rem',
-            fontWeight: 700,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-          }}
-        >
-          <span>RESTRICTED</span>
-        </Box>
-      );
-    }
-
-    if (leadStatus === 'HUMAN_REVIEW') {
-      return (
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 0.5,
-            px: 0.85,
-            py: 0.25,
-            borderRadius: 'var(--radius-sm)',
-            bgcolor: 'var(--accent-warning-muted)',
-            border: '1px solid rgba(245, 158, 11, 0.3)',
-            color: '#fbbf24',
-            fontSize: '0.625rem',
-            fontWeight: 700,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-          }}
-        >
-          <span>HUMAN REVIEW</span>
-        </Box>
-      );
-    }
-
-    if (leadStatus === 'QUALIFIED' || leadStatus === 'WON') {
-      return (
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 0.5,
-            px: 0.85,
-            py: 0.25,
-            borderRadius: 'var(--radius-sm)',
-            bgcolor: 'var(--accent-success-muted)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
-            color: '#34d399',
-            fontSize: '0.625rem',
-            fontWeight: 700,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-          }}
-        >
-          <span>{leadStatus}</span>
-        </Box>
-      );
-    }
-
-    return (
-      <Box
-        sx={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          px: 0.85,
-          py: 0.25,
-          borderRadius: 'var(--radius-sm)',
-          bgcolor: 'var(--bg-surface-subtle)',
-          border: '1px solid var(--border-subtle)',
-          color: 'var(--text-secondary)',
-          fontSize: '0.625rem',
-          fontWeight: 600,
-          letterSpacing: '0.04em',
-          textTransform: 'uppercase',
-        }}
-      >
-        <span>{leadStatus.replace(/_/g, ' ')}</span>
-      </Box>
-    );
-  };
+  const getLeadStatusBadge = (leadStatus: string) => <LeadStatus status={leadStatus} />;
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
@@ -196,7 +104,7 @@ export default async function CompanyDetailPage({
           p: { xs: 2, sm: 3, md: 4 },
           display: 'flex',
           flexDirection: 'column',
-          gap: 3,
+          gap: 4,
           maxWidth: 1400,
           width: '100%',
           mx: 'auto',
@@ -224,7 +132,7 @@ export default async function CompanyDetailPage({
               '&:hover': { color: 'var(--text-primary)', bgcolor: 'transparent' },
             }}
           >
-            ← Back to Companies Directory
+            Back to companies
           </Button>
 
           {/* AI Action Trigger */}
@@ -237,7 +145,7 @@ export default async function CompanyDetailPage({
             bgcolor: 'var(--bg-surface)',
             border: '1px solid var(--border-default)',
             borderRadius: 'var(--radius-md)',
-            boxShadow: 'var(--shadow-card)',
+            boxShadow: 'none',
           }}
         >
           <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
@@ -276,11 +184,10 @@ export default async function CompanyDetailPage({
                         py: 0.35,
                         borderRadius: 'var(--radius-full)',
                         bgcolor: 'var(--accent-info-muted)',
-                        border: '1px solid rgba(14, 165, 233, 0.3)',
-                        color: '#38bdf8',
-                        fontSize: '0.6875rem',
-                        fontWeight: 600,
-                        letterSpacing: '0.03em',
+                        border: '1px solid rgba(237, 237, 237, 0.09)',
+                        color: '#86a9f2',
+                        fontSize: '0.75rem',
+                        fontWeight: 500,
                       }}
                     >
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -317,7 +224,7 @@ export default async function CompanyDetailPage({
                     className="btn-secondary"
                     sx={{ textTransform: 'none', fontSize: '0.8125rem' }}
                   >
-                    Official Website ↗
+                    Website
                   </Button>
                 )}
                 {company.linkedinUrl && (
@@ -331,7 +238,7 @@ export default async function CompanyDetailPage({
                     className="btn-secondary"
                     sx={{ textTransform: 'none', fontSize: '0.8125rem' }}
                   >
-                    LinkedIn Profile ↗
+                    LinkedIn
                   </Button>
                 )}
               </Stack>
@@ -341,7 +248,7 @@ export default async function CompanyDetailPage({
 
             <Grid container spacing={3}>
               <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
+                <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500 }}>
                   Location
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'var(--text-primary)', mt: 0.5, fontWeight: 500 }}>
@@ -352,7 +259,7 @@ export default async function CompanyDetailPage({
               </Grid>
 
               <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
+                <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500 }}>
                   Company Scale / Size
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'var(--text-primary)', mt: 0.5, fontWeight: 500 }}>
@@ -361,19 +268,19 @@ export default async function CompanyDetailPage({
               </Grid>
 
               <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-                  Linked Active Leads
+                <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500 }}>
+                  Linked active leads
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'var(--text-primary)', mt: 0.5, fontWeight: 600 }}>
+                <Typography variant="body2" sx={{ color: 'var(--text-primary)', mt: 0.5, fontWeight: 500 }}>
                   {linkedLeads.length} Lead{linkedLeads.length === 1 ? '' : 's'}
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-                  Research Dossiers
+                <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500 }}>
+                  Research
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'var(--text-primary)', mt: 0.5, fontWeight: 600 }}>
+                <Typography variant="body2" sx={{ color: 'var(--text-primary)', mt: 0.5, fontWeight: 500 }}>
                   {researchHistory.length} Record{researchHistory.length === 1 ? '' : 's'}
                 </Typography>
               </Grid>
@@ -389,7 +296,7 @@ export default async function CompanyDetailPage({
               <Box>
                 <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                   <Typography variant="h3" sx={{ color: 'var(--text-primary)' }}>
-                    AI Research & Market Intelligence History
+                    Research history
                   </Typography>
                   <Chip
                     size="small"
@@ -398,7 +305,7 @@ export default async function CompanyDetailPage({
                       bgcolor: 'var(--bg-surface-subtle)',
                       border: '1px solid var(--border-subtle)',
                       color: 'var(--text-secondary)',
-                      fontWeight: 600,
+                      fontWeight: 500,
                       fontSize: '0.75rem',
                     }}
                   />
@@ -443,7 +350,7 @@ export default async function CompanyDetailPage({
                         bgcolor: 'var(--bg-surface)',
                         border: '1px solid var(--border-default)',
                         borderRadius: 'var(--radius-md)',
-                        boxShadow: 'var(--shadow-card)',
+                        boxShadow: 'none',
                         borderLeft: idx === 0 ? '3px solid var(--accent-info)' : '1px solid var(--border-default)',
                         transition: 'var(--transition-default)',
                       }}
@@ -461,19 +368,19 @@ export default async function CompanyDetailPage({
                         >
                           <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
                             <Typography variant="subtitle1" fontWeight={600} sx={{ color: 'var(--text-primary)' }}>
-                              {idx === 0 ? 'Latest Intelligence Dossier' : `Historical Dossier #${researchHistory.length - idx}`}
+                              {idx === 0 ? 'Latest research' : `Earlier research #${researchHistory.length - idx}`}
                             </Typography>
 
                             {idx === 0 && (
                               <Chip
                                 size="small"
-                                label="CURRENT"
+                                label="Current"
                                 sx={{
                                   bgcolor: 'var(--accent-info-muted)',
-                                  border: '1px solid rgba(14, 165, 233, 0.3)',
-                                  color: '#38bdf8',
-                                  fontSize: '0.625rem',
-                                  fontWeight: 700,
+                                  border: '1px solid rgba(237, 237, 237, 0.09)',
+                                  color: '#86a9f2',
+                                  fontSize: '0.75rem',
+                                  fontWeight: 600,
                                   height: 20,
                                 }}
                               />
@@ -484,8 +391,8 @@ export default async function CompanyDetailPage({
                                 size="small"
                                 label={`POLICY: ${restrictionResult}`}
                                 sx={{
-                                  fontWeight: 700,
-                                  fontSize: '0.625rem',
+                                  fontWeight: 600,
+                                  fontSize: '0.75rem',
                                   height: 20,
                                   bgcolor:
                                     restrictionResult === 'RESTRICTED'
@@ -495,16 +402,16 @@ export default async function CompanyDetailPage({
                                         : 'var(--accent-success-muted)',
                                   border:
                                     restrictionResult === 'RESTRICTED'
-                                      ? '1px solid rgba(244, 63, 94, 0.3)'
+                                      ? '1px solid rgba(237, 237, 237, 0.09)'
                                       : restrictionResult === 'HUMAN_REVIEW'
-                                        ? '1px solid rgba(245, 158, 11, 0.3)'
-                                        : '1px solid rgba(16, 185, 129, 0.3)',
+                                        ? '1px solid rgba(237, 237, 237, 0.09)'
+                                        : '1px solid rgba(237, 237, 237, 0.09)',
                                   color:
                                     restrictionResult === 'RESTRICTED'
-                                      ? '#fb7185'
+                                      ? '#ee7378'
                                       : restrictionResult === 'HUMAN_REVIEW'
-                                        ? '#fbbf24'
-                                        : '#34d399',
+                                        ? '#e3a94d'
+                                        : '#4cc38a',
                                 }}
                               />
                             )}
@@ -516,7 +423,7 @@ export default async function CompanyDetailPage({
                                 sx={{
                                   bgcolor: 'var(--bg-surface-subtle)',
                                   color: 'var(--text-muted)',
-                                  fontSize: '0.625rem',
+                                  fontSize: '0.75rem',
                                   height: 20,
                                 }}
                               />
@@ -546,8 +453,8 @@ export default async function CompanyDetailPage({
                               mb: 2,
                             }}
                           >
-                            <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.5 }}>
-                              Company Profile Summary
+                            <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500, display: 'block', mb: 0.5 }}>
+                              Company profile summary
                             </Typography>
                             <Typography variant="body2" sx={{ color: 'var(--text-primary)', lineHeight: 1.6 }}>
                               {rec.companySummary}
@@ -558,8 +465,8 @@ export default async function CompanyDetailPage({
                         {/* Key Market Insights */}
                         {insights.length > 0 && (
                           <Box sx={{ mb: 2 }}>
-                            <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.75 }}>
-                              Key Market Insights & Positioning
+                            <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500, display: 'block', mb: 0.75 }}>
+                              Key market insights and positioning
                             </Typography>
                             <Box component="ul" sx={{ pl: 2.5, m: 0 }}>
                               {insights.map((insight: string, i: number) => (
@@ -574,8 +481,8 @@ export default async function CompanyDetailPage({
                         {/* Pain Points & Scope */}
                         {pains.length > 0 && (
                           <Box sx={{ mb: 2 }}>
-                            <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.75 }}>
-                              Identified Pain Points & Scope
+                            <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500, display: 'block', mb: 0.75 }}>
+                              Identified pain points and scope
                             </Typography>
                             <Box component="ul" sx={{ pl: 2.5, m: 0 }}>
                               {pains.map((pain: string, i: number) => (
@@ -590,8 +497,8 @@ export default async function CompanyDetailPage({
                         {/* Recent Events */}
                         {news.length > 0 && (
                           <Box sx={{ mb: 2 }}>
-                            <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.75 }}>
-                              Recent Events & Triggers
+                            <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500, display: 'block', mb: 0.75 }}>
+                              Recent events and triggers
                             </Typography>
                             <Box component="ul" sx={{ pl: 2.5, m: 0 }}>
                               {news.map((item: string, i: number) => (
@@ -606,8 +513,8 @@ export default async function CompanyDetailPage({
                         {/* Detected Tech Stack */}
                         {tech.length > 0 && (
                           <Box>
-                            <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.75 }}>
-                              Detected Tech Stack & Systems
+                            <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500, display: 'block', mb: 0.75 }}>
+                              Detected tech stack and systems
                             </Typography>
                             <Stack direction="row" spacing={0.75} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
                               {tech.map((t: string, i: number) => (
@@ -619,7 +526,7 @@ export default async function CompanyDetailPage({
                                     bgcolor: 'var(--bg-surface-subtle)',
                                     border: '1px solid var(--border-subtle)',
                                     color: 'var(--text-primary)',
-                                    fontSize: '0.6875rem',
+                                    fontSize: '0.75rem',
                                   }}
                                 />
                               ))}
@@ -643,13 +550,13 @@ export default async function CompanyDetailPage({
                   bgcolor: 'var(--bg-surface)',
                   border: '1px solid var(--border-default)',
                   borderRadius: 'var(--radius-md)',
-                  boxShadow: 'var(--shadow-card)',
+                  boxShadow: 'none',
                 }}
               >
                 <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
                   <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                     <Typography variant="h3" sx={{ color: 'var(--text-primary)' }}>
-                      Linked Pipeline Leads
+                      Linked pipeline leads
                     </Typography>
                     <Chip
                       size="small"
@@ -658,7 +565,7 @@ export default async function CompanyDetailPage({
                         bgcolor: 'var(--bg-surface-subtle)',
                         border: '1px solid var(--border-subtle)',
                         color: 'var(--text-secondary)',
-                        fontWeight: 600,
+                        fontWeight: 500,
                       }}
                     />
                   </Stack>
@@ -713,9 +620,9 @@ export default async function CompanyDetailPage({
                               sx={{
                                 color:
                                   lead.scoreTotal >= 70
-                                    ? '#34d399'
+                                    ? '#4cc38a'
                                     : lead.scoreTotal >= 50
-                                      ? '#fbbf24'
+                                      ? '#e3a94d'
                                       : 'var(--text-primary)',
                               }}
                             >
@@ -723,7 +630,7 @@ export default async function CompanyDetailPage({
                               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 400 }}>/100</span>
                             </Typography>
                             <Typography variant="caption" sx={{ color: 'var(--accent-primary-light)', display: 'block', mt: 0.25 }}>
-                              Inspect →
+                              Open
                             </Typography>
                           </Box>
                         </Box>
@@ -739,13 +646,13 @@ export default async function CompanyDetailPage({
                   bgcolor: 'var(--bg-surface)',
                   border: '1px solid var(--border-default)',
                   borderRadius: 'var(--radius-md)',
-                  boxShadow: 'var(--shadow-card)',
+                  boxShadow: 'none',
                 }}
               >
                 <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
                   <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                     <Typography variant="h3" sx={{ color: 'var(--text-primary)' }}>
-                      Account Contacts
+                      Account contacts
                     </Typography>
                     <Chip
                       size="small"
@@ -754,7 +661,7 @@ export default async function CompanyDetailPage({
                         bgcolor: 'var(--bg-surface-subtle)',
                         border: '1px solid var(--border-subtle)',
                         color: 'var(--text-secondary)',
-                        fontWeight: 600,
+                        fontWeight: 500,
                       }}
                     />
                   </Stack>
@@ -788,13 +695,13 @@ export default async function CompanyDetailPage({
                               {c.isPrimary && (
                                 <Chip
                                   size="small"
-                                  label="PRIMARY"
+                                  label="Primary"
                                   sx={{
                                     bgcolor: 'var(--accent-success-muted)',
-                                    border: '1px solid rgba(16, 185, 129, 0.3)',
-                                    color: '#34d399',
-                                    fontWeight: 700,
-                                    fontSize: '0.625rem',
+                                    border: '1px solid rgba(237, 237, 237, 0.09)',
+                                    color: '#4cc38a',
+                                    fontWeight: 600,
+                                    fontSize: '0.75rem',
                                     height: 18,
                                   }}
                                 />
@@ -829,7 +736,7 @@ export default async function CompanyDetailPage({
                 sx={{
                   p: 2,
                   borderRadius: 'var(--radius-md)',
-                  bgcolor: 'rgba(255, 255, 255, 0.02)',
+                  bgcolor: 'rgba(237, 237, 237, 0.03)',
                   border: '1px solid var(--border-subtle)',
                 }}
               >

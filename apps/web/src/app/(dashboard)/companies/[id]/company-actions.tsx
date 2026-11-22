@@ -49,7 +49,7 @@ export function CompanyActionButtons({
           data.research?.rawResearchData?.metadata?.usage?.totalTokens ||
           data.research?.rawResearchData?.metadata?.tokensUsed?.totalTokens;
         
-        let msg = `AI Market & Company Intelligence generated in ${durationMs}ms for ${companyName}!`;
+        let msg = `Company research generated for ${companyName} in ${durationMs}ms`;
         if (tokenCost) {
           msg += ` (${tokenCost} tokens consumed)`;
         }
@@ -83,20 +83,17 @@ export function CompanyActionButtons({
         sx={{
           bgcolor: 'var(--accent-info)',
           color: '#ffffff',
-          fontWeight: 600,
+          fontWeight: 500,
           fontSize: '0.8125rem',
           px: 2,
           py: 0.9,
           borderRadius: 'var(--radius-sm)',
-          border: '1px solid rgba(56, 189, 248, 0.4)',
-          boxShadow: '0 2px 8px rgba(14, 165, 233, 0.25)',
+          border: '1px solid rgba(237, 237, 237, 0.09)',
           textTransform: 'none',
-          letterSpacing: '0.01em',
           transition: 'var(--transition-default)',
           '&:hover': {
-            bgcolor: '#0284c7',
-            borderColor: 'rgba(56, 189, 248, 0.7)',
-            boxShadow: '0 4px 14px rgba(14, 165, 233, 0.4)',
+            bgcolor: '#3d6fd8',
+            borderColor: 'rgba(237, 237, 237, 0.09)',
           },
           '&:disabled': {
             bgcolor: 'var(--bg-surface-subtle)',
@@ -127,10 +124,10 @@ export function CompanyActionButtons({
             width: '100%',
             maxWidth: 480,
             bgcolor: 'var(--accent-success-muted)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
-            color: '#34d399',
+            border: '1px solid rgba(237, 237, 237, 0.09)',
+            color: '#4cc38a',
             fontSize: '0.8125rem',
-            '& .MuiAlert-icon': { color: '#34d399' },
+            '& .MuiAlert-icon': { color: '#4cc38a' },
           }}
         >
           {successMsg}
@@ -147,8 +144,8 @@ export function CompanyActionButtons({
             width: '100%',
             maxWidth: 480,
             bgcolor: restrictionAlert.includes('RESTRICTED') ? 'var(--accent-danger-muted)' : 'var(--accent-warning-muted)',
-            border: restrictionAlert.includes('RESTRICTED') ? '1px solid rgba(244, 63, 94, 0.3)' : '1px solid rgba(245, 158, 11, 0.3)',
-            color: restrictionAlert.includes('RESTRICTED') ? '#fb7185' : '#fbbf24',
+            border: restrictionAlert.includes('RESTRICTED') ? '1px solid rgba(237, 237, 237, 0.09)' : '1px solid rgba(237, 237, 237, 0.09)',
+            color: restrictionAlert.includes('RESTRICTED') ? '#ee7378' : '#e3a94d',
             fontSize: '0.8125rem',
           }}
         >
@@ -166,10 +163,10 @@ export function CompanyActionButtons({
             width: '100%',
             maxWidth: 480,
             bgcolor: 'var(--accent-danger-muted)',
-            border: '1px solid rgba(244, 63, 94, 0.3)',
-            color: '#fb7185',
+            border: '1px solid rgba(237, 237, 237, 0.09)',
+            color: '#ee7378',
             fontSize: '0.8125rem',
-            '& .MuiAlert-icon': { color: '#fb7185' },
+            '& .MuiAlert-icon': { color: '#ee7378' },
           }}
         >
           {error}

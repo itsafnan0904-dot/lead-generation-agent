@@ -25,45 +25,42 @@ export default async function SettingsPage() {
       case 'ADMIN':
         return (
           <Chip
-            label="ADMIN"
+            label="Admin"
             size="small"
             sx={{
               bgcolor: 'var(--accent-primary-muted)',
               color: 'var(--accent-primary-light)',
-              fontWeight: 700,
-              fontSize: '0.6875rem',
-              letterSpacing: '0.05em',
-              border: '1px solid rgba(124, 110, 224, 0.3)',
+              fontWeight: 600,
+              fontSize: '0.75rem',
+              border: '1px solid rgba(237, 237, 237, 0.09)',
             }}
           />
         );
       case 'MANAGER':
         return (
           <Chip
-            label="MANAGER"
+            label="Manager"
             size="small"
             sx={{
               bgcolor: 'var(--accent-warning-muted)',
-              color: '#fbbf24',
-              fontWeight: 700,
-              fontSize: '0.6875rem',
-              letterSpacing: '0.05em',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
+              color: '#e3a94d',
+              fontWeight: 600,
+              fontSize: '0.75rem',
+              border: '1px solid rgba(237, 237, 237, 0.09)',
             }}
           />
         );
       case 'SALES_REP':
         return (
           <Chip
-            label="SALES REP"
+            label="Sales rep"
             size="small"
             sx={{
               bgcolor: 'var(--accent-info-muted)',
-              color: '#38bdf8',
-              fontWeight: 700,
-              fontSize: '0.6875rem',
-              letterSpacing: '0.05em',
-              border: '1px solid rgba(14, 165, 233, 0.3)',
+              color: '#86a9f2',
+              fontWeight: 600,
+              fontSize: '0.75rem',
+              border: '1px solid rgba(237, 237, 237, 0.09)',
             }}
           />
         );
@@ -75,9 +72,8 @@ export default async function SettingsPage() {
             sx={{
               bgcolor: 'var(--bg-surface-subtle)',
               color: 'var(--text-secondary)',
-              fontWeight: 600,
-              fontSize: '0.6875rem',
-              letterSpacing: '0.05em',
+              fontWeight: 500,
+              fontSize: '0.75rem',
               border: '1px solid var(--border-subtle)',
             }}
           />
@@ -100,7 +96,7 @@ export default async function SettingsPage() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <Header title="Settings & Account Governance" />
+      <Header title="Settings" />
 
       <Box
         component="main"
@@ -116,8 +112,8 @@ export default async function SettingsPage() {
       >
         {/* Page Header */}
         <Box>
-          <Typography variant="h2" sx={{ color: 'var(--text-primary)', mb: 0.5, fontSize: '1.5rem', fontWeight: 700 }}>
-            Account & System Configuration
+          <Typography variant="h2" sx={{ color: 'var(--text-primary)', mb: 0.5, fontSize: '1.5rem', fontWeight: 600 }}>
+            Account and system configuration
           </Typography>
           <Typography variant="body2" sx={{ color: 'var(--text-secondary)' }}>
             Authenticated profile attributes, security credentials, and platform integration status
@@ -131,7 +127,7 @@ export default async function SettingsPage() {
             bgcolor: 'var(--bg-surface)',
             border: '1px solid var(--border-default)',
             borderRadius: 'var(--radius-md)',
-            boxShadow: 'var(--shadow-card)',
+            boxShadow: 'none',
           }}
         >
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} alignItems={{ xs: 'flex-start', sm: 'center' }} sx={{ mb: 3 }}>
@@ -142,15 +138,13 @@ export default async function SettingsPage() {
                 height: 64,
                 borderRadius: 'var(--radius-md)',
                 bgcolor: 'var(--accent-primary-muted)',
-                border: '1px solid rgba(124, 110, 224, 0.3)',
+                border: '1px solid rgba(237, 237, 237, 0.09)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: 'var(--accent-primary-light)',
-                fontWeight: 700,
+                fontWeight: 600,
                 fontSize: '1.35rem',
-                letterSpacing: '0.02em',
-                boxShadow: '0 4px 12px rgba(124, 110, 224, 0.15)',
               }}
             >
               {user?.name ? user.name.slice(0, 2).toUpperCase() : 'US'}
@@ -158,7 +152,7 @@ export default async function SettingsPage() {
 
             <Box sx={{ flex: 1 }}>
               <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 0.5 }}>
-                <Typography variant="h3" sx={{ color: 'var(--text-primary)', fontSize: '1.25rem', fontWeight: 700 }}>
+                <Typography variant="h3" sx={{ color: 'var(--text-primary)', fontSize: '1.25rem', fontWeight: 600 }}>
                   {user?.name || 'Authenticated User'}
                 </Typography>
                 {getRoleBadge(user?.role)}
@@ -187,10 +181,10 @@ export default async function SettingsPage() {
                 border: '1px solid var(--border-subtle)',
               }}
             >
-              <Typography variant="caption" sx={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.5 }}>
-                Display Name
+              <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 500, display: 'block', mb: 0.5 }}>
+                Display name
               </Typography>
-              <Typography variant="body2" sx={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+              <Typography variant="body2" sx={{ color: 'var(--text-primary)', fontWeight: 500 }}>
                 {user?.name || '—'}
               </Typography>
             </Box>
@@ -203,10 +197,10 @@ export default async function SettingsPage() {
                 border: '1px solid var(--border-subtle)',
               }}
             >
-              <Typography variant="caption" sx={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.5 }}>
-                Email Address
+              <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 500, display: 'block', mb: 0.5 }}>
+                Email address
               </Typography>
-              <Typography variant="body2" sx={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+              <Typography variant="body2" sx={{ color: 'var(--text-primary)', fontWeight: 500 }}>
                 {user?.email || '—'}
               </Typography>
             </Box>
@@ -219,10 +213,10 @@ export default async function SettingsPage() {
                 border: '1px solid var(--border-subtle)',
               }}
             >
-              <Typography variant="caption" sx={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.5 }}>
-                Assigned Role & Access Scope
+              <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 500, display: 'block', mb: 0.5 }}>
+                Assigned role and access scope
               </Typography>
-              <Typography variant="body2" sx={{ color: 'var(--text-primary)', fontWeight: 600, mb: 0.5 }}>
+              <Typography variant="body2" sx={{ color: 'var(--text-primary)', fontWeight: 500, mb: 0.5 }}>
                 {user?.role || 'SALES_REP'}
               </Typography>
               <Typography variant="caption" sx={{ color: 'var(--text-secondary)', display: 'block', lineHeight: 1.4 }}>
@@ -238,7 +232,7 @@ export default async function SettingsPage() {
                 border: '1px solid var(--border-subtle)',
               }}
             >
-              <Typography variant="caption" sx={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.5 }}>
+              <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontWeight: 500, display: 'block', mb: 0.5 }}>
                 User Identifier (UUID)
               </Typography>
               <Typography variant="body2" sx={{ color: 'var(--accent-info)', fontFamily: 'monospace', fontSize: '0.8125rem' }}>
@@ -255,11 +249,11 @@ export default async function SettingsPage() {
             bgcolor: 'var(--bg-surface)',
             border: '1px solid var(--border-default)',
             borderRadius: 'var(--radius-md)',
-            boxShadow: 'var(--shadow-card)',
+            boxShadow: 'none',
           }}
         >
-          <Typography variant="h3" sx={{ color: 'var(--text-primary)', fontSize: '1.125rem', fontWeight: 700, mb: 1 }}>
-            Authentication & Session Security
+          <Typography variant="h3" sx={{ color: 'var(--text-primary)', fontSize: '1.125rem', fontWeight: 600, mb: 1 }}>
+            Authentication and session security
           </Typography>
           <Typography variant="body2" sx={{ color: 'var(--text-secondary)', mb: 3 }}>
             Cryptographic token lifecycle and session validation details
@@ -280,7 +274,7 @@ export default async function SettingsPage() {
               }}
             >
               <Box>
-                <Typography variant="body2" sx={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+                <Typography variant="body2" sx={{ color: 'var(--text-primary)', fontWeight: 500 }}>
                   Active JWT Authentication
                 </Typography>
                 <Typography variant="caption" sx={{ color: 'var(--text-muted)' }}>
@@ -292,10 +286,10 @@ export default async function SettingsPage() {
                 size="small"
                 sx={{
                   bgcolor: 'var(--accent-success-muted)',
-                  color: '#34d399',
-                  fontWeight: 700,
-                  fontSize: '0.6875rem',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  color: '#4cc38a',
+                  fontWeight: 600,
+                  fontSize: '0.75rem',
+                  border: '1px solid rgba(237, 237, 237, 0.09)',
                 }}
               />
             </Box>
@@ -314,7 +308,7 @@ export default async function SettingsPage() {
               }}
             >
               <Box>
-                <Typography variant="body2" sx={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+                <Typography variant="body2" sx={{ color: 'var(--text-primary)', fontWeight: 500 }}>
                   Connected API Service
                 </Typography>
                 <Typography variant="caption" sx={{ color: 'var(--text-muted)' }}>
@@ -322,14 +316,14 @@ export default async function SettingsPage() {
                 </Typography>
               </Box>
               <Chip
-                label="ONLINE"
+                label="Online"
                 size="small"
                 sx={{
                   bgcolor: 'var(--accent-info-muted)',
-                  color: '#38bdf8',
-                  fontWeight: 700,
-                  fontSize: '0.6875rem',
-                  border: '1px solid rgba(14, 165, 233, 0.3)',
+                  color: '#86a9f2',
+                  fontWeight: 600,
+                  fontSize: '0.75rem',
+                  border: '1px solid rgba(237, 237, 237, 0.09)',
                 }}
               />
             </Box>
@@ -341,15 +335,15 @@ export default async function SettingsPage() {
           severity="info"
           sx={{
             bgcolor: 'var(--accent-info-muted)',
-            border: '1px solid rgba(14, 165, 233, 0.3)',
+            border: '1px solid rgba(237, 237, 237, 0.09)',
             color: 'var(--text-primary)',
             borderRadius: 'var(--radius-md)',
             '& .MuiAlert-icon': {
-              color: '#38bdf8',
+              color: '#86a9f2',
             },
           }}
         >
-          <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5, color: '#38bdf8' }}>
+          <Typography variant="body2" sx={{ fontWeight: 500, mb: 0.5, color: '#86a9f2' }}>
             Account Management & Self-Service Scope Notice
           </Typography>
           <Typography variant="caption" sx={{ color: 'var(--text-secondary)', display: 'block', lineHeight: 1.5 }}>

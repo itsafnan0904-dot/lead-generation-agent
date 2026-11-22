@@ -1,15 +1,16 @@
 import type { Metadata } from 'next';
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import { IBM_Plex_Sans, IBM_Plex_Mono } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/lib/auth-context';
 import { MuiProvider } from '@/lib/mui-provider';
 
 // Self-hosted by Next at build time (no request to Google from the browser, so the CSP stays strict)
-const sans = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
+const sans = IBM_Plex_Sans({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-sans', display: 'swap' });
+const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-plex-mono', display: 'swap' });
 
 export const metadata: Metadata = {
-  title: 'AI Sales Agent | Enterprise Dashboard',
-  description: 'AI-driven autonomous lead generation, scoring, and engagement platform',
+  title: 'AI Sales Agent',
+  description: 'Finds prospects, writes outreach and replies, and hands each lead to you when it is ready to talk money',
 };
 
 export default function RootLayout({
@@ -18,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={sans.variable}>
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body>
         <MuiProvider>
           <AuthProvider>{children}</AuthProvider>
