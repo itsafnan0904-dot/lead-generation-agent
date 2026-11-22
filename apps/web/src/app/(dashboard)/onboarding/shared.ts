@@ -40,7 +40,7 @@ export const input: React.CSSProperties = {
 };
 export const label: React.CSSProperties = { display: 'block', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: 6, fontWeight: 500 };
 export const btn = (primary = false): React.CSSProperties => ({
-  padding: '8px 14px', borderRadius: 'var(--radius-sm)', fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer',
+  padding: '8px 16px', borderRadius: 'var(--radius-sm)', fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer',
   border: primary ? '1px solid transparent' : '1px solid var(--border-default)',
   background: primary ? 'var(--accent-primary)' : 'transparent', color: primary ? 'var(--text-inverse)' : 'var(--text-primary)',
 });

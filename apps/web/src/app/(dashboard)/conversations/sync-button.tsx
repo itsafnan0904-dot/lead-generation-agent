@@ -54,20 +54,17 @@ export function SyncInboxButton() {
         sx={{
           bgcolor: 'var(--accent-info)',
           color: '#ffffff',
-          fontWeight: 600,
+          fontWeight: 500,
           fontSize: '0.8125rem',
           px: 2,
           py: 0.8,
           borderRadius: 'var(--radius-sm)',
-          border: '1px solid rgba(56, 189, 248, 0.4)',
-          boxShadow: '0 2px 8px rgba(14, 165, 233, 0.2)',
+          border: '1px solid rgba(237, 237, 237, 0.09)',
           textTransform: 'none',
-          letterSpacing: '0.01em',
           transition: 'var(--transition-default)',
           '&:hover': {
-            bgcolor: '#0284c7',
-            borderColor: 'rgba(56, 189, 248, 0.7)',
-            boxShadow: '0 4px 12px rgba(14, 165, 233, 0.35)',
+            bgcolor: '#3d6fd8',
+            borderColor: 'rgba(237, 237, 237, 0.09)',
           },
           '&:disabled': {
             bgcolor: 'var(--bg-surface-subtle)',
@@ -97,10 +94,10 @@ export function SyncInboxButton() {
             px: 1.5,
             fontSize: '0.75rem',
             bgcolor: 'var(--accent-success-muted)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
-            color: '#34d399',
+            border: '1px solid rgba(237, 237, 237, 0.09)',
+            color: '#4cc38a',
             maxWidth: 440,
-            '& .MuiAlert-icon': { color: '#34d399' },
+            '& .MuiAlert-icon': { color: '#4cc38a' },
           }}
         >
           Inbox Sync Complete: <strong>{syncResult.newMessagesIngested}</strong> new message{syncResult.newMessagesIngested === 1 ? '' : 's'} ingested (
@@ -117,10 +114,10 @@ export function SyncInboxButton() {
             px: 1.5,
             fontSize: '0.75rem',
             bgcolor: 'var(--accent-danger-muted)',
-            border: '1px solid rgba(244, 63, 94, 0.3)',
-            color: '#fb7185',
+            border: '1px solid rgba(237, 237, 237, 0.09)',
+            color: '#ee7378',
             maxWidth: 440,
-            '& .MuiAlert-icon': { color: '#fb7185' },
+            '& .MuiAlert-icon': { color: '#ee7378' },
           }}
         >
           {error}

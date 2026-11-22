@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { sendJson } from './shared';
 
-const input: React.CSSProperties = { width: '100%', padding: '8px 10px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.1)', background: '#1a1b30', color: '#f4f4fa', fontSize: '0.8125rem', fontFamily: 'inherit' };
-const label: React.CSSProperties = { display: 'block', fontSize: '0.75rem', color: '#a1a3b8', marginBottom: 6 };
+const input: React.CSSProperties = { width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(237, 237, 237, 0.09)', background: '#1e1e20', color: '#ededed', fontSize: '0.8125rem', fontFamily: 'inherit' };
+const label: React.CSSProperties = { display: 'block', fontSize: '0.75rem', color: '#a1a1a6', marginBottom: 6 };
 
 export function NewCampaignForm() {
   const router = useRouter();
@@ -25,16 +25,16 @@ export function NewCampaignForm() {
   };
 
   return (
-    <section style={{ background: '#151628', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 16 }}>
+    <section style={{ background: '#19191b', border: '1px solid rgba(237, 237, 237, 0.09)', borderRadius: 12, padding: 16 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr auto', gap: 10, alignItems: 'end' }}>
         <div><label style={label}>New campaign name *</label><input style={input} value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Q4 retail outreach" /></div>
         <div><label style={label}>Description</label><input style={input} value={description} onChange={(e) => setDescription(e.target.value)} /></div>
         <button
           disabled={busy || !name.trim()} onClick={create}
-          style={{ padding: '8px 14px', borderRadius: 6, border: '1px solid transparent', background: '#7c6ee0', color: '#fff', fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }}
+          style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid transparent', background: '#3d6fd8', color: '#ffffff', fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }}
         >{busy ? 'Creating…' : 'Create campaign'}</button>
       </div>
-      {error && <div role="alert" style={{ color: '#fb7185', fontSize: '0.8125rem', marginTop: 10 }}>{error}</div>}
+      {error && <div role="alert" style={{ color: '#ee7378', fontSize: '0.8125rem', marginTop: 10 }}>{error}</div>}
     </section>
   );
 }

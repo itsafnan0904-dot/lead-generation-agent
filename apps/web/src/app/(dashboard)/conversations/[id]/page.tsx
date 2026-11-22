@@ -12,6 +12,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { Header } from '@/components/header';
 import { serverApiFetch } from '@/lib/server-api-client';
+import { StatusDot } from '@/components/ui';
 
 interface AiReplyAnalysis {
   intent: 'INTERESTED' | 'NOT_INTERESTED' | 'MORE_INFO_REQUESTED' | 'OUT_OF_OFFICE' | 'OBJECTION_RAISED' | 'UNSUBSCRIBE' | 'NEUTRAL';
@@ -94,25 +95,7 @@ export default async function ConversationDetailPage({
     if (leadStatus === 'HUMAN_REVIEW') {
       return (
         <Tooltip title="Human review required before outbound transmission" arrow>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.6,
-              px: 1,
-              py: 0.35,
-              borderRadius: 'var(--radius-sm)',
-              bgcolor: 'var(--accent-warning-muted)',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
-              color: '#fbbf24',
-              fontSize: '0.6875rem',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span>⚠ Review Required</span>
-          </Box>
+          <StatusDot tone="paused">Needs review</StatusDot>
         </Tooltip>
       );
     }
@@ -120,25 +103,7 @@ export default async function ConversationDetailPage({
     if (controlState === 'PAUSED') {
       return (
         <Tooltip title="AI autonomous agent is paused by operator" arrow>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.6,
-              px: 1,
-              py: 0.35,
-              borderRadius: 'var(--radius-sm)',
-              bgcolor: 'var(--accent-warning-muted)',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
-              color: '#fbbf24',
-              fontSize: '0.6875rem',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span>Ⅱ AI Paused</span>
-          </Box>
+          <StatusDot tone="paused">AI paused</StatusDot>
         </Tooltip>
       );
     }
@@ -146,25 +111,7 @@ export default async function ConversationDetailPage({
     if (controlState === 'TAKEN_OVER') {
       return (
         <Tooltip title="Thread taken over by human sales representative" arrow>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.6,
-              px: 1,
-              py: 0.35,
-              borderRadius: 'var(--radius-sm)',
-              bgcolor: 'var(--accent-primary-muted)',
-              border: '1px solid rgba(124, 110, 224, 0.3)',
-              color: '#a99ef2',
-              fontSize: '0.6875rem',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span>✋ Human Controlled</span>
-          </Box>
+          <StatusDot tone="turn">Human handling</StatusDot>
         </Tooltip>
       );
     }
@@ -172,25 +119,7 @@ export default async function ConversationDetailPage({
     if (controlState === 'AI_ACTIVE' || (!controlState && leadStatus)) {
       return (
         <Tooltip title="AI autonomous agent is actively monitoring and qualifying this thread" arrow>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.6,
-              px: 1,
-              py: 0.35,
-              borderRadius: 'var(--radius-sm)',
-              bgcolor: 'var(--accent-success-muted)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              color: '#34d399',
-              fontSize: '0.6875rem',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span>● Autonomous Active</span>
-          </Box>
+          <StatusDot tone="active">AI active</StatusDot>
         </Tooltip>
       );
     }
@@ -204,13 +133,13 @@ export default async function ConversationDetailPage({
         return (
           <Chip
             size="small"
-            label="INTERESTED"
+            label="Interested"
             sx={{
               bgcolor: 'var(--accent-success-muted)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              color: '#34d399',
-              fontWeight: 700,
-              fontSize: '0.6875rem',
+              border: '1px solid rgba(237, 237, 237, 0.09)',
+              color: '#4cc38a',
+              fontWeight: 600,
+              fontSize: '0.75rem',
             }}
           />
         );
@@ -218,13 +147,13 @@ export default async function ConversationDetailPage({
         return (
           <Chip
             size="small"
-            label="INFO REQUESTED"
+            label="Info requested"
             sx={{
               bgcolor: 'var(--accent-info-muted)',
-              border: '1px solid rgba(14, 165, 233, 0.3)',
-              color: '#38bdf8',
-              fontWeight: 700,
-              fontSize: '0.6875rem',
+              border: '1px solid rgba(237, 237, 237, 0.09)',
+              color: '#86a9f2',
+              fontWeight: 600,
+              fontSize: '0.75rem',
             }}
           />
         );
@@ -232,13 +161,13 @@ export default async function ConversationDetailPage({
         return (
           <Chip
             size="small"
-            label="OBJECTION"
+            label="Objection"
             sx={{
               bgcolor: 'var(--accent-warning-muted)',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
-              color: '#fbbf24',
-              fontWeight: 700,
-              fontSize: '0.6875rem',
+              border: '1px solid rgba(237, 237, 237, 0.09)',
+              color: '#e3a94d',
+              fontWeight: 600,
+              fontSize: '0.75rem',
             }}
           />
         );
@@ -250,10 +179,10 @@ export default async function ConversationDetailPage({
             label={intent}
             sx={{
               bgcolor: 'var(--accent-danger-muted)',
-              border: '1px solid rgba(244, 63, 94, 0.3)',
-              color: '#fb7185',
-              fontWeight: 700,
-              fontSize: '0.6875rem',
+              border: '1px solid rgba(237, 237, 237, 0.09)',
+              color: '#ee7378',
+              fontWeight: 600,
+              fontSize: '0.75rem',
             }}
           />
         );
@@ -266,7 +195,7 @@ export default async function ConversationDetailPage({
               bgcolor: 'var(--bg-surface-subtle)',
               border: '1px solid var(--border-subtle)',
               color: 'var(--text-secondary)',
-              fontSize: '0.6875rem',
+              fontSize: '0.75rem',
             }}
           />
         );
@@ -275,7 +204,7 @@ export default async function ConversationDetailPage({
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <Header title={conv.subject || 'Conversation Thread'} />
+      <Header title={conv.subject || 'Conversation'} />
 
       <Box
         component="main"
@@ -283,7 +212,7 @@ export default async function ConversationDetailPage({
           p: { xs: 2, sm: 3, md: 4 },
           display: 'flex',
           flexDirection: 'column',
-          gap: 3,
+          gap: 4,
           maxWidth: 1400,
           width: '100%',
           mx: 'auto',
@@ -304,7 +233,7 @@ export default async function ConversationDetailPage({
               '&:hover': { color: 'var(--text-primary)', bgcolor: 'transparent' },
             }}
           >
-            ← Back to Inbox & Conversations
+            ← Back to Conversations
           </Button>
         </Box>
 
@@ -315,10 +244,10 @@ export default async function ConversationDetailPage({
               p: 2.5,
               borderRadius: 'var(--radius-md)',
               bgcolor: 'var(--accent-warning-muted)',
-              border: '1px solid rgba(245, 158, 11, 0.35)',
+              border: '1px solid rgba(237, 237, 237, 0.09)',
             }}
           >
-            <Typography variant="subtitle1" fontWeight={700} sx={{ color: '#fbbf24', mb: 0.5 }}>
+            <Typography variant="subtitle1" fontWeight={700} sx={{ color: '#e3a94d', mb: 0.5 }}>
               Unassigned Conversation (Needs Human Lead Assignment)
             </Typography>
             <Typography variant="body2" sx={{ color: 'var(--text-primary)', lineHeight: 1.5 }}>
@@ -334,7 +263,7 @@ export default async function ConversationDetailPage({
               bgcolor: 'var(--bg-surface)',
               border: '1px solid var(--border-default)',
               borderRadius: 'var(--radius-md)',
-              boxShadow: 'var(--shadow-card)',
+              boxShadow: 'none',
             }}
           >
             <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
@@ -355,8 +284,8 @@ export default async function ConversationDetailPage({
                   }}
                 >
                   <Box>
-                    <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-                      Associated Account & Lead
+                    <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500 }}>
+                      Associated account and lead
                     </Typography>
                     <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', mt: 0.5, flexWrap: 'wrap' }}>
                       <Typography variant="h3" sx={{ color: 'var(--text-primary)' }}>
@@ -372,11 +301,11 @@ export default async function ConversationDetailPage({
                         label={conv.lead?.status}
                         sx={{
                           height: 20,
-                          fontSize: '0.6875rem',
-                          fontWeight: 700,
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
                           bgcolor: conv.lead?.status === 'QUALIFIED' ? 'var(--accent-success-muted)' : 'var(--accent-info-muted)',
-                          color: conv.lead?.status === 'QUALIFIED' ? '#34d399' : '#38bdf8',
-                          border: conv.lead?.status === 'QUALIFIED' ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(14, 165, 233, 0.3)',
+                          color: conv.lead?.status === 'QUALIFIED' ? '#4cc38a' : '#86a9f2',
+                          border: conv.lead?.status === 'QUALIFIED' ? '1px solid rgba(237, 237, 237, 0.09)' : '1px solid rgba(237, 237, 237, 0.09)',
                         }}
                       />
                     </Stack>
@@ -384,8 +313,8 @@ export default async function ConversationDetailPage({
 
                   {conv.lead?.primaryContact && (
                     <Box sx={{ borderLeft: { sm: '1px solid var(--border-subtle)' }, pl: { sm: 3 } }}>
-                      <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-                        Primary Contact
+                      <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500 }}>
+                        Primary contact
                       </Typography>
                       <Typography variant="body2" sx={{ color: 'var(--text-primary)', mt: 0.5, fontWeight: 500 }}>
                         {conv.lead.primaryContact.firstName} {conv.lead.primaryContact.lastName || ''}{' '}
@@ -395,7 +324,7 @@ export default async function ConversationDetailPage({
                   )}
 
                   <Box sx={{ borderLeft: { sm: '1px solid var(--border-subtle)' }, pl: { sm: 3 } }}>
-                    <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.5 }}>
+                    <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500, display: 'block', mb: 0.5 }}>
                       AI Operating State
                     </Typography>
                     {renderAiStateIndicator(conv.lead?.aiControlState, conv.lead?.status)}
@@ -410,7 +339,7 @@ export default async function ConversationDetailPage({
                   className="btn-primary"
                   sx={{ textTransform: 'none', px: 2, py: 0.75 }}
                 >
-                  View Full Lead Detail & Score →
+                  Open lead and score
                 </Button>
               </Stack>
             </CardContent>
@@ -455,7 +384,7 @@ export default async function ConversationDetailPage({
                     bgcolor: 'var(--bg-surface)',
                     border: '1px solid var(--border-default)',
                     borderRadius: 'var(--radius-md)',
-                    boxShadow: 'var(--shadow-card)',
+                    boxShadow: 'none',
                     borderLeft: isInbound ? '3px solid var(--accent-info)' : '3px solid var(--accent-success)',
                     transition: 'var(--transition-default)',
                   }}
@@ -474,13 +403,13 @@ export default async function ConversationDetailPage({
                       <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
                         <Chip
                           size="small"
-                          label={isInbound ? 'INBOUND EMAIL' : 'OUTBOUND EMAIL'}
+                          label={isInbound ? 'Inbound email' : 'Outbound email'}
                           sx={{
-                            fontWeight: 700,
-                            fontSize: '0.625rem',
+                            fontWeight: 600,
+                            fontSize: '0.75rem',
                             bgcolor: isInbound ? 'var(--accent-info-muted)' : 'var(--accent-success-muted)',
-                            color: isInbound ? '#38bdf8' : '#34d399',
-                            border: isInbound ? '1px solid rgba(14, 165, 233, 0.3)' : '1px solid rgba(16, 185, 129, 0.3)',
+                            color: isInbound ? '#86a9f2' : '#4cc38a',
+                            border: isInbound ? '1px solid rgba(237, 237, 237, 0.09)' : '1px solid rgba(237, 237, 237, 0.09)',
                           }}
                         />
                         <Typography variant="body2" fontWeight={600} sx={{ color: 'var(--text-primary)' }}>
@@ -526,8 +455,8 @@ export default async function ConversationDetailPage({
                         sx={{
                           p: 2,
                           borderRadius: 'var(--radius-sm)',
-                          bgcolor: 'rgba(14, 165, 233, 0.05)',
-                          border: '1px solid rgba(14, 165, 233, 0.25)',
+                          bgcolor: 'rgba(94, 140, 235, 0.05)',
+                          border: '1px solid rgba(237, 237, 237, 0.09)',
                         }}
                       >
                         <Stack
@@ -537,20 +466,18 @@ export default async function ConversationDetailPage({
                             alignItems: 'center',
                             mb: 1.5,
                             flexWrap: 'wrap',
-                            gap: 1,
+                            gap: 4,
                           }}
                         >
                           <Typography
                             variant="subtitle2"
                             sx={{
-                              color: '#38bdf8',
-                              fontWeight: 700,
-                              letterSpacing: '0.04em',
+                              color: '#86a9f2',
+                              fontWeight: 600,
                               fontSize: '0.75rem',
-                              textTransform: 'uppercase',
                             }}
                           >
-                            AI Inbound Reply Analysis & Intelligence
+                            Reply analysis
                           </Typography>
 
                           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
@@ -559,8 +486,8 @@ export default async function ConversationDetailPage({
                               size="small"
                               label={`Sentiment: ${aiAnalysis.sentiment}`}
                               sx={{
-                                fontWeight: 600,
-                                fontSize: '0.625rem',
+                                fontWeight: 500,
+                                fontSize: '0.75rem',
                                 bgcolor:
                                   aiAnalysis.sentiment === 'POSITIVE'
                                     ? 'var(--accent-success-muted)'
@@ -569,15 +496,15 @@ export default async function ConversationDetailPage({
                                       : 'var(--bg-surface-subtle)',
                                 border:
                                   aiAnalysis.sentiment === 'POSITIVE'
-                                    ? '1px solid rgba(16, 185, 129, 0.3)'
+                                    ? '1px solid rgba(237, 237, 237, 0.09)'
                                     : aiAnalysis.sentiment === 'NEGATIVE' || aiAnalysis.sentiment === 'HOSTILE'
-                                      ? '1px solid rgba(244, 63, 94, 0.3)'
+                                      ? '1px solid rgba(237, 237, 237, 0.09)'
                                       : '1px solid var(--border-subtle)',
                                 color:
                                   aiAnalysis.sentiment === 'POSITIVE'
-                                    ? '#34d399'
+                                    ? '#4cc38a'
                                     : aiAnalysis.sentiment === 'NEGATIVE' || aiAnalysis.sentiment === 'HOSTILE'
-                                      ? '#fb7185'
+                                      ? '#ee7378'
                                       : 'var(--text-secondary)',
                               }}
                             />
@@ -587,8 +514,8 @@ export default async function ConversationDetailPage({
                         <Grid container spacing={2}>
                           {aiAnalysis.recommendedNextAction && (
                             <Grid size={{ xs: 12, sm: 6 }}>
-                              <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.25 }}>
-                                Recommended Next Action
+                              <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500, display: 'block', mb: 0.25 }}>
+                                Recommended next action
                               </Typography>
                               <Typography variant="body2" sx={{ color: 'var(--text-primary)', fontWeight: 500 }}>
                                 {aiAnalysis.recommendedNextAction}
@@ -598,10 +525,10 @@ export default async function ConversationDetailPage({
 
                           {aiAnalysis.suggestedLeadStage && (
                             <Grid size={{ xs: 12, sm: 6 }}>
-                              <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.25 }}>
-                                Suggested Stage Progression
+                              <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500, display: 'block', mb: 0.25 }}>
+                                Suggested stage progression
                               </Typography>
-                              <Typography variant="body2" sx={{ color: 'var(--accent-info)', fontWeight: 600 }}>
+                              <Typography variant="body2" sx={{ color: 'var(--accent-info)', fontWeight: 500 }}>
                                 {aiAnalysis.suggestedLeadStage}
                               </Typography>
                             </Grid>
@@ -609,8 +536,8 @@ export default async function ConversationDetailPage({
 
                           {aiAnalysis.objectionsIdentified && aiAnalysis.objectionsIdentified.length > 0 && (
                             <Grid size={12}>
-                              <Typography variant="caption" sx={{ color: '#fb7185', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.25 }}>
-                                Objections Identified
+                              <Typography variant="caption" sx={{ color: '#ee7378', fontWeight: 500, display: 'block', mb: 0.25 }}>
+                                Objections identified
                               </Typography>
                               <Box component="ul" sx={{ pl: 2.5, m: 0, mt: 0.5 }}>
                                 {aiAnalysis.objectionsIdentified.map((obj, i) => (
@@ -624,7 +551,7 @@ export default async function ConversationDetailPage({
 
                           {aiAnalysis.questionsAsked && aiAnalysis.questionsAsked.length > 0 && (
                             <Grid size={12}>
-                              <Typography variant="caption" sx={{ color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, display: 'block', mb: 0.25 }}>
+                              <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontWeight: 500, display: 'block', mb: 0.25 }}>
                                 Questions Asked by Prospect
                               </Typography>
                               <Box component="ul" sx={{ pl: 2.5, m: 0, mt: 0.5 }}>

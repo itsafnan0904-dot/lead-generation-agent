@@ -22,7 +22,7 @@ export function RestrictionsStep({ profile, busy, run }: StepProps) {
         {profile.restrictionRules.map((r) => (
           <div key={r.id} style={row}>
             <div style={{ fontSize: '0.8125rem' }}>
-              <span style={{ color: 'var(--accent-danger)', fontWeight: 600 }}>{r.type}</span> · {r.value}
+              <span style={{ color: 'var(--accent-danger)', fontWeight: 500 }}>{r.type}</span> · {r.value}
               {r.reason && <span style={{ color: 'var(--text-secondary)' }}> — {r.reason}</span>}
             </div>
             <button style={btn()} disabled={busy} onClick={() => run(() => api(`/restriction-rules/${r.id}`, 'DELETE'))}>Remove</button>
@@ -106,12 +106,12 @@ export function ReviewStep({ profile, busy, run, onDone }: StepProps & { onDone:
     <div style={{ display: 'grid', gap: 16 }}>
       <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 8 }}>
         {checks.map((c) => (
-          <li key={c.text} style={{ fontSize: '0.8125rem', color: c.ok ? '#34d399' : c.optional ? 'var(--text-muted)' : '#fb7185' }}>
-            {c.ok ? '✓' : c.optional ? '○' : '✗'} {c.text}
+          <li key={c.text} style={{ fontSize: '0.8125rem', color: c.ok ? '#4cc38a' : c.optional ? 'var(--text-muted)' : '#ee7378' }}>
+            <span aria-hidden="true" style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: 'currentColor', marginRight: 8, opacity: c.ok ? 1 : 0.6 }} />{c.text}
           </li>
         ))}
       </ul>
-      {profile.onboardingComplete && <div style={{ fontSize: '0.8125rem', color: '#34d399' }}>Onboarding is already complete. You can keep editing any step.</div>}
+      {profile.onboardingComplete && <div style={{ fontSize: '0.8125rem', color: '#4cc38a' }}>Onboarding is already complete. You can keep editing any step.</div>}
       <div>
         <button style={btn(true)} disabled={busy || !ready} onClick={async () => { if (await run(() => api('/complete-onboarding', 'POST'))) onDone(); }}>
           {busy ? 'Finishing…' : profile.onboardingComplete ? 'Save & go to dashboard' : 'Finish setup'}

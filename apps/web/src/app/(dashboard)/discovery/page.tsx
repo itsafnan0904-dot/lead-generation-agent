@@ -5,7 +5,7 @@ import { ImportProspects } from './import-prospects';
 export default function DiscoveryPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <Header title="Import Prospects" />
+      <Header title="Import prospects" />
       <ImportProspects />
     </div>
   );

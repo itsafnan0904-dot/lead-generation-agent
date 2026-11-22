@@ -18,6 +18,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { Header } from '@/components/header';
 import { serverApiFetch } from '@/lib/server-api-client';
 import { LeadPriority, PriorityBadge, ReadinessMeter, NeedsYouBadge } from '@/components/lead-priority';
+import { LeadStatus } from '@/components/ui';
 
 interface LeadItem {
   id: string;
@@ -217,148 +218,11 @@ export default async function LeadsListPage({
   };
 
   // Render comprehensive status indicator (Label + Icon + Plain Text + Color per V2)
-  const getStatusBadge = (status: string) => {
-    if (status === 'RESTRICTED') {
-      return (
-        <Tooltip title="Outreach blocked by compliance or safety rules" arrow>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.75,
-              px: 1,
-              py: 0.35,
-              borderRadius: '6px',
-              bgcolor: 'rgba(244, 63, 94, 0.10)',
-              border: '1px solid rgba(244, 63, 94, 0.28)',
-              color: '#fb7185',
-              fontSize: '0.6875rem',
-              fontWeight: 600,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-            <span>RESTRICTED</span>
-          </Box>
-        </Tooltip>
-      );
-    }
-
-    if (status === 'HUMAN_REVIEW') {
-      return (
-        <Tooltip title="Flagged by AI: Requires manager review before outreach" arrow>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.75,
-              px: 1,
-              py: 0.35,
-              borderRadius: '6px',
-              bgcolor: 'rgba(245, 158, 11, 0.10)',
-              border: '1px solid rgba(245, 158, 11, 0.28)',
-              color: '#fbbf24',
-              fontSize: '0.6875rem',
-              fontWeight: 600,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            <span>HUMAN REVIEW</span>
-          </Box>
-        </Tooltip>
-      );
-    }
-
-    if (status === 'QUALIFIED' || status === 'WON' || status === 'DEAL_DISCUSSION') {
-      return (
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 0.75,
-            px: 1,
-            py: 0.35,
-            borderRadius: '6px',
-            bgcolor: 'rgba(16, 185, 129, 0.10)',
-            border: '1px solid rgba(16, 185, 129, 0.28)',
-            color: '#34d399',
-            fontSize: '0.6875rem',
-            fontWeight: 600,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-          }}
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M20 6L9 17l-5-5" />
-          </svg>
-          <span>{status.replace(/_/g, ' ')}</span>
-        </Box>
-      );
-    }
-
-    if (status === 'CONTACTED' || status === 'INTERESTED' || status === 'RESPONDED') {
-      return (
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 0.75,
-            px: 1,
-            py: 0.35,
-            borderRadius: '6px',
-            bgcolor: 'rgba(14, 165, 233, 0.10)',
-            border: '1px solid rgba(14, 165, 233, 0.28)',
-            color: '#38bdf8',
-            fontSize: '0.6875rem',
-            fontWeight: 600,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-          }}
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
-          </svg>
-          <span>{status.replace(/_/g, ' ')}</span>
-        </Box>
-      );
-    }
-
-    return (
-      <Box
-        sx={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          px: 1,
-          py: 0.35,
-          borderRadius: '6px',
-          bgcolor: '#1a1b30',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          color: '#a1a3b8',
-          fontSize: '0.6875rem',
-          fontWeight: 500,
-          letterSpacing: '0.04em',
-          textTransform: 'uppercase',
-        }}
-      >
-        <span>{status.replace(/_/g, ' ')}</span>
-      </Box>
-    );
-  };
+  const getStatusBadge = (status: string) => <LeadStatus status={status} />;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, bgcolor: '#0d0e1b', minHeight: '100vh' }}>
-      <Header title="Lead Pipeline & Governance" />
+    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, bgcolor: '#141415', minHeight: '100vh' }}>
+      <Header title="Leads" />
 
       <Box
         component="main"
@@ -382,10 +246,10 @@ export default async function LeadsListPage({
           }}
         >
           <Box>
-            <Typography variant="h2" sx={{ color: '#f4f4fa', mb: 0.5, fontSize: '1.25rem', fontWeight: 600, letterSpacing: '-0.025em' }}>
-              Prospect Directory
+            <Typography variant="h2" sx={{ color: '#ededed', mb: 0.5, fontSize: '1.25rem', fontWeight: 500, }}>
+              All leads
             </Typography>
-            <Typography variant="body2" sx={{ color: '#a1a3b8', fontSize: '0.8125rem' }}>
+            <Typography variant="body2" sx={{ color: '#a1a1a6', fontSize: '0.8125rem' }}>
               Showing {items.length} of {total} leads across the autonomous sales lifecycle
             </Typography>
           </Box>
@@ -408,14 +272,14 @@ export default async function LeadsListPage({
                 defaultValue={statusFilter}
                 displayEmpty
                 sx={{
-                  bgcolor: '#1a1b30',
-                  border: '1px solid rgba(255, 255, 255, 0.10)',
-                  borderRadius: '6px',
+                  bgcolor: '#1e1e20',
+                  border: '1px solid rgba(237, 237, 237, 0.09)',
+                  borderRadius: '8px',
                   fontSize: '0.8125rem',
-                  color: '#f4f4fa',
+                  color: '#ededed',
                   '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
                   '&:hover': {
-                    borderColor: 'rgba(255, 255, 255, 0.18)',
+                    borderColor: 'rgba(237, 237, 237, 0.16)',
                   },
                 }}
               >
@@ -441,13 +305,13 @@ export default async function LeadsListPage({
                 py: 0.65,
                 fontSize: '0.8125rem',
                 fontWeight: 500,
-                color: '#f4f4fa',
-                borderColor: 'rgba(255, 255, 255, 0.10)',
-                bgcolor: '#1a1b30',
-                borderRadius: '6px',
+                color: '#ededed',
+                borderColor: 'rgba(237, 237, 237, 0.09)',
+                bgcolor: '#1e1e20',
+                borderRadius: '8px',
                 '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 0.06)',
-                  borderColor: 'rgba(255, 255, 255, 0.18)',
+                  bgcolor: 'rgba(237, 237, 237, 0.06)',
+                  borderColor: 'rgba(237, 237, 237, 0.16)',
                 },
               }}
             >
@@ -460,7 +324,7 @@ export default async function LeadsListPage({
                 href="/leads"
                 variant="text"
                 size="small"
-                sx={{ color: '#6e7089', textTransform: 'none', fontSize: '0.8125rem', '&:hover': { color: '#f4f4fa' } }}
+                sx={{ color: '#85858b', textTransform: 'none', fontSize: '0.8125rem', '&:hover': { color: '#ededed' } }}
               >
                 Clear
               </Button>
@@ -473,10 +337,10 @@ export default async function LeadsListPage({
           sx={{
             display: 'flex',
             flexWrap: 'wrap',
-            gap: 1,
+            gap: 4,
             p: 0.75,
-            bgcolor: '#151628',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            bgcolor: '#19191b',
+            border: '1px solid rgba(237, 237, 237, 0.09)',
             borderRadius: '8px',
           }}
         >
@@ -494,14 +358,14 @@ export default async function LeadsListPage({
                   fontWeight: isActive ? 600 : 500,
                   px: 1.75,
                   py: 0.6,
-                  borderRadius: '6px',
-                  color: isActive ? '#ffffff' : '#a1a3b8',
-                  bgcolor: isActive ? '#7c6ee0' : 'transparent',
-                  border: isActive ? '1px solid #7c6ee0' : '1px solid transparent',
+                  borderRadius: '8px',
+                  color: isActive ? '#ffffff' : '#a1a1a6',
+                  bgcolor: isActive ? '#3d6fd8' : 'transparent',
+                  border: isActive ? '1px solid #3d6fd8' : '1px solid transparent',
                   transition: 'background-color 140ms cubic-bezier(0.23, 1, 0.32, 1), color 140ms cubic-bezier(0.23, 1, 0.32, 1)',
                   '&:hover': {
-                    bgcolor: isActive ? '#6c5ed0' : 'rgba(255, 255, 255, 0.04)',
-                    color: '#f4f4fa',
+                    bgcolor: isActive ? '#3563c4' : 'rgba(237, 237, 237, 0.06)',
+                    color: '#ededed',
                   },
                   '&:active': {
                     transform: 'scale(0.97)',
@@ -514,13 +378,13 @@ export default async function LeadsListPage({
                     <Box
                       component="span"
                       sx={{
-                        fontSize: '0.625rem',
+                        fontSize: '0.75rem',
                         px: 0.65,
                         py: 0.05,
-                        borderRadius: '9999px',
-                        bgcolor: isActive ? 'rgba(255, 255, 255, 0.2)' : '#202238',
-                        color: isActive ? '#ffffff' : '#6e7089',
-                        fontWeight: 600,
+                        borderRadius: '4px',
+                        bgcolor: isActive ? 'rgba(237, 237, 237, 0.16)' : '#232325',
+                        color: isActive ? '#ffffff' : '#85858b',
+                        fontWeight: 500,
                       }}
                     >
                       {preset.statuses.length}
@@ -536,38 +400,38 @@ export default async function LeadsListPage({
         <Card
           sx={{
             overflow: 'hidden',
-            bgcolor: '#151628',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '10px',
-            boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.6), 0 1px 2px 0 rgba(0, 0, 0, 0.4)',
+            bgcolor: '#19191b',
+            border: '1px solid rgba(237, 237, 237, 0.09)',
+            borderRadius: '12px',
+            boxShadow: 'none',
           }}
         >
           <TableContainer>
             <Table>
               <TableHead>
-                <TableRow sx={{ bgcolor: '#1a1b30' }}>
-                  <TableCell sx={{ color: '#a1a3b8', fontWeight: 600, fontSize: '0.71875rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', py: 1.5 }}>
+                <TableRow sx={{ bgcolor: '#1e1e20' }}>
+                  <TableCell sx={{ color: '#a1a1a6', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid rgba(237, 237, 237, 0.06)', py: 1.5 }}>
                     Company
                   </TableCell>
-                  <TableCell sx={{ color: '#a1a3b8', fontWeight: 600, fontSize: '0.71875rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', py: 1.5 }}>
-                    Primary Contact
+                  <TableCell sx={{ color: '#a1a1a6', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid rgba(237, 237, 237, 0.06)', py: 1.5 }}>
+                    Primary contact
                   </TableCell>
-                  <TableCell sx={{ color: '#a1a3b8', fontWeight: 600, fontSize: '0.71875rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', py: 1.5 }}>
-                    Lifecycle Status
+                  <TableCell sx={{ color: '#a1a1a6', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid rgba(237, 237, 237, 0.06)', py: 1.5 }}>
+                    Lifecycle status
                   </TableCell>
-                  <TableCell sx={{ color: '#a1a3b8', fontWeight: 600, fontSize: '0.71875rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', py: 1.5 }}>
-                    Qualification Score
+                  <TableCell sx={{ color: '#a1a1a6', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid rgba(237, 237, 237, 0.06)', py: 1.5 }}>
+                    Qualification score
                   </TableCell>
-                  <TableCell sx={{ color: '#a1a3b8', fontWeight: 600, fontSize: '0.71875rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', py: 1.5 }}>
+                  <TableCell sx={{ color: '#a1a1a6', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid rgba(237, 237, 237, 0.06)', py: 1.5 }}>
                     Priority
                   </TableCell>
-                  <TableCell sx={{ color: '#a1a3b8', fontWeight: 600, fontSize: '0.71875rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', py: 1.5 }}>
-                    Deal Readiness
+                  <TableCell sx={{ color: '#a1a1a6', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid rgba(237, 237, 237, 0.06)', py: 1.5 }}>
+                    Deal readiness
                   </TableCell>
-                  <TableCell sx={{ color: '#a1a3b8', fontWeight: 600, fontSize: '0.71875rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', py: 1.5 }}>
-                    Date Ingested
+                  <TableCell sx={{ color: '#a1a1a6', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid rgba(237, 237, 237, 0.06)', py: 1.5 }}>
+                    Date ingested
                   </TableCell>
-                  <TableCell align="right" sx={{ color: '#a1a3b8', fontWeight: 600, fontSize: '0.71875rem', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', py: 1.5 }}>
+                  <TableCell align="right" sx={{ color: '#a1a1a6', fontWeight: 500, fontSize: '0.75rem', borderBottom: '1px solid rgba(237, 237, 237, 0.06)', py: 1.5 }}>
                     Action
                   </TableCell>
                 </TableRow>
@@ -575,8 +439,8 @@ export default async function LeadsListPage({
               <TableBody>
                 {items.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} sx={{ textAlign: 'center', py: 8, color: '#6e7089' }}>
-                      <Typography variant="body2" sx={{ fontSize: '0.84375rem' }}>No leads found matching the selected filter preset or criteria.</Typography>
+                    <TableCell colSpan={8} sx={{ textAlign: 'center', py: 8, color: '#85858b' }}>
+                      <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>No leads found matching the selected filter preset or criteria.</Typography>
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -584,10 +448,10 @@ export default async function LeadsListPage({
                     <TableRow
                       key={lead.id}
                       sx={{
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                        borderBottom: '1px solid rgba(237, 237, 237, 0.06)',
                         transition: 'background-color 120ms cubic-bezier(0.23, 1, 0.32, 1)',
                         '&:hover': {
-                          bgcolor: 'rgba(255, 255, 255, 0.03) !important',
+                          bgcolor: 'rgba(237, 237, 237, 0.03) !important',
                         },
                       }}
                     >
@@ -596,10 +460,10 @@ export default async function LeadsListPage({
                           href={`/leads/${lead.id}`}
                           style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
                         >
-                          <Typography variant="body2" fontWeight={600} sx={{ color: '#f4f4fa', fontSize: '0.84375rem', letterSpacing: '-0.01em' }}>
+                          <Typography variant="body2" fontWeight={600} sx={{ color: '#ededed', fontSize: '0.875rem', }}>
                             {lead.company?.name || 'Unknown Company'}
                           </Typography>
-                          <Typography variant="caption" sx={{ color: '#6e7089', fontSize: '0.71875rem' }}>
+                          <Typography variant="caption" sx={{ color: '#85858b', fontSize: '0.75rem' }}>
                             {lead.company?.industry || 'General Industry'} {lead.company?.domain ? `• ${lead.company.domain}` : ''}
                           </Typography>
                         </Link>
@@ -612,15 +476,15 @@ export default async function LeadsListPage({
                         >
                           {lead.primaryContact ? (
                             <>
-                              <Typography variant="body2" sx={{ color: '#f4f4fa', fontSize: '0.84375rem' }}>
+                              <Typography variant="body2" sx={{ color: '#ededed', fontSize: '0.875rem' }}>
                                 {lead.primaryContact.firstName} {lead.primaryContact.lastName || ''}
                               </Typography>
-                              <Typography variant="caption" sx={{ color: '#38bdf8', fontSize: '0.71875rem' }}>
+                              <Typography variant="caption" sx={{ color: '#86a9f2', fontSize: '0.75rem' }}>
                                 {lead.primaryContact.email}
                               </Typography>
                             </>
                           ) : (
-                            <Typography variant="body2" sx={{ color: '#6e7089', fontSize: '0.8125rem' }}>
+                            <Typography variant="body2" sx={{ color: '#85858b', fontSize: '0.8125rem' }}>
                               No contact assigned
                             </Typography>
                           )}
@@ -648,16 +512,16 @@ export default async function LeadsListPage({
                               sx={{
                                 color:
                                   lead.scoreTotal >= 70
-                                    ? '#34d399'
+                                    ? '#4cc38a'
                                     : lead.scoreTotal >= 50
-                                      ? '#fbbf24'
-                                      : '#f4f4fa',
+                                      ? '#e3a94d'
+                                      : '#ededed',
                                 fontSize: '0.875rem',
                                 fontVariantNumeric: 'tabular-nums',
                               }}
                             >
                               {lead.scoreTotal}
-                              <span style={{ fontSize: '0.71875rem', color: '#6e7089', fontWeight: 400 }}>/100</span>
+                              <span style={{ fontSize: '0.75rem', color: '#85858b', fontWeight: 400 }}>/100</span>
                             </Typography>
                           </Box>
                         </Link>
@@ -681,7 +545,7 @@ export default async function LeadsListPage({
                           href={`/leads/${lead.id}`}
                           style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
                         >
-                          <Typography variant="body2" sx={{ color: '#a1a3b8', fontSize: '0.8125rem', fontVariantNumeric: 'tabular-nums' }}>
+                          <Typography variant="body2" sx={{ color: '#a1a1a6', fontSize: '0.8125rem', fontVariantNumeric: 'tabular-nums' }}>
                             {new Date(lead.createdAt).toLocaleDateString(undefined, {
                               year: 'numeric',
                               month: 'short',
@@ -698,22 +562,22 @@ export default async function LeadsListPage({
                           size="small"
                           variant="text"
                           sx={{
-                            color: '#a99ef2',
+                            color: '#86a9f2',
                             textTransform: 'none',
                             fontSize: '0.8125rem',
                             fontWeight: 500,
                             p: '4px 8px',
                             borderRadius: '4px',
                             '&:hover': {
-                              color: '#c4bcf7',
-                              bgcolor: 'rgba(124, 110, 224, 0.08)',
+                              color: '#a9c1f6',
+                              bgcolor: 'rgba(94, 140, 235, 0.08)',
                             },
                             '&:active': {
                               transform: 'scale(0.97)',
                             },
                           }}
                         >
-                          Inspect Lead →
+                          Open lead
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -732,11 +596,11 @@ export default async function LeadsListPage({
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-                bgcolor: '#1a1b30',
+                borderTop: '1px solid rgba(237, 237, 237, 0.06)',
+                bgcolor: '#1e1e20',
               }}
             >
-              <Typography variant="body2" sx={{ color: '#a1a3b8', fontSize: '0.8125rem' }}>
+              <Typography variant="body2" sx={{ color: '#a1a1a6', fontSize: '0.8125rem' }}>
                 Page <strong>{page}</strong> of <strong>{totalPages}</strong> ({total} total leads)
               </Typography>
 
@@ -749,14 +613,14 @@ export default async function LeadsListPage({
                     size="small"
                     sx={{
                       textTransform: 'none',
-                      color: '#f4f4fa',
-                      borderColor: 'rgba(255, 255, 255, 0.10)',
-                      bgcolor: '#151628',
-                      borderRadius: '6px',
+                      color: '#ededed',
+                      borderColor: 'rgba(237, 237, 237, 0.09)',
+                      bgcolor: '#19191b',
+                      borderRadius: '8px',
                       fontSize: '0.8125rem',
                       '&:hover': {
-                        bgcolor: 'rgba(255, 255, 255, 0.06)',
-                        borderColor: 'rgba(255, 255, 255, 0.18)',
+                        bgcolor: 'rgba(237, 237, 237, 0.06)',
+                        borderColor: 'rgba(237, 237, 237, 0.16)',
                       },
                       '&:active': { transform: 'scale(0.97)' },
                     }}
@@ -764,7 +628,7 @@ export default async function LeadsListPage({
                     Previous
                   </Button>
                 ) : (
-                  <Button disabled variant="outlined" size="small" sx={{ textTransform: 'none', opacity: 0.4, borderRadius: '6px', fontSize: '0.8125rem' }}>
+                  <Button disabled variant="outlined" size="small" sx={{ textTransform: 'none', opacity: 0.4, borderRadius: '8px', fontSize: '0.8125rem' }}>
                     Previous
                   </Button>
                 )}
@@ -777,14 +641,14 @@ export default async function LeadsListPage({
                     size="small"
                     sx={{
                       textTransform: 'none',
-                      color: '#f4f4fa',
-                      borderColor: 'rgba(255, 255, 255, 0.10)',
-                      bgcolor: '#151628',
-                      borderRadius: '6px',
+                      color: '#ededed',
+                      borderColor: 'rgba(237, 237, 237, 0.09)',
+                      bgcolor: '#19191b',
+                      borderRadius: '8px',
                       fontSize: '0.8125rem',
                       '&:hover': {
-                        bgcolor: 'rgba(255, 255, 255, 0.06)',
-                        borderColor: 'rgba(255, 255, 255, 0.18)',
+                        bgcolor: 'rgba(237, 237, 237, 0.06)',
+                        borderColor: 'rgba(237, 237, 237, 0.16)',
                       },
                       '&:active': { transform: 'scale(0.97)' },
                     }}
@@ -792,7 +656,7 @@ export default async function LeadsListPage({
                     Next
                   </Button>
                 ) : (
-                  <Button disabled variant="outlined" size="small" sx={{ textTransform: 'none', opacity: 0.4, borderRadius: '6px', fontSize: '0.8125rem' }}>
+                  <Button disabled variant="outlined" size="small" sx={{ textTransform: 'none', opacity: 0.4, borderRadius: '8px', fontSize: '0.8125rem' }}>
                     Next
                   </Button>
                 )}

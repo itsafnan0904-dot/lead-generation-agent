@@ -23,6 +23,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
+import { StatusDot } from '@/components/ui';
 
 export interface NotificationItem {
   id: string;
@@ -196,17 +197,17 @@ export function NotificationsList({
   const getActionLabel = (n: NotificationItem): string => {
     switch (n.entityType) {
       case 'HUMAN_REVIEW':
-        return 'Review Lead Restrictions →';
+        return 'Review restrictions';
       case 'OUTREACH_DRAFT':
-        return 'Review Outreach Draft →';
+        return 'Review draft';
       case 'COMPANY':
-        return 'Inspect Company Intelligence →';
+        return 'Open company';
       case 'CONVERSATION':
-        return 'Open Conversation Thread →';
+        return 'Open conversation';
       case 'LEAD':
-        return 'View Lead Dossier →';
+        return 'Open lead';
       default:
-        return 'View Associated Record →';
+        return 'Open record';
     }
   };
 
@@ -238,25 +239,7 @@ export function NotificationsList({
     if (actorType === 'AI') {
       return (
         <Tooltip title="Triggered by Autonomous AI Sales Agent Orchestrator" arrow>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.5,
-              px: 1,
-              py: 0.25,
-              borderRadius: 'var(--radius-sm)',
-              bgcolor: 'var(--accent-success-muted)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              color: '#34d399',
-              fontSize: '0.625rem',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span>● AI Agent</span>
-          </Box>
+          <StatusDot tone="active">AI</StatusDot>
         </Tooltip>
       );
     }
@@ -264,50 +247,14 @@ export function NotificationsList({
     if (actorType === 'USER') {
       return (
         <Tooltip title="Triggered by Human Sales Representative / Compliance Operator" arrow>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.5,
-              px: 1,
-              py: 0.25,
-              borderRadius: 'var(--radius-sm)',
-              bgcolor: 'var(--accent-primary-muted)',
-              border: '1px solid rgba(124, 110, 224, 0.3)',
-              color: '#a99ef2',
-              fontSize: '0.625rem',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span>✋ Human User</span>
-          </Box>
+          <StatusDot tone="turn">Human</StatusDot>
         </Tooltip>
       );
     }
 
     return (
       <Tooltip title="Triggered by Compliance Engine / Scheduled Background Job" arrow>
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 0.5,
-            px: 1,
-            py: 0.25,
-            borderRadius: 'var(--radius-sm)',
-            bgcolor: 'var(--accent-info-muted)',
-            border: '1px solid rgba(14, 165, 233, 0.3)',
-            color: '#38bdf8',
-            fontSize: '0.625rem',
-            fontWeight: 700,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-          }}
-        >
-          <span>⚙ System Engine</span>
-        </Box>
+        <StatusDot tone="idle">System</StatusDot>
       </Tooltip>
     );
   };
@@ -315,14 +262,14 @@ export function NotificationsList({
   const totalPages = Math.ceil(total / initialLimit) || 1;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       {/* Top Filter & Controls Surface */}
       <Card
         sx={{
           bgcolor: 'var(--bg-surface)',
           border: '1px solid var(--border-default)',
           borderRadius: 'var(--radius-md)',
-          boxShadow: 'var(--shadow-card)',
+          boxShadow: 'none',
         }}
       >
         <CardContent sx={{ p: { xs: 2, sm: 2.5 }, '&:last-child': { pb: { xs: 2, sm: 2.5 } } }}>
@@ -350,12 +297,11 @@ export function NotificationsList({
                 '& .MuiTab-root': {
                   color: 'var(--text-secondary)',
                   fontSize: '0.8125rem',
-                  fontWeight: 600,
+                  fontWeight: 500,
                   textTransform: 'none',
                   minHeight: 42,
                   py: 1,
                   px: 1.75,
-                  letterSpacing: '-0.01em',
                   '&.Mui-selected': {
                     color: 'var(--text-primary)',
                   },
@@ -372,7 +318,6 @@ export function NotificationsList({
                         height: 6,
                         borderRadius: '50%',
                         bgcolor: 'var(--accent-danger)',
-                        boxShadow: '0 0 6px rgba(244, 63, 94, 0.6)',
                       }}
                     />
                     <span>Action Required</span>
@@ -459,10 +404,10 @@ export function NotificationsList({
                         <Box
                           sx={{
                             bgcolor: 'var(--accent-danger-muted)',
-                            color: '#fb7185',
-                            border: '1px solid rgba(244, 63, 94, 0.3)',
-                            fontSize: '0.6875rem',
-                            fontWeight: 700,
+                            color: '#ee7378',
+                            border: '1px solid rgba(237, 237, 237, 0.09)',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
                             px: 0.75,
                             py: 0.1,
                             borderRadius: 'var(--radius-full)',
@@ -489,10 +434,10 @@ export function NotificationsList({
           onClose={() => setActionError(null)}
           sx={{
             bgcolor: 'var(--accent-danger-muted)',
-            color: '#fb7185',
-            border: '1px solid rgba(244, 63, 94, 0.3)',
+            color: '#ee7378',
+            border: '1px solid rgba(237, 237, 237, 0.09)',
             borderRadius: 'var(--radius-sm)',
-            '& .MuiAlert-icon': { color: '#fb7185' },
+            '& .MuiAlert-icon': { color: '#ee7378' },
           }}
         >
           {actionError}
@@ -524,7 +469,7 @@ export function NotificationsList({
                 width: 56,
                 height: 56,
                 borderRadius: '50%',
-                bgcolor: 'rgba(255, 255, 255, 0.03)',
+                bgcolor: 'rgba(237, 237, 237, 0.03)',
                 border: '1px solid var(--border-subtle)',
                 display: 'flex',
                 alignItems: 'center',
@@ -539,10 +484,9 @@ export function NotificationsList({
               variant="h3"
               sx={{
                 fontSize: '1rem',
-                fontWeight: 600,
+                fontWeight: 500,
                 color: 'var(--text-primary)',
                 mb: 0.75,
-                letterSpacing: '-0.01em',
               }}
             >
               All clear — no notifications
@@ -570,31 +514,31 @@ export function NotificationsList({
             let cardBorder = 'var(--border-default)';
             let leftStripe = '3px solid transparent';
             let priorityBadgeBg = 'var(--accent-info-muted)';
-            let priorityBadgeColor = '#38bdf8';
-            let priorityBadgeBorder = '1px solid rgba(14, 165, 233, 0.3)';
+            let priorityBadgeColor = '#86a9f2';
+            let priorityBadgeBorder = '1px solid rgba(237, 237, 237, 0.09)';
             let priorityLabel = 'INFO';
 
             if (isActionRequired) {
-              cardBg = isUnread ? 'rgba(244, 63, 94, 0.06)' : 'rgba(244, 63, 94, 0.02)';
-              cardBorder = isUnread ? 'rgba(244, 63, 94, 0.35)' : 'rgba(244, 63, 94, 0.20)';
-              leftStripe = '3px solid #f43f5e';
+              cardBg = isUnread ? 'rgba(229, 72, 77, 0.06)' : 'rgba(229, 72, 77, 0.02)';
+              cardBorder = isUnread ? 'rgba(237, 237, 237, 0.09)' : 'rgba(229, 72, 77, 0.20)';
+              leftStripe = '3px solid #e5484d';
               priorityBadgeBg = 'var(--accent-danger-muted)';
-              priorityBadgeColor = '#fb7185';
-              priorityBadgeBorder = '1px solid rgba(244, 63, 94, 0.4)';
+              priorityBadgeColor = '#ee7378';
+              priorityBadgeBorder = '1px solid rgba(237, 237, 237, 0.09)';
               priorityLabel = 'ACTION REQUIRED';
             } else if (isImportant) {
-              cardBg = isUnread ? 'rgba(245, 158, 11, 0.05)' : 'rgba(245, 158, 11, 0.02)';
-              cardBorder = isUnread ? 'rgba(245, 158, 11, 0.30)' : 'rgba(245, 158, 11, 0.18)';
-              leftStripe = '3px solid #f59e0b';
+              cardBg = isUnread ? 'rgba(227, 169, 77, 0.05)' : 'rgba(227, 169, 77, 0.02)';
+              cardBorder = isUnread ? 'rgba(237, 237, 237, 0.09)' : 'rgba(227, 169, 77, 0.18)';
+              leftStripe = '3px solid #e3a94d';
               priorityBadgeBg = 'var(--accent-warning-muted)';
-              priorityBadgeColor = '#fbbf24';
-              priorityBadgeBorder = '1px solid rgba(245, 158, 11, 0.35)';
+              priorityBadgeColor = '#e3a94d';
+              priorityBadgeBorder = '1px solid rgba(237, 237, 237, 0.09)';
               priorityLabel = 'IMPORTANT';
             } else {
               // INFO
-              cardBg = isUnread ? 'rgba(124, 110, 224, 0.03)' : 'var(--bg-surface)';
-              cardBorder = isUnread ? 'rgba(124, 110, 224, 0.20)' : 'var(--border-subtle)';
-              leftStripe = isUnread ? '3px solid rgba(124, 110, 224, 0.4)' : '3px solid transparent';
+              cardBg = isUnread ? 'rgba(94, 140, 235, 0.03)' : 'var(--bg-surface)';
+              cardBorder = isUnread ? 'rgba(94, 140, 235, 0.20)' : 'var(--border-subtle)';
+              leftStripe = isUnread ? '3px solid rgba(237, 237, 237, 0.09)' : '3px solid transparent';
             }
 
             return (
@@ -607,13 +551,13 @@ export function NotificationsList({
                   borderColor: cardBorder,
                   borderLeft: leftStripe,
                   borderRadius: 'var(--radius-md)',
-                  boxShadow: isActionRequired && isUnread ? '0 4px 16px rgba(244, 63, 94, 0.12)' : 'var(--shadow-card)',
-                  transition: 'all 150ms cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: isActionRequired && isUnread ? '0 4px 16px rgba(229, 72, 77, 0.12)' : 'var(--shadow-card)',
+                  transition: 'background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1)',
                   '&:hover': {
                     borderColor: isActionRequired
-                      ? 'rgba(244, 63, 94, 0.5)'
+                      ? 'rgba(237, 237, 237, 0.09)'
                       : isImportant
-                      ? 'rgba(245, 158, 11, 0.45)'
+                      ? 'rgba(237, 237, 237, 0.09)'
                       : 'var(--border-strong)',
                   },
                 }}
@@ -633,13 +577,13 @@ export function NotificationsList({
                               : isImportant
                               ? 'var(--accent-warning)'
                               : 'var(--accent-primary)'
-                            : 'rgba(255, 255, 255, 0.12)',
+                            : 'rgba(237, 237, 237, 0.12)',
                           boxShadow: isUnread
                             ? isActionRequired
-                              ? '0 0 8px #f43f5e'
+                              ? '0 0 8px #e5484d'
                               : isImportant
-                              ? '0 0 8px #f59e0b'
-                              : '0 0 8px #7c6ee0'
+                              ? '0 0 8px #e3a94d'
+                              : '0 0 8px #3d6fd8'
                             : 'none',
                         }}
                       />
@@ -667,10 +611,8 @@ export function NotificationsList({
                               bgcolor: priorityBadgeBg,
                               color: priorityBadgeColor,
                               border: priorityBadgeBorder,
-                              fontSize: '0.625rem',
-                              fontWeight: 700,
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.05em',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: 0.4,
@@ -686,11 +628,9 @@ export function NotificationsList({
                           {/* Read/Unread State Label */}
                           <Box
                             sx={{
-                              fontSize: '0.6875rem',
-                              fontWeight: 600,
+                              fontSize: '0.75rem',
+                              fontWeight: 500,
                               color: isUnread ? 'var(--text-primary)' : 'var(--text-muted)',
-                              letterSpacing: '0.02em',
-                              textTransform: 'uppercase',
                             }}
                           >
                             {isUnread ? 'Unread' : 'Read'}
@@ -724,7 +664,6 @@ export function NotificationsList({
                           fontWeight: isUnread ? 600 : 500,
                           color: isUnread ? 'var(--text-primary)' : 'var(--text-secondary)',
                           lineHeight: 1.4,
-                          letterSpacing: '-0.01em',
                           mb: 0.5,
                         }}
                       >
@@ -771,14 +710,13 @@ export function NotificationsList({
                                 bgcolor: 'var(--accent-danger)',
                                 color: '#ffffff',
                                 fontSize: '0.8125rem',
-                                fontWeight: 600,
+                                fontWeight: 500,
                                 textTransform: 'none',
                                 px: 1.75,
                                 py: 0.6,
                                 borderRadius: 'var(--radius-sm)',
-                                boxShadow: '0 2px 8px rgba(244, 63, 94, 0.3)',
                                 '&:hover': {
-                                  bgcolor: '#e11d48',
+                                  bgcolor: '#d2565b',
                                 },
                               }}
                             >
@@ -795,18 +733,18 @@ export function NotificationsList({
                               variant="outlined"
                               endIcon={<ArrowForwardIcon sx={{ fontSize: '0.875rem' }} />}
                               sx={{
-                                color: '#fbbf24',
-                                borderColor: 'rgba(245, 158, 11, 0.4)',
-                                bgcolor: 'rgba(245, 158, 11, 0.08)',
+                                color: '#e3a94d',
+                                borderColor: 'rgba(237, 237, 237, 0.09)',
+                                bgcolor: 'rgba(227, 169, 77, 0.08)',
                                 fontSize: '0.8125rem',
-                                fontWeight: 600,
+                                fontWeight: 500,
                                 textTransform: 'none',
                                 px: 1.5,
                                 py: 0.5,
                                 borderRadius: 'var(--radius-sm)',
                                 '&:hover': {
-                                  bgcolor: 'rgba(245, 158, 11, 0.16)',
-                                  borderColor: '#fbbf24',
+                                  bgcolor: 'rgba(227, 169, 77, 0.16)',
+                                  borderColor: '#e3a94d',
                                 },
                               }}
                             >
@@ -871,9 +809,9 @@ export function NotificationsList({
                               color: 'var(--text-secondary)',
                               borderColor: 'var(--border-default)',
                               borderRadius: 'var(--radius-sm)',
-                              bgcolor: 'rgba(255, 255, 255, 0.02)',
+                              bgcolor: 'rgba(237, 237, 237, 0.03)',
                               '&:hover': {
-                                bgcolor: 'rgba(255, 255, 255, 0.06)',
+                                bgcolor: 'rgba(237, 237, 237, 0.06)',
                                 borderColor: 'var(--border-strong)',
                                 color: 'var(--text-primary)',
                               },
@@ -911,7 +849,7 @@ export function NotificationsList({
                 '&.Mui-selected': {
                   bgcolor: 'var(--accent-primary)',
                   color: '#ffffff',
-                  fontWeight: 600,
+                  fontWeight: 500,
                   '&:hover': {
                     bgcolor: 'var(--accent-primary-hover)',
                   },

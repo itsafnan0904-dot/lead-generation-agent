@@ -24,6 +24,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
+import { StatusDot } from '@/components/ui';
 
 export interface AuditEventItem {
   id: string;
@@ -178,25 +179,7 @@ export function ActivityTimeline({
     if (actorType === 'AI') {
       return (
         <Tooltip title="Autonomous AI Sales Agent Orchestrator" arrow>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.6,
-              px: 0.85,
-              py: 0.25,
-              borderRadius: 'var(--radius-sm)',
-              bgcolor: 'var(--accent-success-muted)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              color: '#34d399',
-              fontSize: '0.625rem',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span>● AI Agent</span>
-          </Box>
+          <StatusDot tone="active">AI</StatusDot>
         </Tooltip>
       );
     }
@@ -204,50 +187,14 @@ export function ActivityTimeline({
     if (actorType === 'USER') {
       return (
         <Tooltip title={`Human Sales Representative (${userEmail || 'Operator'})`} arrow>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.6,
-              px: 0.85,
-              py: 0.25,
-              borderRadius: 'var(--radius-sm)',
-              bgcolor: 'var(--accent-primary-muted)',
-              border: '1px solid rgba(124, 110, 224, 0.3)',
-              color: '#a99ef2',
-              fontSize: '0.625rem',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span>✋ Human User</span>
-          </Box>
+          <StatusDot tone="turn">Human</StatusDot>
         </Tooltip>
       );
     }
 
     return (
       <Tooltip title="Automated System Engine / Background Job" arrow>
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 0.6,
-            px: 0.85,
-            py: 0.25,
-            borderRadius: 'var(--radius-sm)',
-            bgcolor: 'var(--accent-info-muted)',
-            border: '1px solid rgba(14, 165, 233, 0.3)',
-            color: '#38bdf8',
-            fontSize: '0.625rem',
-            fontWeight: 700,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-          }}
-        >
-          <span>⚙ System Engine</span>
-        </Box>
+        <StatusDot tone="idle">System</StatusDot>
       </Tooltip>
     );
   };
@@ -269,14 +216,14 @@ export function ActivityTimeline({
   const totalPages = Math.ceil(total / initialLimit) || 1;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       {/* Search & Filter Header Card */}
       <Card
         sx={{
           bgcolor: 'var(--bg-surface)',
           border: '1px solid var(--border-default)',
           borderRadius: 'var(--radius-md)',
-          boxShadow: 'var(--shadow-card)',
+          boxShadow: 'none',
         }}
       >
         <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
@@ -284,7 +231,7 @@ export function ActivityTimeline({
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
               <FilterAltIcon sx={{ fontSize: 20, color: 'var(--accent-primary-light)' }} />
               <Typography variant="subtitle2" fontWeight={700} sx={{ color: 'var(--text-primary)' }}>
-                Audit Stream Filters
+                Audit stream filters
               </Typography>
             </Stack>
 
@@ -386,7 +333,7 @@ export function ActivityTimeline({
                 startIcon={<FilterAltOffIcon sx={{ fontSize: 16 }} />}
                 sx={{ textTransform: 'none' }}
               >
-                Reset Filters
+                Reset filters
               </Button>
               <Button
                 onClick={handleApplyFilter}
@@ -396,7 +343,7 @@ export function ActivityTimeline({
                 startIcon={<FilterAltIcon sx={{ fontSize: 16 }} />}
                 sx={{ textTransform: 'none', px: 2 }}
               >
-                Apply Filters
+                Apply filters
               </Button>
             </Stack>
           </Stack>
@@ -405,9 +352,9 @@ export function ActivityTimeline({
 
       {/* Error Message */}
       {error && (
-        <Card sx={{ bgcolor: 'var(--accent-danger-muted)', border: '1px solid rgba(244, 63, 94, 0.3)' }}>
+        <Card sx={{ bgcolor: 'var(--accent-danger-muted)', border: '1px solid rgba(237, 237, 237, 0.09)' }}>
           <CardContent sx={{ p: 2 }}>
-            <Typography variant="body2" sx={{ color: '#fb7185' }}>
+            <Typography variant="body2" sx={{ color: '#ee7378' }}>
               {error}
             </Typography>
           </CardContent>
@@ -428,7 +375,7 @@ export function ActivityTimeline({
             bgcolor: 'var(--bg-surface)',
             border: '1px solid var(--border-default)',
             borderRadius: 'var(--radius-md)',
-            boxShadow: 'var(--shadow-card)',
+            boxShadow: 'none',
           }}
         >
           <CardContent sx={{ p: 8, textAlign: 'center' }}>
@@ -466,7 +413,7 @@ export function ActivityTimeline({
                   bgcolor: 'var(--bg-surface)',
                   border: '1px solid var(--border-default)',
                   borderRadius: 'var(--radius-md)',
-                  boxShadow: 'var(--shadow-card)',
+                  boxShadow: 'none',
                   borderLeft: `3px solid ${borderAccent}`,
                   transition: 'var(--transition-default)',
                   '&:hover': {
@@ -496,12 +443,11 @@ export function ActivityTimeline({
                           label={evt.entityType.replace(/_/g, ' ')}
                           sx={{
                             height: 20,
-                            fontSize: '0.625rem',
-                            fontWeight: 600,
+                            fontSize: '0.75rem',
+                            fontWeight: 500,
                             bgcolor: 'var(--bg-surface-subtle)',
                             border: '1px solid var(--border-subtle)',
                             color: 'var(--text-secondary)',
-                            textTransform: 'uppercase',
                           }}
                         />
                       </Stack>
@@ -547,14 +493,14 @@ export function ActivityTimeline({
                           endIcon={<OpenInNewIcon sx={{ fontSize: '0.875rem' }} />}
                           sx={{
                             p: 0,
-                            fontWeight: 600,
+                            fontWeight: 500,
                             textTransform: 'none',
                             color: 'var(--accent-primary-light)',
                             '&:hover': { color: 'var(--accent-info)', bgcolor: 'transparent' },
                           }}
                         >
                           Target Entity: {evt.entityType.replace('_', ' ')} (
-                          {evt.entityId ? evt.entityId.substring(0, 8) : 'linked'}) →
+                          {evt.entityId ? evt.entityId.substring(0, 8) : 'linked'})
                         </Button>
                       ) : (
                         <Typography variant="caption" sx={{ color: 'var(--text-muted)' }}>
@@ -581,7 +527,7 @@ export function ActivityTimeline({
                             p: 0,
                             color: 'var(--text-secondary)',
                             fontSize: '0.75rem',
-                            fontWeight: 600,
+                            fontWeight: 500,
                             textTransform: 'none',
                             '&:hover': { color: 'var(--text-primary)', bgcolor: 'transparent' },
                           }}
@@ -606,12 +552,10 @@ export function ActivityTimeline({
                                   <Typography
                                     variant="caption"
                                     sx={{
-                                      color: '#fb7185',
-                                      fontWeight: 700,
+                                      color: '#ee7378',
+                                      fontWeight: 600,
                                       display: 'block',
                                       mb: 0.5,
-                                      textTransform: 'uppercase',
-                                      letterSpacing: '0.04em',
                                     }}
                                   >
                                     PREVIOUS STATE
@@ -623,7 +567,7 @@ export function ActivityTimeline({
                                       p: 1.5,
                                       bgcolor: 'var(--accent-danger-muted)',
                                       borderRadius: 'var(--radius-sm)',
-                                      border: '1px solid rgba(244, 63, 94, 0.2)',
+                                      border: '1px solid rgba(229, 72, 77, 0.2)',
                                       fontSize: '0.75rem',
                                       overflowX: 'auto',
                                       fontFamily: 'monospace',
@@ -640,12 +584,10 @@ export function ActivityTimeline({
                                   <Typography
                                     variant="caption"
                                     sx={{
-                                      color: '#34d399',
-                                      fontWeight: 700,
+                                      color: '#4cc38a',
+                                      fontWeight: 600,
                                       display: 'block',
                                       mb: 0.5,
-                                      textTransform: 'uppercase',
-                                      letterSpacing: '0.04em',
                                     }}
                                   >
                                     NEW STATE
@@ -657,7 +599,7 @@ export function ActivityTimeline({
                                       p: 1.5,
                                       bgcolor: 'var(--accent-success-muted)',
                                       borderRadius: 'var(--radius-sm)',
-                                      border: '1px solid rgba(16, 185, 129, 0.2)',
+                                      border: '1px solid rgba(76, 195, 138, 0.2)',
                                       fontSize: '0.75rem',
                                       overflowX: 'auto',
                                       fontFamily: 'monospace',
@@ -674,12 +616,10 @@ export function ActivityTimeline({
                                   <Typography
                                     variant="caption"
                                     sx={{
-                                      color: '#38bdf8',
-                                      fontWeight: 700,
+                                      color: '#86a9f2',
+                                      fontWeight: 600,
                                       display: 'block',
                                       mb: 0.5,
-                                      textTransform: 'uppercase',
-                                      letterSpacing: '0.04em',
                                     }}
                                   >
                                     EVENT METADATA & CONTEXT
@@ -691,7 +631,7 @@ export function ActivityTimeline({
                                       p: 1.5,
                                       bgcolor: 'var(--accent-info-muted)',
                                       borderRadius: 'var(--radius-sm)',
-                                      border: '1px solid rgba(14, 165, 233, 0.2)',
+                                      border: '1px solid rgba(94, 140, 235, 0.2)',
                                       fontSize: '0.75rem',
                                       overflowX: 'auto',
                                       fontFamily: 'monospace',

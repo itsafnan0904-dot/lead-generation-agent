@@ -124,7 +124,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
               return (
                 <div className="bar-col" key={f.status}>
                   <div style={{ alignSelf: 'end', width: '100%', display: 'flex', justifyContent: 'center', height: '100%', alignItems: 'flex-end' }}>
-                    <div className="bar" style={{ height: `${Math.max(2, (n / max) * 100)}%` }} />
+                    <div className={`bar${n === max ? " lead" : ""}`} style={{ height: `${Math.max(2, (n / max) * 100)}%` }} />
                   </div>
                   <span className="bar-num">{n}</span>
                   <span className="bar-label">{f.label}</span>
@@ -140,7 +140,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
         <section className="card" aria-label="Top priority leads">
           <div className="card-head">
             <div><h2 className="card-title">Top priority leads</h2><p className="card-sub">Ranked by fit, readiness and recent replies</p></div>
-            <Link href="/leads" style={{ color: 'var(--accent-primary-light)', fontSize: '0.75rem', fontWeight: 600 }}>View all</Link>
+            <Link href="/leads" style={{ color: 'var(--accent-primary-light)', fontSize: '0.75rem', fontWeight: 500 }}>View all</Link>
           </div>
           <div className="table-wrap">
             <table className="tbl">
@@ -149,7 +149,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
                 {data.top.length === 0 && <tr><td colSpan={5} style={{ color: 'var(--text-muted)', textAlign: 'center' }}>No leads yet. Import prospects to get started.</td></tr>}
                 {data.top.map((l) => (
                   <tr key={l.id}>
-                    <td><Link href={`/leads/${l.id}`} style={{ fontWeight: 600 }}>{l.company.name}</Link></td>
+                    <td><Link href={`/leads/${l.id}`} style={{ fontWeight: 500 }}>{l.company.name}</Link></td>
                     <td><span style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}><PriorityBadge priority={l.priority} /><NeedsYouBadge priority={l.priority} /></span></td>
                     <td><ReadinessMeter priority={l.priority} /></td>
                     <td style={{ color: 'var(--text-secondary)' }}>{l.status.replace(/_/g, ' ').toLowerCase()}</td>
@@ -170,7 +170,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
               {data.needsYou.map((l) => (
                 <Link key={l.id} href={`/leads/${l.id}`} className="row" style={{ alignItems: 'flex-start' }}>
                   <span className="row-label" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-                    <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{l.company.name}</span>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{l.company.name}</span>
                     <span style={{ fontSize: '0.75rem' }}>{l.priority.humanReasons.join(' · ') || l.priority.nextAction}</span>
                   </span>
                   <span className="pill pill-warn">Your turn</span>

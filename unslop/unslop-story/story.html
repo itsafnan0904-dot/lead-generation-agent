@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI Sales Agent: unslop story</title>
+<meta name="unslop-steps" content="Spacing, Color and icons, Type and copy, Details">
+<meta name="unslop-frame" content="0 0 1000">
+<style>
+@font-face { font-family: "Plex"; src: url("plex-sans.woff2") format("woff2"); font-weight: 400 600; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1440px; min-height: 900px; background: #0d0e1b; }
+body { font-family: "Segoe UI", system-ui, sans-serif; color: #f4f4fa; font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+.app { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; display: flex; }
+
+/* ---- sidebar (step 0 = the slop) ---- */
+.side { width: 248px; flex: none; background: #0d0e1b; border-right: 1px solid rgba(255,255,255,0.07); padding: 18px 14px; }
+.brand { display: flex; align-items: center; gap: 10px; padding: 0 6px 22px; }
+.logo { position: relative; width: 34px; height: 34px; border-radius: 12px; background: #6c5ed0; overflow: hidden; }
+.logo i { position: absolute; inset: 0; background: linear-gradient(135deg, #6c5ed0, #a99ef2); }
+.logo svg { position: absolute; left: 8px; top: 8px; }
+.brand b { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; }
+.group { margin-bottom: 22px; }
+.group h6 { font-size: 11px; font-weight: 800; letter-spacing: 0.09em; color: #6e7089; padding: 0 12px; margin-bottom: 7px; }
+.nav { display: flex; align-items: center; gap: 11px; padding: 11px 12px; margin-bottom: 5px; border-radius: 10px; font-weight: 600; font-size: 13.5px; color: #a1a3b8; }
+.nav svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.75; flex: none; }
+.nav.on { background: rgba(124,110,224,0.18); color: #a99ef2; }
+.nav .n { margin-left: auto; padding: 1px 8px; border-radius: 11px; background: rgba(244,63,94,0.18); color: #fb7185; font-size: 11px; font-weight: 800; letter-spacing: 0.05em; }
+
+/* ---- main ---- */
+.main { flex: 1; min-width: 0; padding: 0 26px 22px; }
+.head { display: flex; align-items: center; height: 64px; margin: 0 -26px 22px; padding: 0 26px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+.head h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+.head .u { margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; }
+.av { width: 34px; height: 34px; border-radius: 17px; background: rgba(124,110,224,0.2); border: 1px solid rgba(124,110,224,0.5); color: #a99ef2; display: grid; place-items: center; font-size: 12px; font-weight: 800; }
+.top { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 14px; }
+.hero { position: relative; overflow: hidden; border-radius: 20px; padding: 26px 30px; background: #6c5ed0; color: #fff; box-shadow: 0 20px 50px -10px rgba(124,110,224,0.55); }
+.hero .wash { position: absolute; inset: 0; background: linear-gradient(135deg, #5b4ecb 0%, #8f82e8 60%, #b0a3ff 100%); }
+.hero > *:not(.wash) { position: relative; }
+.hero .lab { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; opacity: 0.8; }
+.hero .val { font-size: 42px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin: 9px 0 5px; }
+.hero .sub { font-size: 13px; opacity: 0.85; }
+.hero .pill { position: absolute; right: 30px; top: 26px; padding: 3px 11px; border-radius: 11px; background: rgba(255,255,255,0.2); font-size: 11px; font-weight: 800; letter-spacing: 0.07em; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.25); }
+.stats b { display: block; font-size: 20px; font-weight: 800; }
+.stats span { font-size: 12px; opacity: 0.8; }
+.btns { display: flex; gap: 10px; margin-top: 22px; }
+.btn { height: 38px; padding: 0 18px; border-radius: 19px; display: inline-flex; align-items: center; font-weight: 800; font-size: 13px; background: #fff; color: #5b4ecb; }
+.btn.g { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.45); }
+.side2 { display: grid; grid-template-rows: 1fr 1fr; gap: 14px; }
+.card { background: #151628; border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 22px; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.6); }
+.stat { display: flex; align-items: center; justify-content: space-between; }
+.stat b { display: block; font-size: 30px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+.stat span { display: block; margin-top: 9px; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; color: #a1a3b8; }
+.ic { position: relative; width: 38px; height: 38px; border-radius: 12px; background: rgba(124,110,224,0.2); color: #a99ef2; flex: none; }
+.ic .em { position: absolute; inset: 0; display: grid; place-items: center; font-size: 17px; }
+.ic svg { position: absolute; left: 10px; top: 10px; width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; opacity: 0; }
+.mid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 14px; margin-bottom: 14px; }
+.card h3 { font-size: 15px; font-weight: 800; letter-spacing: -0.01em; }
+.card p { font-size: 12px; color: #6e7089; margin-top: 3px; margin-bottom: 14px; }
+.row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 13px; color: #a1a3b8; }
+.row:last-child { border-bottom: 0; }
+.row b { color: #f4f4fa; font-weight: 800; }
+.bars { position: relative; display: flex; align-items: flex-end; gap: 12px; height: 130px; }
+.bar { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; }
+.bar i { display: block; width: 34px; border-radius: 6px 6px 0 0; background: #7c6ee0; }
+.bar i::after { content: ""; position: absolute; }
+.bar em { font-style: normal; font-size: 12px; font-weight: 800; margin-top: 6px; }
+.bar u { text-transform: uppercase; text-decoration: none; font-size: 10px; letter-spacing: 0.07em; font-weight: 800; color: #6e7089; }
+.bottom .tb { display: grid; grid-template-columns: 1.4fr 1fr 1fr; align-items: center; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 13px; }
+.tb strong { font-weight: 800; }
+.chip { display: inline-block; width: max-content; padding: 2px 9px; border-radius: 11px; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+.dot { position: relative; display: inline-flex; align-items: center; }
+.dot::before { content: ""; width: 0; height: 8px; border-radius: 4px; background: #e3a94d; margin-right: 0; flex: none; }
+[data-slop] { }
+
+/* swap helper wrappers need block flow */
+.swap { display: inline-grid; }
+
+/* ================= step 1: spacing (4px grid, even rhythm) ================= */
+.s1 .side { padding: 20px 16px; }
+.s1 .brand { padding: 0 8px 24px; }
+.s1 .group { margin-bottom: 24px; }
+.s1 .group h6 { padding: 0 12px; margin-bottom: 8px; }
+.s1 .nav { padding: 8px 12px; margin-bottom: 4px; }
+.s1 .main { padding: 0 32px 24px; }
+.s1 .head { margin: 0 -32px 24px; padding: 0 32px; }
+.s1 .top { gap: 16px; margin-bottom: 16px; }
+.s1 .hero { padding: 24px; }
+.s1 .hero .val { margin: 8px 0 4px; }
+.s1 .stats { margin-top: 24px; padding-top: 16px; }
+.s1 .btns { margin-top: 24px; gap: 8px; }
+.s1 .side2 { gap: 16px; }
+.s1 .card { padding: 20px; }
+.s1 .mid { gap: 16px; margin-bottom: 16px; }
+.s1 .stat span { margin-top: 8px; }
+.s1 .card p { margin-bottom: 16px; }
+.s1 .row { padding: 12px 0; }
+
+/* ================= step 2: colour and icons ================= */
+.s2, .s2 body { background: #141415; }
+.s2 .side { background: #0f0f10; border-right-color: rgba(237,237,237,0.06); }
+.s2 .logo { background: #3d6fd8; }
+.s2 .logo i { opacity: 0; }
+.s2 .brand b, .s2 .row b, .s2 .stat b, .s2 .tb strong { color: #ededed; }
+.s2 .group h6 { color: #85858b; }
+.s2 .nav { color: #a1a1a6; }
+.s2 .nav.on { background: #232325; color: #ededed; }
+.s2 .nav .n { background: transparent; color: #a1a1a6; }
+.s2 .head { border-bottom-color: rgba(237,237,237,0.06); }
+.s2 .av { background: rgba(94,140,235,0.14); border-color: transparent; color: #86a9f2; }
+.s2 .hero { background: #19191b; color: #ededed; box-shadow: none; outline: 1px solid rgba(237,237,237,0.06); }
+.s2 .hero .wash { opacity: 0; }
+.s2 .hero .pill { background: #232325; color: #a1a1a6; }
+.s2 .hero .lab, .s2 .hero .sub, .s2 .stats span { color: #a1a1a6; opacity: 1; }
+.s2 .stats { border-top-color: rgba(237,237,237,0.06); }
+.s2 .btn { background: #ededed; color: #141415; }
+.s2 .btn.g { background: transparent; color: #ededed; border-color: rgba(237,237,237,0.16); }
+.s2 .card { background: #19191b; border-color: rgba(237,237,237,0.06); box-shadow: none; }
+.s2 .ic { background: #232325; color: #a1a1a6; }
+.s2 .ic .em { opacity: 0; }
+.s2 .ic svg { opacity: 1; }
+.s2 .stat span, .s2 .row { color: #a1a1a6; }
+.s2 .row { border-bottom-color: rgba(237,237,237,0.06); }
+.s2 .card p, .s2 .bar u { color: #85858b; }
+.s2 .bar i { background: #3a3a3e; }
+.s2 .bar.k i { background: #86a9f2; }
+.s2 .tb { border-bottom-color: rgba(237,237,237,0.06); }
+.s2 .chip { background: transparent; color: #a1a1a6; border-color: transparent; padding-left: 0; }
+.s2 .dot::before { width: 8px; margin-right: 8px; }
+
+/* ================= step 3: type and copy ================= */
+.s3 body { font-family: "Plex", "Segoe UI", sans-serif; }
+.s3 .brand b, .s3 .head h1, .s3 .head .u, .s3 .hero .val, .s3 .stats b, .s3 .stat b, .s3 .card h3, .s3 .row b, .s3 .bar em, .s3 .tb strong, .s3 .nav, .s3 .btn, .s3 .av { font-weight: 500; letter-spacing: 0; }
+.s3 .hero .val { letter-spacing: -0.02em; }
+.s3 .group h6, .s3 .stat span, .s3 .hero .lab, .s3 .bar u, .s3 .hero .pill, .s3 .chip, .s3 .nav .n { font-weight: 400; letter-spacing: 0; }
+.s3 .group h6 { font-size: 12px; } .s3 .stat span { font-size: 13px; } .s3 .bar u { font-size: 12px; text-transform: none; } .s3 .hero .pill, .s3 .chip { font-size: 12px; }
+.s3 .hero .lab { font-size: 13px; }
+
+/* ================= step 4: details (radius, quiet tags, the one chart moment) ================= */
+.s4 .nav { border-radius: 8px; }
+.s4 .logo { border-radius: 8px; }
+.s4 .hero { border-radius: 12px; }
+.s4 .card { border-radius: 12px; }
+.s4 .btn { border-radius: 8px; }
+.s4 .hero .pill { border-radius: 4px; }
+.s4 .ic { border-radius: 8px; }
+.s4 .bar i { border-radius: 4px 4px 0 0; }
+.s4 .av { border-radius: 17px; }
+.s4 .bar.k em { color: #86a9f2; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand" data-gap="sidebar">
+      <span class="logo"><i></i><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span>
+      <b>AI Sales Agent</b>
+    </div>
+    <div class="group" data-gap="sidebar">
+      <h6><span class="swap" data-at="3"><span class="from">DASHBOARD</span><span class="to">Dashboard</span></span></h6>
+      <div class="nav on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Overview</div>
+      <div class="nav"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M17 4.5a3.5 3.5 0 0 1 0 7M21.5 20c0-2.8-1.6-4.8-4-5.6"/></svg>Leads</div>
+      <div class="nav"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Opportunities</div>
+      <div class="nav"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Campaigns</div>
+    </div>
+    <div class="group" data-gap="sidebar">
+      <h6><span class="swap" data-at="3"><span class="from">WORK</span><span class="to">Work</span></span></h6>
+      <div class="nav"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Import prospects</div>
+      <div class="nav"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Companies</div>
+      <div class="nav"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Conversations</div>
+      <div class="nav"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>Notifications<span class="n">11</span></div>
+    </div>
+    <div class="group" data-gap="sidebar">
+      <h6><span class="swap" data-at="3"><span class="from">SETUP</span><span class="to">Setup</span></span></h6>
+      <div class="nav"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>Seller profile</div>
+      <div class="nav"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Gmail</div>
+    </div>
+    <div class="foot" data-gap="sidebar"><div class="nav"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Agent activity</div><div class="nav"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</div></div>
+  </aside>
+
+  <main class="main">
+    <div class="head" data-gap="main"><h1>Overview</h1><div class="u"><span class="av">DS</span>Dummy Seller</div></div>
+
+    <div class="top" data-gap="main">
+      <section class="hero" data-radius>
+        <div class="wash"></div>
+        <div class="lab" data-gap="hero"><span class="swap" data-at="3"><span class="from">OPEN PIPELINE VALUE</span><span class="to">Open pipeline value</span></span></div>
+        <div class="val" data-gap="hero">$86,400</div>
+        <div class="sub" data-gap="hero">$12,000 won · 23 leads in play</div>
+        <span class="pill"><span class="swap" data-at="3"><span class="from">SYSTEM HEALTHY</span><span class="to">System healthy</span></span></span>
+        <div class="stats" data-gap="hero"><div><b>31</b><span>Total leads</span></div><div><b>3</b><span>Need you</span></div><div><b>33%</b><span>Reply rate</span></div><div><b>1</b><span>Won</span></div></div>
+        <div class="btns" data-gap="hero"><span class="btn" data-radius>View pipeline</span><span class="btn g" data-radius>Import prospects</span></div>
+      </section>
+      <div class="side2">
+        <div class="card stat" data-radius><div><b>3</b><span><span class="swap" data-at="3"><span class="from">WAITING ON YOU</span><span class="to">Waiting on you</span></span></span></div><span class="ic"><span class="em">⏱</span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg></span></div>
+        <div class="card stat"><div><b>11</b><span><span class="swap" data-at="3"><span class="from">UNREAD NOTIFICATIONS</span><span class="to">Unread notifications</span></span></span></div><span class="ic"><span class="em">🔔</span><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></span></div>
+      </div>
+    </div>
+
+    <div class="mid" data-gap="main">
+      <section class="card">
+        <h3>At a glance</h3><p>Where your leads stand</p>
+        <div class="row">Contacted<b>12</b></div><div class="row">Replied<b>4</b></div><div class="row">Qualified or further<b>3</b></div><div class="row">Active campaigns<b>0</b></div>
+      </section>
+      <section class="card">
+        <h3>Pipeline by stage</h3><p>All leads</p>
+        <div class="bars">
+          <div class="bar k"><i style="height:100px"></i><em>13</em><u>New</u></div>
+          <div class="bar"><i style="height:46px"></i><em>6</em><u>Contacted</u></div>
+          <div class="bar"><i style="height:30px"></i><em>4</em><u>Replied</u></div>
+          <div class="bar"><i style="height:16px"></i><em>2</em><u>Interested</u></div>
+          <div class="bar"><i style="height:23px"></i><em>3</em><u>Qualified</u></div>
+          <div class="bar"><i style="height:8px"></i><em>1</em><u>Deal</u></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card bottom" data-gap="main">
+      <h3>Top priority leads</h3><p>Ranked by fit, readiness and recent replies</p>
+      <div class="tb"><strong>Strata Distributed Storage</strong><span class="chip"><span class="dot"><span class="swap" data-at="3"><span class="from">WARM 48</span><span class="to">Warm 48</span></span></span></span><span style="color:#a1a3b8">AI is handling this lead</span></div>
+    </section>
+  </main>
+</div>
+</body>
+</html>

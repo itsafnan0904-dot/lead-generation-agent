@@ -28,31 +28,31 @@ const money = (v: ValueByCurrency) => {
   return parts.length ? parts.join(' + ') : '—';
 };
 
-const panel: React.CSSProperties = { background: '#151628', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10 };
+const panel: React.CSSProperties = { background: '#19191b', border: '1px solid rgba(237, 237, 237, 0.09)', borderRadius: 12 };
 
 export default async function OpportunitiesPage() {
   const { data } = await serverApiFetch<Pipeline>('/opportunities');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <Header title="Opportunities & Deals" />
+      <Header title="Opportunities" />
       <div style={{ padding: 24, display: 'grid', gap: 16 }}>
         {!data ? (
-          <div style={{ ...panel, padding: 20, color: '#fb7185', fontSize: '0.8125rem' }}>Could not load the deal pipeline.</div>
+          <div style={{ ...panel, padding: 20, color: '#ee7378', fontSize: '0.8125rem' }}>Could not load the deal pipeline.</div>
         ) : (
           <>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
-              <div style={{ ...panel, padding: '14px 18px', minWidth: 220 }}>
-                <div style={{ color: '#a1a3b8', fontSize: '0.6875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Open pipeline value</div>
-                <div style={{ color: '#f4f4fa', fontSize: '1.25rem', fontWeight: 600 }}>{money(data.totals.openValueByCurrency)}</div>
+              <div style={{ ...panel, padding: '16px 20px', minWidth: 220 }}>
+                <div style={{ color: '#a1a1a6', fontSize: '0.75rem', }}>Open pipeline value</div>
+                <div style={{ color: '#ededed', fontSize: '1.25rem', fontWeight: 500 }}>{money(data.totals.openValueByCurrency)}</div>
               </div>
-              <div style={{ ...panel, padding: '14px 18px', minWidth: 220 }}>
-                <div style={{ color: '#a1a3b8', fontSize: '0.6875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Won</div>
-                <div style={{ color: '#34d399', fontSize: '1.25rem', fontWeight: 600 }}>{money(data.totals.wonValueByCurrency)}</div>
+              <div style={{ ...panel, padding: '16px 20px', minWidth: 220 }}>
+                <div style={{ color: '#a1a1a6', fontSize: '0.75rem', }}>Won</div>
+                <div style={{ color: '#4cc38a', fontSize: '1.25rem', fontWeight: 500 }}>{money(data.totals.wonValueByCurrency)}</div>
               </div>
             </div>
             {data.otherDealsInEarlierStages > 0 && (
-              <div style={{ color: '#a1a3b8', fontSize: '0.75rem' }}>
+              <div style={{ color: '#a1a1a6', fontSize: '0.75rem' }}>
                 {data.otherDealsInEarlierStages} more lead(s) have a deal recorded but are still in an earlier stage, so they are not shown here.
               </div>
             )}
@@ -61,20 +61,20 @@ export default async function OpportunitiesPage() {
               {data.stages.map((stage) => (
                 <section key={stage.status} style={{ ...panel, padding: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
-                    <h2 style={{ margin: 0, fontSize: '0.75rem', fontWeight: 600, color: '#f4f4fa', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                      {stage.status.replace(/_/g, ' ')} <span style={{ color: '#6e7089' }}>({stage.count})</span>
+                    <h2 style={{ margin: 0, fontSize: '0.75rem', fontWeight: 500, color: '#ededed', }}>
+                      {stage.status.replace(/_/g, ' ')} <span style={{ color: '#85858b' }}>({stage.count})</span>
                     </h2>
-                    <span style={{ color: '#a1a3b8', fontSize: '0.75rem' }}>{money(stage.valueByCurrency)}</span>
+                    <span style={{ color: '#a1a1a6', fontSize: '0.75rem' }}>{money(stage.valueByCurrency)}</span>
                   </div>
                   <div style={{ display: 'grid', gap: 8 }}>
-                    {stage.items.length === 0 && <div style={{ color: '#6e7089', fontSize: '0.75rem' }}>No deals in this stage.</div>}
+                    {stage.items.length === 0 && <div style={{ color: '#85858b', fontSize: '0.75rem' }}>No deals in this stage.</div>}
                     {stage.items.map((it) => (
-                      <Link key={it.leadId} href={`/leads/${it.leadId}`} style={{ display: 'grid', gap: 6, padding: 10, borderRadius: 8, background: '#1a1b30', border: '1px solid rgba(255,255,255,0.06)', textDecoration: 'none' }}>
-                        <div style={{ color: '#f4f4fa', fontSize: '0.8125rem', fontWeight: 600 }}>{it.company}</div>
-                        {it.contact && <div style={{ color: '#a1a3b8', fontSize: '0.75rem' }}>{it.contact}</div>}
-                        <div style={{ color: '#c9cadb', fontSize: '0.75rem' }}>
+                      <Link key={it.leadId} href={`/leads/${it.leadId}`} style={{ display: 'grid', gap: 6, padding: 10, borderRadius: 8, background: '#1e1e20', border: '1px solid rgba(237, 237, 237, 0.06)', textDecoration: 'none' }}>
+                        <div style={{ color: '#ededed', fontSize: '0.8125rem', fontWeight: 500 }}>{it.company}</div>
+                        {it.contact && <div style={{ color: '#a1a1a6', fontSize: '0.75rem' }}>{it.contact}</div>}
+                        <div style={{ color: '#c4c4c8', fontSize: '0.75rem' }}>
                           {it.projects.length === 0 ? 'No deal recorded yet' : it.projects.map((p) => p.title).join(', ')}
-                          {Object.keys(it.valueByCurrency).length > 0 && <strong style={{ color: '#f4f4fa' }}> · {money(it.valueByCurrency)}</strong>}
+                          {Object.keys(it.valueByCurrency).length > 0 && <strong style={{ color: '#ededed' }}> · {money(it.valueByCurrency)}</strong>}
                         </div>
                         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                           <PriorityBadge priority={it.priority} />

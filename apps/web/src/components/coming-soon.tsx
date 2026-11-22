@@ -22,14 +22,14 @@ export function ComingSoon({ screenName, description }: { screenName: string; de
         <div style={{
           width: '64px',
           height: '64px',
-          borderRadius: '20px',
-          backgroundColor: 'rgba(124, 110, 224, 0.15)',
-          border: '1px solid rgba(124, 110, 224, 0.3)',
+          borderRadius: '16px',
+          backgroundColor: 'rgba(94, 140, 235, 0.15)',
+          border: '1px solid rgba(237, 237, 237, 0.09)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: '20px',
-          color: '#a99ef2',
+          color: '#86a9f2',
         }}>
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />
@@ -41,11 +41,11 @@ export function ComingSoon({ screenName, description }: { screenName: string; de
           Prompt 16 Placeholder
         </span>
 
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
           {screenName}
         </h2>
 
-        <p style={{ fontSize: '0.9375rem', color: 'var(--text-secondary)', marginBottom: '28px', lineHeight: 1.5 }}>
+        <p style={{ fontSize: '0.9375rem', color: 'var(--text-secondary)', marginBottom: '32px', lineHeight: 1.5 }}>
           {description || `The ${screenName} screen is scheduled in subsequent tasks. The backend services and APIs are active and verified.`}
         </p>
 

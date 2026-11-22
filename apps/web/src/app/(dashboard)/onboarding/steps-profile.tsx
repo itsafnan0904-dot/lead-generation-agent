@@ -20,7 +20,7 @@ export function ProfileStep({ profile, busy, run, onSaved }: { profile: Profile 
   };
 
   return (
-    <div style={{ display: 'grid', gap: 14 }}>
+    <div style={{ display: 'grid', gap: 16 }}>
       <div><label style={label}>Your name *</label><input style={input} value={f.displayName} onChange={set('displayName')} /></div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <div><label style={label}>Company / brand</label><input style={input} value={f.companyName} onChange={set('companyName')} /></div>
@@ -51,7 +51,7 @@ export function ResumeStep({ profile, busy, run }: StepProps) {
   };
 
   return (
-    <div style={{ display: 'grid', gap: 14 }}>
+    <div style={{ display: 'grid', gap: 16 }}>
       <p style={hint}>
         Paste your resume text or load a plain-text file (.txt / .md). Skills and years of experience are extracted and can be merged into your profile.
         {profile.resumeFileName && <> Current resume: <strong>{profile.resumeFileName}</strong>.</>}
